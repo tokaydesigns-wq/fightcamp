@@ -22,6 +22,25 @@ const pose3 = changes => Object.assign({}, G3, changes);
 
 const J3 = pose3({ hip: [.07, .92, .02], yaw: 40, chestYaw: 45, lean: 8,
   lF: [.82, 1.5, -.08], rF: [.24, 1.48, .12], lA: [.42, .08, -.1], rA: [-.17, .14, .2], lElb: [0, -1, -.6] });
+// Cross: hips and shoulders turn so the right shoulder drives forward, the back heel turns out
+// (up on the ball of the foot), and the lead hand stays home by the face.
+const C3 = pose3({ hip: [.11, .92, .03], yaw: 0, chestYaw: -10, lean: 10,
+  lF: [.24, 1.56, -.1], rF: [.79, 1.48, .03], rA: [-.2, .19, .17], rKn: [1, 0, -.4], rElb: [0, -1, .3], rPoint: .45 });
+
+// Lead hook: a small step in, then the elbow lifts and the fist swings out wide (HL3) and
+// round into the side of the bag (H3) as the lead foot, hip and shoulder turn together.
+const HL3 = pose3({ hip: [.18, .92, .02], yaw: 40, chestYaw: 40, lean: 8,
+  lF: [.6, 1.5, -.45], rF: [.2, 1.55, .14], lA: [.42, .08, -.12], lElb: [0, .5, -1], lKn: [1, 0, -.1] });
+const H3 = pose3({ hip: [.25, .92, 0], yaw: 60, chestYaw: 70, lean: 8,
+  lF: [.82, 1.45, -.05], rF: [.21, 1.58, .176], lA: [.46, .13, -.12], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
+
+// Teep: weight back on the rear leg, lift the lead knee high (TC3), then push the hips
+// through and drive the ball of the foot straight into the bag (T3), leaning back slightly.
+const TC3 = pose3({ hip: [-.06, .95, .08], yaw: 20, chestYaw: 25, lean: 0,
+  lF: [.28, 1.55, -.1], rF: [.14, 1.5, .14], lA: [.35, .55, -.1], lKn: [1, .3, 0] });
+const T3 = pose3({ hip: [-.08, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
+  lF: [.25, 1.55, -.12], rF: [.12, 1.5, .12], lA: [.8, 1, -.05], lKn: [0, 1, 0] });
+
 // Muay Thai round kick with the rear (right) leg: step out at an angle with the lead foot,
 // pivot on its ball so the heel turns toward the bag, turn the hips right over, and swing the
 // leg round from the side in a flat arc so the shin lands on the side of the bag.
@@ -37,13 +56,16 @@ const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -5, ti
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
+  cross: [G3, C3, C3, G3, G3],
+  hook: [G3, HL3, H3, H3, G3, G3],
+  teep: [G3, TC3, T3, T3, TC3, G3, G3],
   roundhouse: [G3, RSTEP3, RSWING3, RKICK3, RKICK3, G3, G3],
 };
 
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
-const TRAILS = { roundhouse: [1, 3] };
+const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], teep: [0, 2], roundhouse: [1, 3] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL' };
 
 function trailPoints(T, move, hot) {
@@ -55,7 +77,9 @@ function trailPoints(T, move, hot) {
 
 // The angle each move opens at: the round kick reads best from the kicking side, a little above,
 // where you see the leg come round (from behind it looks like a push kick)
-const START_VIEW = { roundhouse: [110, 26] };
+// the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
+// to see the knee lift then the straight push
+const START_VIEW = { roundhouse: [110, 26], hook: [35, 40], teep: [-75, 12] };
 
 /* ---------- Pose maths ---------- */
 

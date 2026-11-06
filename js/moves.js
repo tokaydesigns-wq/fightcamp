@@ -82,7 +82,8 @@ const DEMOS = {
 function moveDemo(id) {
   const d = DEMOS[id];
   if (!d) return '';
-  return `<div class="demo" data-move="${id}">
+  // Moves with a 3D version open in 3D, because some (like the round kick) can't be read side-on
+  return `<div class="demo" data-move="${id}"${POSES3D[id] ? ' data-start3d' : ''}>
     <svg class="demo-svg" viewBox="0 0 300 250" role="img" aria-label="Animation of the technique"></svg>
     <p class="demo-cue" aria-live="polite">${esc(d.seq[0][2])}</p>
     <div class="demo-ctl ${POSES3D[id] ? 'three' : ''}"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
@@ -138,6 +139,11 @@ let demoRaf = 0;
 
 // Called after every render(); runs one shared loop while any demo is on screen
 function startDemos() {
+  document.querySelectorAll('.demo[data-start3d]').forEach(el => {
+    if (el._opened3d) return;
+    el._opened3d = true;
+    toggle3d(el, el.querySelector('[data-act="demo-3d"]'));
+  });
   if (!demoRaf && document.querySelector('.demo')) demoRaf = requestAnimationFrame(demoTick);
 }
 

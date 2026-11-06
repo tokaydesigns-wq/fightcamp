@@ -1,5 +1,5 @@
 /* Offline cache. Bump CACHE on every release so phones pick up the new version. */
-const CACHE = 'fightcamp-v5';
+const CACHE = 'fightcamp-v6';
 const SHELL = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png',
   'js/core.js', 'js/charts.js', 'js/techniques.js', 'js/fighters.js', 'js/camp.js', 'js/learn.js',

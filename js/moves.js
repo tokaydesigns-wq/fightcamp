@@ -47,9 +47,9 @@ const DEMOS = {
     [GUARD, 400, 'Guard up, chin down'] ] },
   roundhouse: { type: 'side', hot: 'rear-leg', seq: [
     [GUARD, 700, 'Stance, hands up'],
-    [KICK_STEP, 200, 'Step out at an angle with the lead foot'],
-    [KICK_SWING, 180, 'Pivot on the ball of that foot, turn the hip right over'],
-    [KICK, 170, 'Swing the leg round flat and hit with the shin'],
+    [KICK_STEP, 240, 'Step out at an angle with the lead foot'],
+    [KICK_SWING, 220, 'Pivot on the ball of that foot, turn the hip right over'],
+    [KICK, 200, 'Swing the leg round flat and hit with the shin'],
     [KICK, 300, 'Lean away, same-side arm swings down'],
     [GUARD, 340, 'Back to stance'],
     [GUARD, 400, 'Stance, hands up'] ] },
@@ -95,9 +95,32 @@ const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').match
 
 /* ---------- Drawing ---------- */
 
-const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-// Blend two poses (objects of number arrays) by t from 0 to 1
-const blend = (a, b, t) => Object.fromEntries(Object.keys(a).map(k => [k, a[k].map((v, i) => v + (b[k][i] - v) * t)]));
+// Apply f to every number in a set of poses (objects of numbers or number arrays)
+const mapPose = (ps, f) => Object.fromEntries(Object.keys(ps[1]).map(k => [k, Array.isArray(ps[1][k])
+  ? ps[1][k].map((_, j) => f(...ps.map(p => p[k][j]))) : f(...ps.map(p => p[k]))]));
+
+// Two keyframes count as the same pose if all their numbers match (a "hold")
+const poseKey = new WeakMap();
+const samePose = (p, q) => {
+  for (const o of [p, q]) if (!poseKey.has(o)) poseKey.set(o, JSON.stringify(o));
+  return poseKey.get(p) === poseKey.get(q);
+};
+
+// Smooth motion: a curve (Hermite spline) through the keyframes, so movement flows through
+// in-between poses instead of stopping at each one, and only eases to a stop at held poses.
+// P = poses, D = milliseconds to reach each pose, going from pose a to pose b, u from 0 to 1.
+function splinePose(P, D, a, b, u) {
+  const n = P.length, pa = P[a], pb = P[b];
+  if (samePose(pa, pb)) return pa;
+  const a0 = P[(a - 1 + n) % n], b1 = P[(b + 1) % n], db = D[b], da = D[a], db1 = D[(b + 1) % n];
+  const stopA = samePose(a0, pa), stopB = samePose(b1, pb);
+  const s2 = u * u, s3 = s2 * u;
+  const h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + u, h01 = -2 * s3 + 3 * s2, h11 = s3 - s2;
+  return mapPose([a0, pa, pb, b1], (q0, q1, q2, q3) => {
+    const ma = stopA ? 0 : (q2 - q0) / (da + db), mb = stopB ? 0 : (q3 - q1) / (db + db1);
+    return h00 * q1 + h10 * db * ma + h01 * q2 + h11 * db * mb;
+  });
+}
 const pt = p => p.map(n => n.toFixed(1)).join(' ');
 
 function drawSide(p, hot) {
@@ -169,14 +192,15 @@ function drawDemo(el, now) {
   let t = st.at % total, prev = d.seq.length - 1, i = 0, k = 1;
   for (; i < d.seq.length; i++) {
     const dur = d.seq[i][1] * st.slow;
-    if (t <= dur) { k = ease(t / dur); break; }
+    if (t <= dur) { k = t / dur; break; }
     t -= dur; prev = i;
   }
   i = Math.min(i, d.seq.length - 1);
   const [, , cue, hot] = d.seq[i];
   if (cue !== st.cue) { el.querySelector('.demo-cue').textContent = st.cue = cue; }
   if (el._3d) { st.drawn = draw3d(el, prev, i, k); return; }
-  const out = blend(d.seq[prev][0], d.seq[i][0], k);
+  d._P = d._P || d.seq.map(f => f[0]); d._D = d._D || d.seq.map(f => f[1]);
+  const out = splinePose(d._P, d._D, prev, i, k);
   el.querySelector('svg').innerHTML = d.type === 'side' ? drawSide(out, d.hot) : drawTop(d, out, hot);
   st.drawn = true;
 }

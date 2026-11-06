@@ -16,17 +16,17 @@ const BODY = { thigh: .46, shin: .46, upper: .3, fore: .29, torso: .5, hipW: .1,
 // lean = forward tilt, tilt = sideways tilt toward the right shoulder (negative = toward the left);
 // lPoint/rPoint = how much the foot points along the shin (0 = flat, 1 = toes fully pointed)
 const G3 = { hip: [0, .93, .03], yaw: 35, chestYaw: 30, lean: 6, tilt: 0,
-  lF: [.34, 1.52, -.08], rF: [.2, 1.48, .1], lA: [.3, .08, -.12], rA: [-.24, .1, .2],
+  lF: [.34, 1.52, -.08], rF: [.2, 1.48, .1], lA: [.3, .08, -.12], rA: [-.24, .14, .2],
   lElb: [0, -1, -.4], rElb: [0, -1, .5], lKn: [1, 0, -.3], rKn: [1, 0, .5], lPoint: 0, rPoint: .3 };
 const pose3 = changes => Object.assign({}, G3, changes);
 
 const J3 = pose3({ hip: [.07, .92, .02], yaw: 40, chestYaw: 45, lean: 8,
-  lF: [.82, 1.5, -.08], rF: [.24, 1.48, .12], lA: [.42, .08, -.1], rA: [-.17, .1, .2], lElb: [0, -1, -.6] });
+  lF: [.82, 1.5, -.08], rF: [.24, 1.48, .12], lA: [.42, .08, -.1], rA: [-.17, .14, .2], lElb: [0, -1, -.6] });
 // Muay Thai round kick with the rear (right) leg: step out at an angle with the lead foot,
 // pivot on its ball so the heel turns toward the bag, turn the hips right over, and swing the
 // leg round from the side in a flat arc so the shin lands on the side of the bag.
 const RSTEP3 = pose3({ hip: [.14, .94, -.08], yaw: 15, chestYaw: 15, lean: 4,
-  lF: [.36, 1.52, -.16], rF: [.22, 1.47, .04], lA: [.4, .1, -.32], rA: [-.2, .13, .2], lKn: [1, 0, -.6], rPoint: .5 });
+  lF: [.36, 1.52, -.16], rF: [.22, 1.47, .04], lA: [.4, .1, -.32], rA: [-.2, .16, .2], lKn: [1, 0, -.6], rPoint: .5 });
 const RSWING3 = pose3({ hip: [.22, .97, -.14], yaw: -40, chestYaw: -20, lean: -4, tilt: -12,
   lF: [.3, 1.55, -.26], rF: [.12, 1.05, .2], lA: [.4, .12, -.32], rA: [.42, .7, .79],
   lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -1, .4], lPoint: .35, rPoint: .7 });
@@ -47,9 +47,9 @@ const TRAILS = { roundhouse: [1, 3] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL' };
 
 function trailPoints(T, move, hot) {
-  const poses = POSES3D[move], [a, b] = TRAILS[move], joint = TRAIL_JOINT[hot], pts = [];
-  for (let i = a; i < b; i++) for (let k = 0; k < 1; k += .1) pts.push(skeleton(T, blendPose3(poses[i], poses[i + 1], k))[joint]);
-  pts.push(skeleton(T, poses[b])[joint]);
+  const [a, b] = TRAILS[move], joint = TRAIL_JOINT[hot], pts = [];
+  for (let i = a; i < b; i++) for (let k = 0; k < 1; k += .1) pts.push(skeleton(T, splinePose3(move, i, i + 1, k))[joint]);
+  pts.push(skeleton(T, splinePose3(move, b - 1, b, 1))[joint]);
   return pts;
 }
 
@@ -60,19 +60,24 @@ const START_VIEW = { roundhouse: [110, 26] };
 /* ---------- Pose maths ---------- */
 
 const rad = d => d * Math.PI / 180;
-const blend3 = (a, b, t) => Object.fromEntries(Object.keys(a).map(k =>
-  [k, Array.isArray(a[k]) ? a[k].map((v, i) => v + (b[k][i] - v) * t) : a[k] + (b[k] - a[k]) * t]));
 
-// Like blend3, but the feet swing in an arc around the hips (as a real leg does) instead of
-// sliding in a straight line, which made kicks look like knee lifts halfway through
-function blendPose3(a, b, t) {
-  const out = blend3(a, b, t);
+// Smooth 3D motion along the same curve as the 2D (splinePose in moves.js). The feet are
+// handled as offsets from the hips with their own length, so a leg swings round the hip in an
+// arc (as a real leg does) instead of sliding in a straight line, which looked like a knee lift.
+const relCache = {}, durCache = {};
+function relPoses(move) {
+  return relCache[move] || (relCache[move] = POSES3D[move].map(p => {
+    const r = Object.assign({}, p);
+    for (const k of ['lA', 'rA']) { r[k] = p[k].map((v, i) => v - p.hip[i]); r[k + 'Len'] = Math.hypot(...r[k]); }
+    return r;
+  }));
+}
+function splinePose3(move, a, b, u) {
+  const D = durCache[move] || (durCache[move] = DEMOS[move].seq.map(f => f[1]));
+  const p = splinePose(relPoses(move), D, a, b, u), out = Object.assign({}, p);
   for (const k of ['lA', 'rA']) {
-    const va = a[k].map((v, i) => v - a.hip[i]), vb = b[k].map((v, i) => v - b.hip[i]);
-    const la = Math.hypot(...va), lb = Math.hypot(...vb);
-    const dir = va.map((v, i) => v / la * (1 - t) + vb[i] / lb * t), dl = Math.hypot(...dir);
-    const len = la + (lb - la) * t;
-    out[k] = out.hip.map((h, i) => h + dir[i] / dl * len);
+    const len = Math.hypot(...p[k]);
+    out[k] = p.hip.map((h, i) => h + p[k][i] / len * p[k + 'Len']);
   }
   return out;
 }
@@ -120,14 +125,15 @@ function skeleton(T, p) {
 function buildScene(T, canvas, hot, move) {
   const trail = TRAILS[move] && trailPoints(T, move, hot);
   const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  // Phones have very dense screens; 1.5x is plenty sharp and much less work per frame
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
   renderer.shadowMap.enabled = true;
   const scene = new T.Scene(), camera = new T.PerspectiveCamera(32, 1, .1, 30);
 
   scene.add(new T.HemisphereLight(0xffffff, 0x8a7f74, 1.7));
   const sun = new T.DirectionalLight(0xffffff, 2.2);
   sun.position.set(2, 4, 3); sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.mapSize.set(512, 512);
   Object.assign(sun.shadow.camera, { left: -1.6, right: 1.6, top: 1.6, bottom: -1.6 });
   scene.add(sun);
 
@@ -189,9 +195,12 @@ function buildScene(T, canvas, hot, move) {
 
   const [az, el] = START_VIEW[move] || VIEWS.angle, view = { az, el };
   const target = new T.Vector3(.3, 1, 0);
+  // Only resize when the card's size changes. (Comparing pixel sizes instead resized on every
+  // frame on phones with a fractional pixel ratio, which made the animation stutter.)
+  let size = '';
   const render = () => {
     const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (canvas.width !== Math.round(w * renderer.getPixelRatio())) { renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+    if (w + 'x' + h !== size) { size = w + 'x' + h; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     const r = 4.1, a = rad(view.az), e = rad(view.el);
     camera.position.set(target.x + r * Math.cos(e) * Math.cos(a), target.y + r * Math.sin(e), target.z + r * Math.cos(e) * Math.sin(a));
     camera.lookAt(target);
@@ -255,9 +264,9 @@ function dragToTurn(canvas, el) {
 
 // Draw the 3D pose for keyframe i (blending from prev); called by the shared loop in moves.js
 function draw3d(el, prev, i, k) {
-  const v = el._3d, poses = POSES3D[el.dataset.move];
+  const v = el._3d;
   if (!v.ready) return false;
-  v.pose(blendPose3(poses[prev], poses[i], k));
+  v.pose(splinePose3(el.dataset.move, prev, i, k));
   v.render();
   return true;
 }

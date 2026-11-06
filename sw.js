@@ -1,9 +1,9 @@
 /* Offline cache. Bump CACHE on every release so phones pick up the new version. */
-const CACHE = 'fightcamp-v8';
+const CACHE = 'fightcamp-v9';
 const SHELL = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png',
   'js/core.js', 'js/charts.js', 'js/techniques.js', 'js/fighters.js', 'js/camp.js', 'js/learn.js',
-  'js/moves.js', 'js/moves3d.js', 'js/timer.js', 'js/ui.js',
+  'js/moves.js', 'js/moves3d.js', 'js/art.js', 'js/timer.js', 'js/ui.js',
   'js/vendor/three.module.min.js', 'js/vendor/three.core.js',
 ];
 

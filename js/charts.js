@@ -44,4 +44,5 @@ function meter(name, val, target, unit = '') {
     <div class="bar"><i style="width:${pct}%"></i></div></div>`;
 }
 
-const stat = (n, label) => `<div class="stat"><b>${n}</b><span>${esc(label)}</span></div>`;
+// A number tile, with an optional icon name from art.js
+const stat = (n, label, ic) => `<div class="stat">${ic ? icon(ic) : ''}<b>${n}</b><span>${esc(label)}</span></div>`;

@@ -14,10 +14,12 @@ const JAB = pose({ head: [157, 60], neck: [156, 83], hip: [150, 150], lE: [206, 
 const CROSS = pose({ head: [163, 62], neck: [161, 84], hip: [151, 150], lE: [178, 112], lF: [172, 84], rE: [198, 88], rF: [242, 84],
   lK: [178, 194], lA: [188, 236], rK: [140, 197], rA: [124, 232] });
 const HOOK = pose({ head: [154, 62], neck: [153, 84], hip: [147, 150], lE: [184, 82], lF: [212, 92], rF: [160, 80], lK: [176, 194] });
-const KICK_CHAMBER = pose({ head: [146, 60], neck: [146, 84], hip: [150, 152], rE: [126, 124], rF: [116, 140],
-  lK: [170, 196], lA: [180, 236], rK: [178, 168], rA: [160, 204] });
+// Round kick: step out, then the leg swings up and round nearly straight (not a knee lift)
+const KICK_STEP = pose({ head: [154, 58], neck: [153, 82], hip: [152, 150], lK: [180, 194], lA: [200, 236], rK: [132, 196], rA: [116, 234] });
+const KICK_SWING = pose({ head: [142, 62], neck: [144, 86], hip: [156, 152], rE: [130, 122], rF: [122, 140],
+  lK: [176, 196], lA: [196, 234], rK: [178, 186], rA: [212, 206] });
 const KICK = pose({ head: [130, 66], neck: [135, 88], hip: [150, 152], lE: [166, 112], lF: [170, 88], rE: [112, 128], rF: [98, 150],
-  lK: [168, 196], lA: [178, 236], rK: [192, 140], rA: [238, 128] });
+  lK: [176, 196], lA: [196, 234], rK: [192, 140], rA: [238, 128] });
 const TEEP_CHAMBER = pose({ head: [146, 58], neck: [146, 82], hip: [146, 152], lK: [188, 168], lA: [186, 206] });
 const TEEP = pose({ head: [138, 60], neck: [140, 84], hip: [148, 154], lE: [166, 114], lF: [172, 88], lK: [196, 158], lA: [242, 148] });
 
@@ -45,10 +47,11 @@ const DEMOS = {
     [GUARD, 400, 'Guard up, chin down'] ] },
   roundhouse: { type: 'side', hot: 'rear-leg', seq: [
     [GUARD, 700, 'Stance, hands up'],
-    [KICK_CHAMBER, 200, 'Up on the ball of the standing foot, turn the hip'],
-    [KICK, 200, 'Swing through and hit with the shin'],
-    [KICK, 220, 'Same-side arm swings down for balance'],
-    [GUARD, 320, 'Back to stance'],
+    [KICK_STEP, 200, 'Step out at an angle with the lead foot'],
+    [KICK_SWING, 180, 'Pivot on the ball of that foot, turn the hip right over'],
+    [KICK, 170, 'Swing the leg round flat and hit with the shin'],
+    [KICK, 300, 'Lean away, same-side arm swings down'],
+    [GUARD, 340, 'Back to stance'],
     [GUARD, 400, 'Stance, hands up'] ] },
   teep: { type: 'side', hot: 'lead-leg', seq: [
     [GUARD, 650, 'Stance, hands up'],

@@ -12,32 +12,57 @@ const loadThree = () => THREE3 ? Promise.resolve(THREE3)
 // Segment lengths
 const BODY = { thigh: .46, shin: .46, upper: .3, fore: .29, torso: .5, hipW: .1, shW: .19, neck: .1, head: .11 };
 
-// yaw = which way the hips face, chestYaw = the shoulders (degrees from +X toward +Z); lean is forward tilt
-const G3 = { hip: [0, .93, .03], yaw: 35, chestYaw: 30, lean: 6,
+// yaw = which way the hips face, chestYaw = the shoulders (degrees from +X toward +Z);
+// lean = forward tilt, tilt = sideways tilt toward the right shoulder (negative = toward the left);
+// lPoint/rPoint = how much the foot points along the shin (0 = flat, 1 = toes fully pointed)
+const G3 = { hip: [0, .93, .03], yaw: 35, chestYaw: 30, lean: 6, tilt: 0,
   lF: [.34, 1.52, -.08], rF: [.2, 1.48, .1], lA: [.3, .08, -.12], rA: [-.24, .1, .2],
-  lElb: [0, -1, -.4], rElb: [0, -1, .5], lKn: [1, 0, -.3], rKn: [1, 0, .5] };
+  lElb: [0, -1, -.4], rElb: [0, -1, .5], lKn: [1, 0, -.3], rKn: [1, 0, .5], lPoint: 0, rPoint: .3 };
 const pose3 = changes => Object.assign({}, G3, changes);
 
 const J3 = pose3({ hip: [.07, .92, .02], yaw: 40, chestYaw: 45, lean: 8,
   lF: [.82, 1.5, -.08], rF: [.24, 1.48, .12], lA: [.42, .08, -.1], rA: [-.17, .1, .2], lElb: [0, -1, -.6] });
-const RC3 = pose3({ hip: [.04, .97, 0], yaw: -10, chestYaw: 10, lean: -8,
-  lF: [.34, 1.52, -.1], rF: [0, 1.2, .3], lA: [.32, .12, -.12], rA: [.25, .62, .12], rKn: [1, .6, .2], rElb: [0, -1, .6] });
-const RK3 = pose3({ hip: [.02, .98, .02], yaw: -55, chestYaw: -20, lean: -22,
-  lF: [.3, 1.55, -.12], rF: [-.25, .95, .35], lA: [.32, .12, -.12], rA: [.86, 1.08, -.22], rKn: [.3, 1, -.3], rElb: [0, -1, .3] });
+// Muay Thai round kick with the rear (right) leg: step out at an angle with the lead foot,
+// pivot on its ball so the heel turns toward the bag, turn the hips right over, and swing the
+// leg round from the side in a flat arc so the shin lands on the side of the bag.
+const RSTEP3 = pose3({ hip: [.14, .94, -.08], yaw: 15, chestYaw: 15, lean: 4,
+  lF: [.36, 1.52, -.16], rF: [.22, 1.47, .04], lA: [.4, .1, -.32], rA: [-.2, .13, .2], lKn: [1, 0, -.6], rPoint: .5 });
+const RSWING3 = pose3({ hip: [.22, .97, -.14], yaw: -40, chestYaw: -20, lean: -4, tilt: -12,
+  lF: [.3, 1.55, -.26], rF: [.12, 1.05, .2], lA: [.4, .12, -.32], rA: [.42, .7, .79],
+  lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -1, .4], lPoint: .35, rPoint: .7 });
+const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -5, tilt: -25,
+  lF: [.25, 1.6, -.35], rF: [-.1, 1, .1], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
+  lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-.5, 0, -1], rKn: [0, .5, -1], lPoint: .35, rPoint: .85 });
 
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
-  roundhouse: [G3, RC3, RK3, RK3, G3, G3],
+  roundhouse: [G3, RSTEP3, RSWING3, RKICK3, RKICK3, G3, G3],
 };
 
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
+// The angle each move opens at: the round kick reads best from behind on the kicking side
+const START_VIEW = { roundhouse: [145, 16] };
 
 /* ---------- Pose maths ---------- */
 
 const rad = d => d * Math.PI / 180;
 const blend3 = (a, b, t) => Object.fromEntries(Object.keys(a).map(k =>
   [k, Array.isArray(a[k]) ? a[k].map((v, i) => v + (b[k][i] - v) * t) : a[k] + (b[k] - a[k]) * t]));
+
+// Like blend3, but the feet swing in an arc around the hips (as a real leg does) instead of
+// sliding in a straight line, which made kicks look like knee lifts halfway through
+function blendPose3(a, b, t) {
+  const out = blend3(a, b, t);
+  for (const k of ['lA', 'rA']) {
+    const va = a[k].map((v, i) => v - a.hip[i]), vb = b[k].map((v, i) => v - b.hip[i]);
+    const la = Math.hypot(...va), lb = Math.hypot(...vb);
+    const dir = va.map((v, i) => v / la * (1 - t) + vb[i] / lb * t), dl = Math.hypot(...dir);
+    const len = la + (lb - la) * t;
+    out[k] = out.hip.map((h, i) => h + dir[i] / dl * len);
+  }
+  return out;
+}
 
 // Two-bone IK: from joint a, reach toward target with bones l1 and l2, bending toward pole
 function ik(T, a, target, l1, l2, pole) {
@@ -55,7 +80,7 @@ function skeleton(T, p) {
   const rightOf = f => new T.Vector3(-f.z, 0, f.x);
   const H = V(p.hip), pr = rightOf(facing(p.yaw));
   const cf = facing(p.chestYaw), cr = rightOf(cf);
-  const spine = up.clone().multiplyScalar(Math.cos(rad(p.lean))).addScaledVector(cf, Math.sin(rad(p.lean)));
+  const spine = up.clone().addScaledVector(cf, Math.tan(rad(p.lean))).addScaledVector(cr, Math.tan(rad(p.tilt))).normalize();
   const chest = H.clone().addScaledVector(spine, BODY.torso);
   const s = {
     H, chest, cf,
@@ -67,18 +92,19 @@ function skeleton(T, p) {
   [s.elR, s.fiR] = ik(T, s.shR, V(p.rF), BODY.upper, BODY.fore, V(p.rElb));
   [s.knL, s.anL] = ik(T, s.hipL, V(p.lA), BODY.thigh, BODY.shin, V(p.lKn));
   [s.knR, s.anR] = ik(T, s.hipR, V(p.rA), BODY.thigh, BODY.shin, V(p.rKn));
-  // Feet point the way the knee points, square to the shin
-  const foot = (kn, an, pole) => {
+  // Feet point the way the knee points, square to the shin, or further along it when pointed
+  const foot = (kn, an, pole, point) => {
     const shin = an.clone().sub(kn).normalize();
-    return an.clone().addScaledVector(V(pole).addScaledVector(shin, -V(pole).dot(shin)).normalize(), .17);
+    const flat = V(pole).addScaledVector(shin, -V(pole).dot(shin)).normalize();
+    return an.clone().addScaledVector(flat.multiplyScalar(1 - point).addScaledVector(shin, point).normalize(), .17);
   };
-  s.toeL = foot(s.knL, s.anL, p.lKn); s.toeR = foot(s.knR, s.anR, p.rKn);
+  s.toeL = foot(s.knL, s.anL, p.lKn, p.lPoint); s.toeR = foot(s.knR, s.anR, p.rKn, p.rPoint);
   return s;
 }
 
 /* ---------- Scene ---------- */
 
-function buildScene(T, canvas, hot) {
+function buildScene(T, canvas, hot, move) {
   const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
@@ -137,7 +163,7 @@ function buildScene(T, canvas, hot) {
     place(P.thighR, s.hipR, s.knR); place(P.shinR, s.knR, s.anR); place(P.footR, s.anR, s.toeR); P.knR.position.copy(s.knR);
   };
 
-  const view = { az: VIEWS.angle[0], el: VIEWS.angle[1] };
+  const [az, el] = START_VIEW[move] || VIEWS.angle, view = { az, el };
   const target = new T.Vector3(.3, 1, 0);
   const render = () => {
     const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -173,7 +199,7 @@ async function toggle3d(el, btn) {
   try {
     const T = await loadThree();
     if (!box.isConnected) return;
-    const v = buildScene(T, box.querySelector('canvas'), DEMOS[el.dataset.move].hot);
+    const v = buildScene(T, box.querySelector('canvas'), DEMOS[el.dataset.move].hot, el.dataset.move);
     Object.assign(el._3d, v, { ready: true });
     viewers.add(el._3d);
     box.querySelector('.d3-msg').remove();
@@ -207,7 +233,7 @@ function dragToTurn(canvas, el) {
 function draw3d(el, prev, i, k) {
   const v = el._3d, poses = POSES3D[el.dataset.move];
   if (!v.ready) return false;
-  v.pose(blend3(poses[prev], poses[i], k));
+  v.pose(blendPose3(poses[prev], poses[i], k));
   v.render();
   return true;
 }

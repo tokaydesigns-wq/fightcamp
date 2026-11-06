@@ -37,6 +37,8 @@ help), and say clearly what you did and didn't test.
 - Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`.
 - Animations exist for jab, cross, hook, roundhouse, teep, angles and distance. To add one, add keyframes to
   `DEMOS` in moves.js with the technique's id; it then shows on the Learn result and program page automatically.
+- Moves with 3D open in 3D first (`data-start3d`). `TRAILS` in moves3d.js draws the path of the striking foot/fist;
+  `START_VIEW` sets the opening camera angle per move.
 - 3D exists for jab and roundhouse. To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
   2D `seq`. Poses are hip/fist/ankle positions in metres, fighter facing +X, orthodox.
 - Clicks use `data-act`, forms use `data-form`.

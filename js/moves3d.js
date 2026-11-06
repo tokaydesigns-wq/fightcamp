@@ -41,8 +41,21 @@ const POSES3D = {
 };
 
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
-// The angle each move opens at: the round kick reads best from behind on the kicking side
-const START_VIEW = { roundhouse: [145, 16] };
+// Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
+// It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
+const TRAILS = { roundhouse: [1, 3] };
+const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL' };
+
+function trailPoints(T, move, hot) {
+  const poses = POSES3D[move], [a, b] = TRAILS[move], joint = TRAIL_JOINT[hot], pts = [];
+  for (let i = a; i < b; i++) for (let k = 0; k < 1; k += .1) pts.push(skeleton(T, blendPose3(poses[i], poses[i + 1], k))[joint]);
+  pts.push(skeleton(T, poses[b])[joint]);
+  return pts;
+}
+
+// The angle each move opens at: the round kick reads best from the kicking side, a little above,
+// where you see the leg come round (from behind it looks like a push kick)
+const START_VIEW = { roundhouse: [110, 26] };
 
 /* ---------- Pose maths ---------- */
 
@@ -105,6 +118,7 @@ function skeleton(T, p) {
 /* ---------- Scene ---------- */
 
 function buildScene(T, canvas, hot, move) {
+  const trail = TRAILS[move] && trailPoints(T, move, hot);
   const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
@@ -127,6 +141,16 @@ function buildScene(T, canvas, hot, move) {
   bag.position.set(.97, 1.15, 0); bag.castShadow = true; scene.add(bag);
   const chain = new T.Mesh(new T.CylinderGeometry(.008, .008, .5, 6), new T.MeshStandardMaterial({ color: 0x777777 }));
   chain.position.set(.97, 1.9, 0); scene.add(chain);
+
+  // The strike's path: a see-through red tube with an arrowhead at the end
+  if (trail) {
+    const curve = new T.CatmullRomCurve3(trail), glow = new T.MeshBasicMaterial({ color: 0xd62839, transparent: true, opacity: .35, depthWrite: false });
+    scene.add(new T.Mesh(new T.TubeGeometry(curve, 48, .018, 8), glow));
+    const tip = new T.Mesh(new T.ConeGeometry(.045, .12, 12), glow);
+    tip.position.copy(curve.getPoint(1));
+    tip.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), curve.getTangent(1));
+    scene.add(tip);
+  }
 
   const mat = c => new T.MeshStandardMaterial({ color: c, roughness: .55 });
   const wood = mat(0xd9b48c), joint = mat(0xb0845a), glove = mat(0x26262c), red = mat(0xd62839);
@@ -204,7 +228,7 @@ async function toggle3d(el, btn) {
     viewers.add(el._3d);
     box.querySelector('.d3-msg').remove();
     dragToTurn(box.querySelector('canvas'), el);
-    el._st.drawn = false;
+    demoState(el, performance.now()).drawn = false;
   } catch (e) {
     box.querySelector('.d3-msg').textContent = '3D isn\'t available on this device.';
   }
@@ -215,7 +239,7 @@ function close3d(el) {
   if (v.ready) { v.dispose(); viewers.delete(v); }
   v.box.remove();
   el.querySelector('svg').style.display = '';
-  el._3d = null; el._st.drawn = false;
+  el._3d = null; demoState(el, performance.now()).drawn = false;
 }
 
 // Sideways drags turn the figure; up-and-down swipes still scroll the page

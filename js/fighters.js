@@ -66,7 +66,7 @@ const FIGHTERS = [
     distance: 'He stays long, makes opponents reach, and counters as they come in.' } },
   { name: 'Anderson Silva', alias: ['anderson silva', 'spider'], sig: ['slip', 'distance'], how: {
     slip: 'Silva leaned and slipped just enough for punches to miss by inches, then countered while they were off balance.' } },
-  { name: 'Georges St-Pierre', alias: ['st pierre', 'gsp', 'georges st pierre'], sig: ['double-leg', 'jab'], how: {
+  { name: 'Georges St-Pierre', alias: ['georges st pierre', 'st pierre', 'gsp'], sig: ['double-leg', 'jab'], how: {
     'double-leg': 'GSP set up his double leg with the jab, getting opponents to raise their guard, then dropping his level and blasting through.',
     jab: 'He used a stiff, active jab to control the fight and set up his takedowns.' } },
   { name: 'Khabib Nurmagomedov', alias: ['khabib', 'nurmagomedov'], sig: ['single-leg', 'mount'], how: {
@@ -117,3 +117,6 @@ function styleFromText(s) {
   if (/jiu|jitsu|grappl|wrestl|judo|sambo/.test(s)) return 'grappling';
   return null;
 }
+
+// The name fans use ("Buakaw", "Lomachenko"), taken from the first alias
+const shortName = f => f.alias[0].replace(/\b\w/g, c => c.toUpperCase());

@@ -2,7 +2,8 @@
 
 FightCamp is a phone web app (installable PWA) for martial artists: training log, food and weight,
 fight-camp countdown with tips, and "learn from a famous fighter" 4-week drill programs.
-It is separate from the owner's other app, Planerr. For now it runs locally only (no GitHub repo yet).
+It is separate from the owner's other app, Planerr. Live at https://tokaydesigns-wq.github.io/fightcamp/.
+GitHub Pages deploys straight from `main`, so anything merged to `main` goes live within a minute or two.
 
 The owner isn't a developer. Write to them in plain language, show what changed (screenshots
 help), and say clearly what you did and didn't test.
@@ -12,7 +13,7 @@ help), and say clearly what you did and didn't test.
 - **Free sources only, no API keys.** There is no server, so a key would be exposed. Real AI-written
   programs (Claude API through a small server) were discussed and postponed: free version first.
 - No build step and no frameworks. Plain HTML, CSS and JavaScript, loaded as classic scripts.
-- If a GitHub repo is set up later: never push to `main`; use a branch and a pull request.
+- **Never push to `main`.** Work on a branch and open a pull request for the owner to review.
 - Keep weight-cut advice conservative (about 1% of body weight a week; no unsupervised water cuts).
 - Test at phone width (375px), light **and** dark mode, no sideways scrolling.
 

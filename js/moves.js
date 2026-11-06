@@ -146,6 +146,7 @@ function demoTick(now) {
 
 function drawDemo(el, now) {
   const d = DEMOS[el.dataset.move];
+  if (!d) return;
   const st = el._st || (el._st = { start: now, playing: !reducedMotion(), slow: 1, at: 0, cue: '' });
   if (st.playing) st.at = now - st.start;
   else if (st.drawn) return;

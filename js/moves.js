@@ -13,6 +13,8 @@ const JAB = pose({ head: [157, 60], neck: [156, 83], hip: [150, 150], lE: [206, 
   lK: [182, 194], lA: [198, 236], rK: [132, 194], rA: [116, 236] });
 const CROSS = pose({ head: [163, 62], neck: [161, 84], hip: [151, 150], lE: [178, 112], lF: [172, 84], rE: [198, 88], rF: [242, 84],
   lK: [178, 194], lA: [188, 236], rK: [140, 197], rA: [124, 232] });
+// Hook: the elbow comes up and the fist swings out wide first, then round to the target
+const HOOK_LOAD = pose({ head: [151, 58], neck: [151, 82], lE: [182, 96], lF: [196, 84], rF: [160, 80] });
 const HOOK = pose({ head: [154, 62], neck: [153, 84], hip: [147, 150], lE: [184, 82], lF: [212, 92], rF: [160, 80], lK: [176, 194] });
 // Round kick: step out, then the leg swings up and round nearly straight (not a knee lift)
 const KICK_STEP = pose({ head: [154, 58], neck: [153, 82], hip: [152, 150], lK: [180, 194], lA: [200, 236], rK: [132, 196], rA: [116, 234] });
@@ -41,9 +43,10 @@ const DEMOS = {
     [GUARD, 400, 'Guard up, chin down'] ] },
   hook: { type: 'side', hot: 'lead-arm', seq: [
     [GUARD, 700, 'Guard up, chin down'],
-    [HOOK, 180, 'Elbow up, arm bent at about 90°'],
-    [HOOK, 220, 'Turn the foot, hip and shoulder together'],
-    [GUARD, 260, 'Rear hand stays glued to your cheek'],
+    [HOOK_LOAD, 140, 'Elbow up, arm bent at about 90°'],
+    [HOOK, 160, 'Turn the foot, hip and shoulder together'],
+    [HOOK, 240, 'Rear hand stays glued to your cheek'],
+    [GUARD, 260, 'Back to guard'],
     [GUARD, 400, 'Guard up, chin down'] ] },
   roundhouse: { type: 'side', hot: 'rear-leg', seq: [
     [GUARD, 700, 'Stance, hands up'],

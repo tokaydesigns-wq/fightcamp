@@ -28,6 +28,8 @@ help), and say clearly what you did and didn't test.
 | `js/camp.js` | `PHASES` of a fight camp with tips, `campStatus`, `cutPace` |
 | `js/learn.js` | Query matching, Wikipedia lookup, Learn and program screens, `learnAct` clicks |
 | `js/moves.js` | Animated SVG technique demos: `DEMOS` keyframes (side-view stick figure or top-down feet), `moveDemo(id)`, one shared animation loop started by `startDemos()` |
+| `js/moves3d.js` | 3D mannequin view for demos: `POSES3D` (one 3D pose per 2D keyframe, same timing and cues), two-bone IK, three.js scene with a heavy bag, Side/Front/Behind views, drag to turn. three.js loads only when "3D view" is tapped |
+| `js/vendor/` | three.js 0.187.0 (MIT, `LICENSE.three.txt`). `three.core.js` is the minified core, renamed because the module imports that name |
 | `js/timer.js` | Round timer (`#/timer/R-WORK-REST`): bell via Web Audio, 10-second warning, vibration, screen wake lock, `drillTimerBtn` for drill doses |
 | `js/ui.js` | Router, Home/Train/Food/Camp screens, click/input/submit handlers. Must load last. |
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release; add new files to `SHELL`. |
@@ -35,6 +37,8 @@ help), and say clearly what you did and didn't test.
 - Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`.
 - Animations exist for jab, cross, hook, roundhouse, teep, angles and distance. To add one, add keyframes to
   `DEMOS` in moves.js with the technique's id; it then shows on the Learn result and program page automatically.
+- 3D exists for jab and roundhouse. To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
+  2D `seq`. Poses are hip/fist/ankle positions in metres, fighter facing +X, orthodox.
 - Clicks use `data-act`, forms use `data-form`.
 - Saved data: one object in `localStorage['fightcamp.v1']`. New fields need a default in `loadState()`.
   Weights are stored in kg and converted for display.

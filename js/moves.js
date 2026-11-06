@@ -82,8 +82,9 @@ function moveDemo(id) {
   return `<div class="demo" data-move="${id}">
     <svg class="demo-svg" viewBox="0 0 300 250" role="img" aria-label="Animation of the technique"></svg>
     <p class="demo-cue" aria-live="polite">${esc(d.seq[0][2])}</p>
-    <div class="demo-ctl"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
-    <button class="btn" data-act="demo-slow">Slow motion</button></div></div>`;
+    <div class="demo-ctl ${POSES3D[id] ? 'three' : ''}"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
+    <button class="btn" data-act="demo-slow">Slow-mo</button>
+    ${POSES3D[id] ? '<button class="btn d3-btn" data-act="demo-3d">3D view</button>' : ''}</div></div>`;
 }
 
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -141,43 +142,56 @@ function demoTick(now) {
   const els = document.querySelectorAll('.demo');
   if (!els.length) { demoRaf = 0; return; }
   els.forEach(el => drawDemo(el, now));
+  sweep3d();
   demoRaf = requestAnimationFrame(demoTick);
 }
+
+// Playback state for one demo card, created the first time it's drawn or tapped
+const demoState = (el, now) => el._st || (el._st = { start: now, playing: !reducedMotion(), slow: 1, at: 0, cue: '' });
 
 function drawDemo(el, now) {
   const d = DEMOS[el.dataset.move];
   if (!d) return;
-  const st = el._st || (el._st = { start: now, playing: !reducedMotion(), slow: 1, at: 0, cue: '' });
+  const st = demoState(el, now);
   if (st.playing) st.at = now - st.start;
   else if (st.drawn) return;
   const total = d.seq.reduce((s, f) => s + f[1], 0) * st.slow;
-  let t = st.at % total, prev = d.seq[d.seq.length - 1][0], out, cue, hot;
-  for (const [p, ms, c, h] of d.seq) {
-    const dur = ms * st.slow;
-    if (t <= dur) { out = blend(prev, p, ease(t / dur)); cue = c; hot = h; break; }
-    t -= dur; prev = p;
+  // Find which keyframe we're heading to (i), the one before it (prev) and how far along (k)
+  let t = st.at % total, prev = d.seq.length - 1, i = 0, k = 1;
+  for (; i < d.seq.length; i++) {
+    const dur = d.seq[i][1] * st.slow;
+    if (t <= dur) { k = ease(t / dur); break; }
+    t -= dur; prev = i;
   }
-  el.querySelector('svg').innerHTML = d.type === 'side' ? drawSide(out, d.hot) : drawTop(d, out, hot);
+  i = Math.min(i, d.seq.length - 1);
+  const [, , cue, hot] = d.seq[i];
   if (cue !== st.cue) { el.querySelector('.demo-cue').textContent = st.cue = cue; }
+  if (el._3d) { st.drawn = draw3d(el, prev, i, k); return; }
+  const out = blend(d.seq[prev][0], d.seq[i][0], k);
+  el.querySelector('svg').innerHTML = d.type === 'side' ? drawSide(out, d.hot) : drawTop(d, out, hot);
   st.drawn = true;
 }
 
 document.addEventListener('click', e => {
   const btn = e.target.closest('[data-act^="demo-"]');
   if (!btn) return;
-  const el = btn.closest('.demo'), st = el._st, now = performance.now();
-  if (!st) return;
+  const el = btn.closest('.demo'), now = performance.now(), st = demoState(el, now);
+  if (btn.dataset.act === 'demo-3d') { toggle3d(el, btn); return; }
+  if (btn.dataset.act === 'demo-view') {
+    if (!el._3d || !el._3d.ready) return;
+    [el._3d.view.az, el._3d.view.el] = VIEWS[btn.dataset.view]; st.drawn = false; return;
+  }
   if (btn.dataset.act === 'demo-play') {
     st.playing = !st.playing;
     if (st.playing) st.start = now - st.at; else st.drawn = false;
     btn.textContent = st.playing ? 'Pause' : '▶ Play';
-  } else {
+  } else if (btn.dataset.act === 'demo-slow') {
     // Keep the same point in the loop when changing speed
     const total = DEMOS[el.dataset.move].seq.reduce((s, f) => s + f[1], 0);
     const frac = (st.at % (total * st.slow)) / (total * st.slow);
     st.slow = st.slow === 1 ? 3 : 1;
     st.at = frac * total * st.slow; st.start = now - st.at; st.drawn = false;
-    btn.textContent = st.slow === 1 ? 'Slow motion' : 'Normal speed';
+    btn.textContent = st.slow === 1 ? 'Slow-mo' : 'Normal';
     btn.classList.toggle('on', st.slow !== 1);
   }
 });

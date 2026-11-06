@@ -46,6 +46,7 @@ function loadState() {
     unit: s.unit || 'kg',
     camp: s.camp || null,         // {date, opponent, cls, limitKg, start}
     programs: s.programs || [],   // {id, techId, fighter, wiki, started, done:{}}
+    timer: Object.assign({ rounds: 3, work: 180, rest: 60 }, s.timer), // seconds
   };
 }
 let state = loadState();

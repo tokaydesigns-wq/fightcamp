@@ -106,6 +106,7 @@ function learnResult() {
       <p class="eyebrow">${esc(STYLES[tech.style])}</p><h2>${esc(tech.name)}</h2>
       <p>${esc(tech.what)}</p>
       ${how ? `<div class="how"><b>How ${esc(fighter.name.split(' ').at(-1))} does it</b><p>${esc(how)}</p></div>` : ''}
+      ${moveDemo(tech.id)}
       <h3>Key points</h3><ol>${tech.keys.map(k => `<li>${esc(k)}</li>`).join('')}</ol>
       <button class="btn primary wide" data-act="prog-start">Start my 4-week program</button>
       <button class="btn ghost wide" data-act="learn-clear-tech">Pick a different technique</button></div>`;
@@ -158,7 +159,7 @@ function programScreen(id) {
     <ul class="checks">${w.items.map((it, ii) => {
       const k = wi + '-' + ii;
       return `<li><label><input type="checkbox" data-act="prog-tick" data-k="${k}" ${p.done[k] ? 'checked' : ''}>
-        <span><em>${esc(it.kind)}</em> ${esc(it.text)}<small>${esc(it.dose)}</small></span></label></li>`;
+        <span><em>${esc(it.kind)}</em> ${esc(it.text)}<small>${esc(it.dose)}</small></span></label>${drillTimerBtn(it.dose)}</li>`;
     }).join('')}</ul></section>`).join('');
 
   return `<a class="back" href="#/learn">‹ Learn</a>
@@ -169,6 +170,7 @@ function programScreen(id) {
     <div class="meter wide"><div class="meter-top"><span>Progress</span><span><b>${s.done}</b> / ${s.total} drills</span></div>
     <div class="bar"><i style="width:${s.pct}%"></i></div></div></header>
   <section class="card"><h2>How it's done</h2><p>${esc(t.what)}</p>
+    ${moveDemo(t.id)}
     ${how ? `<div class="how"><b>How ${esc(p.fighter.split(' ').at(-1))} does it</b><p>${esc(how)}</p></div>` : ''}
     <h3>Key points</h3><ol>${t.keys.map(k => `<li>${esc(k)}</li>`).join('')}</ol>
     <h3>Common mistakes</h3><ul>${t.mistakes.map(k => `<li>${esc(k)}</li>`).join('')}</ul>

@@ -240,3 +240,12 @@ button.back { border: 0; background: none; color: var(--accent); font: inherit; 
 .checks li label { flex: 1; }
 .tbtn { flex: none; width: 42px; height: 42px; margin-top: 6px; border: 1px solid var(--line); background: var(--bg);
   border-radius: 10px; font-size: 18px; cursor: pointer; }
+
+/* 3D mannequin (moves3d.js) */
+.demo-ctl.three { grid-template-columns: 1fr 1fr 1fr; }
+.demo3d { position: relative; }
+.demo3d canvas { display: block; width: 100%; height: 280px; touch-action: pan-y; cursor: grab; }
+.d3-msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; margin: 0; color: var(--muted); }
+.d3-views { position: absolute; top: 4px; right: 4px; display: flex; gap: 4px; }
+.d3-views button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 99px;
+  font: inherit; font-size: 12px; font-weight: 600; padding: 5px 10px; cursor: pointer; }

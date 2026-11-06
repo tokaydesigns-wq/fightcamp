@@ -1,8 +1,9 @@
 /* Offline cache. Bump CACHE on every release so phones pick up the new version. */
-const CACHE = 'fightcamp-v2';
+const CACHE = 'fightcamp-v3';
 const SHELL = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png',
-  'js/core.js', 'js/charts.js', 'js/techniques.js', 'js/fighters.js', 'js/camp.js', 'js/learn.js', 'js/ui.js',
+  'js/core.js', 'js/charts.js', 'js/techniques.js', 'js/fighters.js', 'js/camp.js', 'js/learn.js',
+  'js/moves.js', 'js/timer.js', 'js/ui.js',
 ];
 
 self.addEventListener('install', e => {

@@ -27,10 +27,14 @@ help), and say clearly what you did and didn't test.
 | `js/fighters.js` | `FIGHTERS` (aliases, signature techniques, "how they do it" notes), `styleFromText` |
 | `js/camp.js` | `PHASES` of a fight camp with tips, `campStatus`, `cutPace` |
 | `js/learn.js` | Query matching, Wikipedia lookup, Learn and program screens, `learnAct` clicks |
+| `js/moves.js` | Animated SVG technique demos: `DEMOS` keyframes (side-view stick figure or top-down feet), `moveDemo(id)`, one shared animation loop started by `startDemos()` |
+| `js/timer.js` | Round timer (`#/timer/R-WORK-REST`): bell via Web Audio, 10-second warning, vibration, screen wake lock, `drillTimerBtn` for drill doses |
 | `js/ui.js` | Router, Home/Train/Food/Camp screens, click/input/submit handlers. Must load last. |
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release; add new files to `SHELL`. |
 
-- Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program).
+- Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`.
+- Animations exist for jab, cross, hook, roundhouse, teep, angles and distance. To add one, add keyframes to
+  `DEMOS` in moves.js with the technique's id; it then shows on the Learn result and program page automatically.
 - Clicks use `data-act`, forms use `data-form`.
 - Saved data: one object in `localStorage['fightcamp.v1']`. New fields need a default in `loadState()`.
   Weights are stored in kg and converted for display.

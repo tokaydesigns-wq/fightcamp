@@ -189,3 +189,54 @@ details.card[open] > summary::after { content: '–'; }
   z-index: 9; animation: up .2s ease-out; white-space: nowrap;
 }
 @keyframes up { from { opacity: 0; transform: translate(-50%, 8px); } }
+
+/* Technique animations (moves.js) */
+.demo { background: var(--bg); border-radius: 14px; padding: 10px 10px 12px; margin: 12px 0 4px; }
+.demo-svg { width: 100%; height: auto; display: block; max-height: 260px; }
+.demo-cue { text-align: center; font-weight: 600; min-height: 2.9em; margin: 4px 6px 8px; }
+.demo-ctl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.demo-ctl .btn { min-height: 40px; font-size: 14px; }
+.demo-ctl .btn.on { border-color: var(--accent); color: var(--accent); }
+.fig path { fill: none; stroke: var(--ink); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.fig .far { stroke: var(--muted); }
+.fig .fist { fill: var(--ink); }
+.fig .fist.far { fill: var(--muted); }
+.fig .hot { stroke: var(--accent); }
+.fig .fist.hot { fill: var(--accent); }
+.fig .head { fill: var(--bg); stroke: var(--ink); stroke-width: 6; }
+.demo .ground { stroke: var(--line); stroke-width: 2; }
+.demo .foot rect { fill: var(--ink); }
+.demo .foot circle { fill: var(--bg); }
+.demo .foot.hot rect { fill: var(--accent); }
+.demo .foot.ghost { opacity: .18; }
+.demo .opp { fill: none; stroke: var(--muted); stroke-width: 2.5; stroke-dasharray: 5 4; }
+.demo .oppline { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 3 5; }
+.demo .reach { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 6 5; transition: fill .2s; }
+.demo .reach.in { fill: var(--soft); stroke: var(--accent); }
+.demo .lbl { fill: var(--muted); font-size: 12px; }
+
+/* Round timer (timer.js) */
+.title-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.title-row .title { margin-bottom: 14px; }
+.title-row .btn { margin-bottom: 14px; min-height: 40px; font-size: 14px; }
+button.back { border: 0; background: none; color: var(--accent); font: inherit; font-weight: 600; padding: 0; cursor: pointer; }
+.timer { text-align: center; --ph: var(--accent); }
+.timer[data-phase=prep] { --ph: var(--warn); }
+.timer[data-phase=rest] { --ph: var(--good); }
+.ring { position: relative; width: min(260px, 72vw); margin: 4px auto 0; }
+.ring svg { width: 100%; display: block; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 12; }
+.ring .track { stroke: var(--bg); }
+.ring .prog { stroke: var(--ph); stroke-linecap: round; stroke-dasharray: 100 100; transition: stroke-dashoffset .25s linear; }
+.ring-in { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-in b { font-size: clamp(44px, 16vw, 64px); line-height: 1; font-variant-numeric: tabular-nums; }
+.ring-in span { color: var(--ph); font-weight: 700; margin-top: 6px; }
+.t-round { font-weight: 600; margin: 10px 0 0; }
+.t-btns { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; margin-top: 12px; }
+.t-btns .btn { min-height: 54px; font-size: 18px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 8px; }
+.grid3 label { min-width: 0; }
+.checks li { display: flex; align-items: flex-start; gap: 6px; }
+.checks li label { flex: 1; }
+.tbtn { flex: none; width: 42px; height: 42px; margin-top: 6px; border: 1px solid var(--line); background: var(--bg);
+  border-radius: 10px; font-size: 18px; cursor: pointer; }

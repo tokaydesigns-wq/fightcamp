@@ -3,14 +3,16 @@
 
 let foodDay = ymd();
 
-const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen };
+const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen };
 
 function render() {
   const [name = 'home', arg] = location.hash.replace(/^#\/?/, '').split('/');
   const fn = ROUTES[name] || homeScreen;
   $('#app').innerHTML = fn(arg && decodeURIComponent(arg));
-  const tab = name === 'p' ? 'learn' : (ROUTES[name] ? name : 'home');
+  const tab = { p: 'learn', timer: 'train' }[name] || (ROUTES[name] ? name : 'home');
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
+  startDemos();
+  paintTimer();
 }
 window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 
@@ -45,7 +47,7 @@ function trainScreen() {
   const weeks = weekTotals(8);
   const avg = Math.round(weeks.slice(0, 7).reduce((t, w) => t + w.mins, 0) / 7);
   const list = [...state.sessions].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)).slice(0, 50);
-  return `<h1 class="title">Training</h1>
+  return `<div class="title-row"><h1 class="title">Training</h1><a class="btn" href="#/timer">⏱ Round timer</a></div>
   <form class="card" data-form="session"><h2>Log a session</h2>
     <div class="grid2">
       <label>Date<input type="date" name="date" value="${ymd()}" max="${ymd()}" required></label>
@@ -221,6 +223,7 @@ document.addEventListener('submit', e => {
       toast('Camp is on. Let\'s go!');
       break;
     case 'learn': runLearn(f.q); return;
+    case 'timer': timerSetup(+f.rounds, +f.work, +f.rest); toast('Timer set'); break;
   }
   save(); render();
 });

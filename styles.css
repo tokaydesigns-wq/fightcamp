@@ -51,9 +51,6 @@ a.card:active { transform: scale(.99); }
 .note.good { color: var(--good); font-weight: 600; }
 
 /* Home */
-.hero { display: flex; justify-content: space-between; align-items: center; margin: 4px 2px 14px; }
-.hero h1 { font-size: 32px; }
-.logo { width: 52px; height: 52px; border-radius: 14px; }
 .camp-mini { display: flex; gap: 14px; align-items: center; }
 .count { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 74px; height: 74px;
   border-radius: 14px; background: var(--accent); color: var(--accent-ink); }
@@ -216,9 +213,6 @@ details.card[open] > summary::after { content: '–'; }
 .demo .lbl { fill: var(--muted); font-size: 12px; }
 
 /* Round timer (timer.js) */
-.title-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.title-row .title { margin-bottom: 14px; }
-.title-row .btn { margin-bottom: 14px; min-height: 40px; font-size: 14px; }
 button.back { border: 0; background: none; color: var(--accent); font: inherit; font-weight: 600; padding: 0; cursor: pointer; }
 .timer { text-align: center; --ph: var(--accent); }
 .timer[data-phase=prep] { --ph: var(--warn); }
@@ -249,3 +243,25 @@ button.back { border: 0; background: none; color: var(--accent); font: inherit; 
 .d3-views { position: absolute; top: 4px; right: 4px; display: flex; gap: 4px; }
 .d3-views button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 99px;
   font: inherit; font-size: 12px; font-weight: 600; padding: 5px 10px; cursor: pointer; }
+
+/* Fight-night look (art.js): banners, icons, empty states, fight poster */
+.banner {
+  position: relative; overflow: hidden; border-radius: 22px; min-height: 158px; padding: 18px 16px; margin: 2px 0 14px;
+  color: #fff; border: 1px solid rgba(255,255,255,.06);
+  background: radial-gradient(circle at 78% 72%, rgba(214,40,57,.6), rgba(214,40,57,0) 58%), linear-gradient(135deg, #24242d, #111116);
+}
+.banner-txt { position: relative; z-index: 1; max-width: 56%; }
+.banner h1 { font-size: 27px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -.01em; line-height: 1.02; margin: 0 0 6px; }
+.banner p { margin: 0; color: rgba(255,255,255,.72); font-size: 14px; line-height: 1.35; }
+.banner .banner-eyebrow { color: #ff6b78; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+.banner-art { position: absolute; right: -8px; bottom: -6px; width: 54%; height: auto; }
+.banner .btn { margin-top: 12px; min-height: 38px; font-size: 14px; background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.22); color: #fff; }
+.stat .ic { width: 20px; height: 20px; display: block; margin: 0 auto 2px; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.empty { text-align: center; padding: 6px 0 2px; }
+.empty svg { width: 64px; height: auto; display: block; margin: 0 auto 6px; }
+.empty p { color: var(--muted); margin: 0; }
+.card h2 { font-weight: 800; }
+.poster { color: #fff; border-color: transparent;
+  background: radial-gradient(circle at 15% 50%, rgba(214,40,57,.45), rgba(214,40,57,0) 55%), linear-gradient(135deg, #24242d, #111116); }
+.poster h2 { font-style: italic; text-transform: uppercase; font-weight: 900; font-size: 22px; }
+.poster .muted { color: rgba(255,255,255,.7); }

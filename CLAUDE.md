@@ -30,6 +30,7 @@ help), and say clearly what you did and didn't test.
 | `js/moves.js` | Animated SVG technique demos: `DEMOS` keyframes (side-view stick figure or top-down feet), `moveDemo(id)`, one shared animation loop started by `startDemos()` |
 | `js/moves3d.js` | 3D mannequin view for demos: `POSES3D` (one 3D pose per 2D keyframe, same timing and cues), two-bone IK, three.js scene with a heavy bag, Side/Front/Behind views, drag to turn. three.js loads only when "3D view" is tapped |
 | `js/vendor/` | three.js 0.187.0 (MIT, `LICENSE.three.txt`). `three.core.js` is the minified core, renamed because the module imports that name |
+| `js/art.js` | Artwork in SVG: `picto()` pictogram fighter drawn from the 2D poses in moves.js, `ART` banner scenes, `banner()` screen headers, `ICONS`/`icon()` for stat tiles, `emptyState()` |
 | `js/timer.js` | Round timer (`#/timer/R-WORK-REST`): bell via Web Audio, 10-second warning, vibration, screen wake lock, `drillTimerBtn` for drill doses |
 | `js/ui.js` | Router, Home/Train/Food/Camp screens, click/input/submit handlers. Must load last. |
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release; add new files to `SHELL`. |

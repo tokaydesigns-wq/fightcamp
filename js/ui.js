@@ -21,13 +21,12 @@ window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 function homeScreen() {
   const wk = weekTotals(1)[0], day = dayFood(ymd()), p = state.programs[0];
   const c = state.camp && campStatus(state.camp);
-  return `<header class="hero"><div><p class="eyebrow">${esc(niceDate(ymd()))}</p><h1>FightCamp</h1></div>
-    <img class="logo" src="icon.svg" alt=""></header>
+  return `${banner('home', 'FightCamp', greeting(), '', niceDate(ymd()))}
   ${c ? `<a class="card camp-mini" href="#/camp"><div class="count"><b>${Math.max(c.daysOut, 0)}</b><span>${c.daysOut === 1 ? 'day' : 'days'}</span></div>
       <div><p class="eyebrow">${c.daysOut >= 0 ? 'To fight night' : 'Fight done'}</p><h2>${esc(c.phase.name)}</h2><p class="muted small">${esc(c.phase.goal)}</p></div></a>`
     : `<a class="card cta" href="#/camp"><span>Got a fight coming up?</span><b>Set your fight date ›</b></a>`}
   <a class="card" href="#/train"><h2>Training this week</h2>
-    <div class="stats">${stat(wk.count, wk.count === 1 ? 'session' : 'sessions')}${stat(wk.mins, 'minutes')}${stat(streak(), 'day streak')}</div></a>
+    <div class="stats">${stat(wk.count, wk.count === 1 ? 'session' : 'sessions', 'glove')}${stat(wk.mins, 'minutes', 'clock')}${stat(streak(), 'day streak', 'flame')}</div></a>
   <a class="card" href="#/food"><h2>Food today</h2>
     ${meter('Calories', day.kcal, state.targets.kcal)}${meter('Protein', day.protein, state.targets.protein, 'g')}</a>
   ${p ? programMini(p) : `<a class="card cta" href="#/learn"><span>Want to move like a pro?</span><b>Learn from a famous fighter ›</b></a>`}
@@ -47,7 +46,7 @@ function trainScreen() {
   const weeks = weekTotals(8);
   const avg = Math.round(weeks.slice(0, 7).reduce((t, w) => t + w.mins, 0) / 7);
   const list = [...state.sessions].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)).slice(0, 50);
-  return `<div class="title-row"><h1 class="title">Training</h1><a class="btn" href="#/timer">⏱ Round timer</a></div>
+  return `${banner('train', 'Training', 'Log it, track it, get better.', '<a class="btn" href="#/timer">⏱ Round timer</a>')}
   <form class="card" data-form="session"><h2>Log a session</h2>
     <div class="grid2">
       <label>Date<input type="date" name="date" value="${ymd()}" max="${ymd()}" required></label>
@@ -62,9 +61,9 @@ function trainScreen() {
   <section class="card"><h2>Last 8 weeks</h2>
     ${barChart(weeks.map(w => w.mins), weeks.map(w => shortDate(w.start)), 'Minutes trained each week')}
     <p class="muted small">Minutes trained each week (week starting)</p>
-    <div class="stats">${stat(weeks.at(-1).mins, 'this week')}${stat(avg, 'avg/week before')}${stat(streak(), 'day streak')}</div></section>
+    <div class="stats">${stat(weeks.at(-1).mins, 'this week', 'clock')}${stat(avg, 'avg/week before', 'chart')}${stat(streak(), 'day streak', 'flame')}</div></section>
   <section class="card"><h2>History</h2>
-    ${list.length ? `<ul class="list">${list.map(sessionRow).join('')}</ul>` : '<p class="muted">No sessions yet. Log your first one above.</p>'}</section>`;
+    ${list.length ? `<ul class="list">${list.map(sessionRow).join('')}</ul>` : emptyState('No sessions yet. Log your first one above.')}</section>`;
 }
 
 function sessionRow(s) {
@@ -82,7 +81,7 @@ function foodScreen() {
   const weights = [...state.weights].sort((a, b) => a.date.localeCompare(b.date)).slice(-30);
   const last = weights.at(-1), weekAgo = weights.find(w => w.date >= addDays(ymd(), -7));
   const limit = state.camp && state.camp.limitKg;
-  return `<h1 class="title">Food</h1>
+  return `${banner('food', 'Food', 'Fuel for training and making weight.')}
   <div class="daynav"><button class="btn" data-act="food-day" data-d="-1" aria-label="Previous day">‹</button>
     <b>${today ? 'Today' : esc(niceDate(foodDay))}</b>
     <button class="btn" data-act="food-day" data-d="1" ${today ? 'disabled' : ''} aria-label="Next day">›</button></div>
@@ -98,11 +97,11 @@ function foodScreen() {
     ${day.meals.length ? `<ul class="list">${day.meals.map(m => `<li class="row"><div><b>${esc(m.name)}</b>
       <p class="small muted">${+m.kcal || 0} kcal · ${+m.protein || 0} g protein</p></div>
       <button class="x" data-act="meal-del" data-id="${m.id}" aria-label="Delete">×</button></li>`).join('')}</ul>`
-      : '<p class="muted">Nothing logged yet.</p>'}</section>
+      : emptyState('Nothing logged yet.')}</section>
   <section class="card"><h2>Weight</h2>
     <form class="inline" data-form="weight"><input type="number" name="w" step="0.1" min="20" max="400" inputmode="decimal"
       placeholder="Today's weight (${state.unit})" required><button class="btn primary">Save</button></form>
-    ${last ? `<div class="stats">${stat(fmtW(last.kg), 'latest')}${weekAgo && weekAgo !== last ? stat((last.kg - weekAgo.kg > 0 ? '+' : '') + fmtW(last.kg - weekAgo.kg), 'this week') : ''}
+    ${last ? `<div class="stats">${stat(fmtW(last.kg), 'latest', 'scale')}${weekAgo && weekAgo !== last ? stat((last.kg - weekAgo.kg > 0 ? '+' : '') + fmtW(last.kg - weekAgo.kg), 'this week') : ''}
       ${limit ? stat(fmtW(Math.abs(last.kg - limit)), last.kg > limit ? 'over the limit' : 'under the limit') : ''}</div>` : ''}
     ${weights.length >= 2 ? lineChart(weights.map(w => ({ date: w.date, v: round1(fromKg(w.kg)) })), limit ? round1(fromKg(limit)) : null, 'Weight over time')
       : '<p class="muted small">Log your weight a couple of times to see a chart.</p>'}</section>
@@ -120,12 +119,12 @@ function foodScreen() {
 
 function campScreen() {
   const c = state.camp;
-  if (!c) return `<h1 class="title">Fight camp</h1>
+  if (!c) return `${banner('camp', 'Fight camp', 'Your road to fight night, week by week.')}
     <section class="card"><h2>Got a fight booked?</h2><p>Add the date and you'll get a countdown and tips for each stage of camp, from the first hard weeks to the weigh-in.</p></section>
     ${campForm({})}${phaseList(null)}`;
   const s = campStatus(c), pace = cutPace(c), ph = s.phase;
-  return `<h1 class="title">Fight camp</h1>
-  <section class="card countdown"><div class="count big"><b>${Math.max(s.daysOut, 0)}</b><span>${s.daysOut === 1 ? 'day to go' : s.daysOut < 0 ? 'fight done' : 'days to go'}</span></div>
+  return `${banner('camp', 'Fight camp', c.opponent ? 'vs ' + c.opponent : 'Your road to fight night.')}
+  <section class="card countdown poster"><div class="count big"><b>${Math.max(s.daysOut, 0)}</b><span>${s.daysOut === 1 ? 'day to go' : s.daysOut < 0 ? 'fight done' : 'days to go'}</span></div>
     <div><h2>${c.opponent ? 'vs ' + esc(c.opponent) : 'Fight night'}</h2><p class="muted">${esc(niceDate(c.date))}${c.cls ? ' · ' + esc(c.cls) : ''}</p>
     ${c.limitKg ? `<p class="small">Weight limit: <b>${fmtW(c.limitKg)}</b></p>` : ''}</div></section>
   ${pace ? weightPace(pace) : c.limitKg ? '<p class="card note">Log your weight on the Food tab to see how you\'re tracking against the limit.</p>' : ''}

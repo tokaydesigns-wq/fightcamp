@@ -74,7 +74,7 @@ async function runLearn(q) {
 const EXAMPLES = ['Lomachenko footwork', 'Mayweather shoulder roll', 'Buakaw body kick', 'Khabib single leg', 'Marcelo Garcia guillotine', 'Tyson head movement'];
 
 function learnScreen() {
-  return `<h1 class="title">Learn from a fighter</h1>
+  return `${banner('learn', 'Learn from a fighter', "Pick a fighter and a move. We'll build the drills.")}
   <form class="card" data-form="learn">
     <label for="lq">What do you want to learn, and from who?</label>
     <div class="search"><input id="lq" name="q" placeholder="e.g. Lomachenko footwork" value="${esc(learn ? learn.q : '')}" autocomplete="off" required>

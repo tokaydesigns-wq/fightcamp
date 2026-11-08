@@ -17,6 +17,11 @@ help), and say clearly what you did and didn't test.
 - Keep weight-cut advice conservative (about 1% of body weight a week; no unsupervised water cuts).
 - Test at phone width (375px), light **and** dark mode, no sideways scrolling.
 
+## Nightly helper
+
+A scheduled cloud job ("FightCamp nightly helper") works through `BACKLOG.md`, opening at most one
+pull request a night. It never merges. The owner adds ideas under Inbox and merges what they like.
+
 ## Files (loaded in this order from index.html; they share globals)
 
 | File | What's in it |

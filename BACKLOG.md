@@ -14,7 +14,6 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## Up next
 
-- [ ] `[feature]` Backup and restore: save all training, food, weight, camp and program data to a file, and load it back, so clearing the browser or changing phones doesn't lose it. Ask before overwriting existing data.
 - [ ] `[animation]` Low kick: 2D and 3D animation with a strike-path trail. It should clearly chop down into the thigh, not look like a roundhouse to the body.
 - [ ] `[animation]` Body shot (lead hook to the liver): 2D and 3D, knees bending to drop the level, head off the centre line.
 - [ ] `[animation]` Head movement (slip and roll): 2D and 3D, moving from the legs and hips, eyes on the target.
@@ -22,7 +21,7 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## In review
 
-- (nothing yet)
+- [ ] `[feature]` Backup and restore (PR: "Add backup and restore of all your data"). Cards on the Home screen: save a backup file, load it back.
 
 ## Needs the owner
 

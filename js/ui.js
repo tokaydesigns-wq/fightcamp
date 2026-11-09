@@ -30,7 +30,42 @@ function homeScreen() {
   <a class="card" href="#/food"><h2>Food today</h2>
     ${meter('Calories', day.kcal, state.targets.kcal)}${meter('Protein', day.protein, state.targets.protein, 'g')}</a>
   ${p ? programMini(p) : `<a class="card cta" href="#/learn"><span>Want to move like a pro?</span><b>Learn from a famous fighter ›</b></a>`}
-  <div class="quick"><a class="btn primary" href="#/train">+ Log training</a><a class="btn" href="#/food">+ Log food</a></div>`;
+  <div class="quick"><a class="btn primary" href="#/train">+ Log training</a><a class="btn" href="#/food">+ Log food</a></div>
+  ${backupCard()}`;
+}
+
+/* ---------- Backup and restore ---------- */
+
+function backupCard() {
+  return `<details class="card"><summary>Backup and restore</summary>
+    <p class="muted small">Your data lives only on this phone. Save a backup file now and then, and load it back after changing phones or clearing the browser.</p>
+    <button class="btn primary wide" data-act="backup-save">Save a backup file</button>
+    <label class="btn wide filebtn">Load a backup file<input type="file" accept=".json,application/json" data-restore hidden></label></details>`;
+}
+
+function backupSave() {
+  const blob = new Blob([JSON.stringify({ app: 'fightcamp', version: 1, saved: new Date().toISOString(), data: state }, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `fightcamp-backup-${ymd()}.json`;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Backup saved');
+}
+
+function backupLoad(file) {
+  const r = new FileReader();
+  r.onload = () => {
+    let b;
+    try { b = JSON.parse(r.result); } catch (e) { /* handled below */ }
+    if (!b || b.app !== 'fightcamp' || !b.data || typeof b.data !== 'object') { toast("That isn't a FightCamp backup"); return; }
+    const d = b.data, n = (d.sessions || []).length, m = (d.meals || []).length;
+    const have = state.sessions.length || state.meals.length || state.weights.length || state.camp || state.programs.length;
+    const msg = `Load this backup (${n} sessions, ${m} meals)?` + (have ? ' It will replace everything currently on this phone.' : '');
+    if (!confirm(msg)) return;
+    localStorage.setItem(KEY, JSON.stringify(d));
+    state = loadState(); save(); render(); toast('Backup loaded');
+  };
+  r.readAsText(file);
 }
 
 function programMini(p) {
@@ -183,8 +218,13 @@ document.addEventListener('click', e => {
       break;
     }
     case 'food-day': foodDay = addDays(foodDay, +el.dataset.d); if (foodDay > ymd()) foodDay = ymd(); render(); break;
+    case 'backup-save': backupSave(); break;
     case 'camp-clear': if (confirm('Remove this fight?')) { state.camp = null; save(); render(); } break;
   }
+});
+
+document.addEventListener('change', e => {
+  if (e.target.matches('[data-restore]') && e.target.files[0]) { backupLoad(e.target.files[0]); e.target.value = ''; }
 });
 
 document.addEventListener('input', e => {

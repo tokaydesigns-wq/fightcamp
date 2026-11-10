@@ -3,16 +3,17 @@
 
 let foodDay = ymd();
 
-const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen };
+const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen, video: videoScreen };
 
 function render() {
   const [name = 'home', arg] = location.hash.replace(/^#\/?/, '').split('/');
   const fn = ROUTES[name] || homeScreen;
   $('#app').innerHTML = fn(arg && decodeURIComponent(arg));
-  const tab = { p: 'learn', timer: 'train' }[name] || (ROUTES[name] ? name : 'home');
+  const tab = { p: 'learn', timer: 'train', video: 'train' }[name] || (ROUTES[name] ? name : 'home');
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   startDemos();
   paintTimer();
+  mountVideo();
 }
 window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 
@@ -81,7 +82,7 @@ function trainScreen() {
   const weeks = weekTotals(8);
   const avg = Math.round(weeks.slice(0, 7).reduce((t, w) => t + w.mins, 0) / 7);
   const list = [...state.sessions].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)).slice(0, 50);
-  return `${banner('train', 'Training', 'Log it, track it, get better.', '<a class="btn" href="#/timer">⏱ Round timer</a>')}
+  return `${banner('train', 'Training', 'Log it, track it, get better.', '<a class="btn" href="#/timer">⏱ Round timer</a> <a class="btn" href="#/video">🎥 Video check</a>')}
   <form class="card" data-form="session"><h2>Log a session</h2>
     <div class="grid2">
       <label>Date<input type="date" name="date" value="${ymd()}" max="${ymd()}" required></label>

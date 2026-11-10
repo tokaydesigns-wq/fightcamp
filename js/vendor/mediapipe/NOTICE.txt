@@ -1,0 +1,3 @@
+MediaPipe Tasks Vision 1.1.1 (npm @mediapipe/tasks-vision) and the pose_landmarker_lite model,
+by Google, Apache License 2.0 (full text in LICENSE.txt).
+Only vision_bundle.mjs and wasm/vision_wasm_internal.* from the package are included.

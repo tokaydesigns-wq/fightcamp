@@ -58,6 +58,13 @@ const ART = {
     <g transform="translate(-58 0)">${picto(GUARD)}</g>
     <g transform="translate(358 0) scale(-1 1)">${picto(GUARD, { color: 'var(--accent)' })}</g>
     <text x="150" y="168" text-anchor="middle" style="fill:#fff;font:italic 900 38px system-ui,sans-serif;opacity:.9">VS</text>`,
+  // A fighter in a camera viewfinder, recording
+  video: () => `${floorShadow(165)}
+    <g style="fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;opacity:.75">
+      <path d="M70 40 v-22 h30"/><path d="M230 18 h30 v22"/><path d="M70 205 v22 h30"/><path d="M230 227 h30 v-22"/></g>
+    <circle cx="94" cy="64" r="8" style="fill:var(--accent)"/>
+    <text x="107" y="70" style="fill:#fff;font:800 16px system-ui,sans-serif;opacity:.8">REC</text>
+    ${picto(GUARD)}`,
   // A round kick with the path of the foot
   learn: () => `${floorShadow(150)}
     <path d="M112 236 C 196 246 262 210 246 124" style="fill:none;stroke:var(--accent);stroke-width:4;stroke-dasharray:3 9;stroke-linecap:round"/>

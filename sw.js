@@ -1,9 +1,9 @@
 /* Offline cache. Bump CACHE on every release so phones pick up the new version. */
-const CACHE = 'fightcamp-v10';
+const CACHE = 'fightcamp-v11';
 const SHELL = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png',
   'js/core.js', 'js/charts.js', 'js/techniques.js', 'js/fighters.js', 'js/camp.js', 'js/learn.js',
-  'js/moves.js', 'js/moves3d.js', 'js/art.js', 'js/timer.js', 'js/ui.js',
+  'js/moves.js', 'js/moves3d.js', 'js/art.js', 'js/timer.js', 'js/video.js', 'js/ui.js',
   'js/vendor/three.module.min.js', 'js/vendor/three.core.js',
 ];
 
@@ -21,5 +21,13 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
+  // The video-check tracker (about 20 MB) is too big to download up front: keep a copy the first time it's used
+  if (url.pathname.includes('/js/vendor/mediapipe/')) {
+    e.respondWith(caches.open(CACHE).then(c => c.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+      if (res.ok) c.put(e.request, res.clone());
+      return res;
+    }))));
+    return;
+  }
   e.respondWith(caches.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request)));
 });

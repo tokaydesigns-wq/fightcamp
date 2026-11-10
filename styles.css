@@ -265,3 +265,6 @@ button.back { border: 0; background: none; color: var(--accent); font: inherit; 
   background: radial-gradient(circle at 15% 50%, rgba(214,40,57,.45), rgba(214,40,57,0) 55%), linear-gradient(135deg, #24242d, #111116); }
 .poster h2 { font-style: italic; text-transform: uppercase; font-weight: 900; font-size: 22px; }
 .poster .muted { color: rgba(255,255,255,.7); }
+.filebtn { display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.filebtn input { display: none; }
+.quick + details.card { margin-top: 14px; }

@@ -20,42 +20,44 @@ runs daily at 11:00 UTC, works through `BACKLOG.md` and opens at most one PR a n
 low-kick animation. If it skips a night, check its run log: one run stopped on the account's weekly
 usage limit (not a bug).
 
-## In progress: Video check (branch `feature/video-check`, no PR yet)
+## Video check (branch `feature/video-check`, pull request open for the owner to review)
 
 The owner asked for: upload a video of pad/bag work or sparring/fights and get a critique of stance,
 footwork, guard, punches and kicks. They chose **free on-phone body tracking now, AI coach later**
-(the paid Claude-vision option is set aside; it would need billing plus a small server for the key).
+(the paid AI coach is in `BACKLOG.md` under Needs the owner).
 
-Done on the branch (committed, not yet merged):
-- `js/video.js`: the `#/video` screen (pick clip type and stance, choose or record a video, "which one
-  is you?" when several people are found, progress, report card with tap-to-jump timestamps, skeleton
-  overlay, "What to drill" links into Learn) and the rules that turn joint positions into notes.
-- `js/vendor/mediapipe/`: Google MediaPipe Tasks Vision 1.1.1 (Apache-2.0, owner approved downloading
-  it into the app) plus `pose_landmarker_lite.task`. Loaded only when Video check is used; `sw.js`
-  caches these files on first use. Cache bumped to `fightcamp-v11`.
-- Train banner has a "🎥 Video check" button; new `video` banner art in `js/art.js`; styles at the end
-  of `styles.css`.
+What's there:
+- `js/video.js`: the `#/video` screen and the rules. `js/vendor/mediapipe/`: Google MediaPipe Tasks
+  Vision 1.1.1 + `pose_landmarker_lite.task` (Apache-2.0), loaded only when Video check is used and
+  cached by `sw.js` on first use. Offline cache `fightcamp-v11`.
+- How it reads a clip: the video stays attached to the page (`holdVideo`, phones don't decode detached
+  videos). It plays the clip from the moment you picked yourself and grabs ~10 frames a second as they
+  go by (`playFrames`, requestVideoFrameCallback; jumping frame by frame was 0.2-0.4 s per frame),
+  then jumps to any missed moments, working outward from the pick (`seekFrames`).
+- Finding people: whole frame plus three overlapping slices (the lite model mostly finds only the
+  biggest person otherwise); during analysis it zooms in on the chosen person (`areaAround`).
+  `follow` refuses to switch to someone of a different size or too far away: losing them for a
+  moment beats following the wrong boxer.
+- Rules, tuned on the mannequin and the clips: a punch = arm straight (shoulder-elbow-wrist in a
+  line) and fist well away from where that hand usually sits; a kick = one foot well above the
+  standing foot compared with the usual stance, for 2+ frames. Side-on cameras can't tell left arm
+  from right, so the report then doesn't name the hand.
 
-Still to do before opening the PR:
-1. **Finish testing on real footage.** A seeking problem was just fixed: videos must stay attached to
-   the page (`holdVideo`) and the code waits for `loadedmetadata` then seeks, because browsers (and
-   iPhones) don't decode frames of detached videos. Re-run the multi-person boxing clip and check the
-   "which one is you?" boxes, then a full analysis and the report.
-2. **Tune the thresholds** in `buildReport` / `findStrikes` against real clips. They are first guesses.
-   Idea for ground truth: render the 3D mannequin (moves3d.js) frame by frame into a canvas with known
-   jab/kick counts and feed it to the tracker (detectForVideo accepts a canvas).
-3. Check at 375px, light and dark, no console errors, then open the PR with screenshots.
-4. Add "AI coach for video check (paid, needs a server)" under Needs the owner in `BACKLOG.md`.
+Test results (mannequin, `docs/video-check-harness.js`): from an angle, from slightly above and
+southpaw it counts exactly 6 punches (3 lead, 3 rear) and 4 kicks; side-on the totals are right;
+from the front it can't see punches thrown at the camera (the report says to film from the side).
+Real clips: boxing (3 people, right one followed, 0 kicks), Jon Jones (2 kicks, 0 punches), Muay
+Thai from the crowd ("couldn't follow you", as expected).
 
-Test clips (from Wikimedia Commons, owner approved downloading them for testing only, not for the app):
-"Boxing training.webm" (several people), "Muay Thai in Lamai.webm" (fight filmed from the crowd: the
-tracker finds no one, which is expected) and "Jon Jones kicking.webm" (close-up at a bag). They were
-kept in the old session's temporary folder, so they'll need downloading again (ask the owner first).
-Load them in the page as a Blob/File to mimic a phone pick; python's http.server can't serve byte
-ranges, so seeking a large file served directly over HTTP doesn't work.
+Not tested: a real phone (speed, iPhone Safari, the camera/file picker), hooks, body shots, guard
+drops and crossed feet on real footage (no clip had them).
 
-Testing note: when the browser panel is hidden, long scripts time out and timers are throttled, so
-start long jobs without awaiting them and check progress in short calls.
+Test clips (Wikimedia Commons, owner approved for testing only, never added to the app): "Boxing
+training.webm", "Muay Thai in Lamai.webm", "Jon Jones kicking.webm". Ask the owner before downloading
+again. Serve them from a second local server with CORS and load them with `testClip`.
+
+Testing note: a hidden browser panel barely plays video and throttles timers, so testing is many times
+slower. Show the panel (the app's preview pane) while testing.
 
 ## Waiting on the owner
 

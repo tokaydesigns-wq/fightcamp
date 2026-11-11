@@ -87,6 +87,7 @@ function greeting() {
 /* ---------- Small icons (24×24, drawn with lines) ---------- */
 
 const ICONS = {
+  kick: '<circle cx="7" cy="4" r="2"/><path d="M7 7v6l-1 8M7 13l6-1 7-6M7 9l-3 3"/>',
   glove: '<path d="M7 11V7a4 4 0 0 1 4-4h3a4 4 0 0 1 4 4v5a5 5 0 0 1-5 5h-2a4 4 0 0 1-4-4zM7 11h7M9 17v3h7v-3"/>',
   clock: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/>',
   flame: '<path d="M12 3c1 3 5 5.5 5 10a5 5 0 0 1-10 0c0-3 2-4.5 2-7 1.5 1 2.2 2.2 2.2 3.5C12.5 7.5 12.5 5 12 3z"/>',

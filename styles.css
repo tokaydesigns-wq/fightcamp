@@ -283,6 +283,7 @@ button.back { border: 0; background: none; color: var(--accent); font: inherit; 
 .vc-notes li > b { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; color: #fff; }
 .vc-notes li.good > b { background: var(--good); }
 .vc-notes li.fix > b { background: var(--warn); }
+.vc-notes li.info > b { background: var(--muted); }
 .vc-notes p { margin: 0; }
 .vc-notes .chips { margin-top: 6px; }
 .spin { width: 34px; height: 34px; margin: 6px auto 10px; border-radius: 50%; border: 4px solid var(--line); border-top-color: var(--accent); animation: spin 1s linear infinite; }

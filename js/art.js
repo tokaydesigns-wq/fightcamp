@@ -58,6 +58,13 @@ const ART = {
     <g transform="translate(-58 0)">${picto(GUARD)}</g>
     <g transform="translate(358 0) scale(-1 1)">${picto(GUARD, { color: 'var(--accent)' })}</g>
     <text x="150" y="168" text-anchor="middle" style="fill:#fff;font:italic 900 38px system-ui,sans-serif;opacity:.9">VS</text>`,
+  // A fighter in a camera viewfinder, recording
+  video: () => `${floorShadow(165)}
+    <g style="fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;opacity:.75">
+      <path d="M70 40 v-22 h30"/><path d="M230 18 h30 v22"/><path d="M70 205 v22 h30"/><path d="M230 227 h30 v-22"/></g>
+    <circle cx="94" cy="64" r="8" style="fill:var(--accent)"/>
+    <text x="107" y="70" style="fill:#fff;font:800 16px system-ui,sans-serif;opacity:.8">REC</text>
+    ${picto(GUARD)}`,
   // A round kick with the path of the foot
   learn: () => `${floorShadow(150)}
     <path d="M112 236 C 196 246 262 210 246 124" style="fill:none;stroke:var(--accent);stroke-width:4;stroke-dasharray:3 9;stroke-linecap:round"/>
@@ -80,6 +87,7 @@ function greeting() {
 /* ---------- Small icons (24×24, drawn with lines) ---------- */
 
 const ICONS = {
+  kick: '<circle cx="7" cy="4" r="2"/><path d="M7 7v6l-1 8M7 13l6-1 7-6M7 9l-3 3"/>',
   glove: '<path d="M7 11V7a4 4 0 0 1 4-4h3a4 4 0 0 1 4 4v5a5 5 0 0 1-5 5h-2a4 4 0 0 1-4-4zM7 11h7M9 17v3h7v-3"/>',
   clock: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/>',
   flame: '<path d="M12 3c1 3 5 5.5 5 10a5 5 0 0 1-10 0c0-3 2-4.5 2-7 1.5 1 2.2 2.2 2.2 3.5C12.5 7.5 12.5 5 12 3z"/>',

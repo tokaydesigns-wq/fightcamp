@@ -37,10 +37,11 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | `js/vendor/` | three.js 0.187.0 (MIT, `LICENSE.three.txt`). `three.core.js` is the minified core, renamed because the module imports that name |
 | `js/art.js` | Artwork in SVG: `picto()` pictogram fighter drawn from the 2D poses in moves.js, `ART` banner scenes, `banner()` screen headers, `ICONS`/`icon()` for stat tiles, `emptyState()` |
 | `js/timer.js` | Round timer (`#/timer/R-WORK-REST`): bell via Web Audio, 10-second warning, vibration, screen wake lock, `drillTimerBtn` for drill doses |
+| `js/video.js` | Video check (`#/video`): MediaPipe pose tracking on the phone (`js/vendor/mediapipe`, loaded on first use), "which one is you?", play-through frame sampling, `measure`/`findStrikes`/`buildReport` rules that turn joints into notes |
 | `js/ui.js` | Router, Home/Train/Food/Camp screens, click/input/submit handlers. Must load last. |
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release; add new files to `SHELL`. |
 
-- Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`.
+- Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`, `#/video`.
 - Animations exist for jab, cross, hook, roundhouse, teep, angles and distance. To add one, add keyframes to
   `DEMOS` in moves.js with the technique's id; it then shows on the Learn result and program page automatically.
 - Moves with 3D open in 3D first (`data-start3d`). `TRAILS` in moves3d.js draws the path of the striking foot/fist;

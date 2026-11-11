@@ -86,11 +86,12 @@ function holdVideo(v) {
   if (!v.isConnected) hold.append(v);
 }
 
-// Jump to a time and wait until that picture is ready
+// Jump to a time and wait until that picture is ready. Resolves false if it took too long
+// (the picture may still be the old one)
 function seekTo(v, t) {
   return new Promise(res => {
-    if (Math.abs(v.currentTime - t) < .001 && v.readyState >= 2) return res();
-    const done = () => { clearTimeout(timer); v.removeEventListener('seeked', done); res(); };
+    if (Math.abs(v.currentTime - t) < .001 && v.readyState >= 2) return res(true);
+    const done = e => { clearTimeout(timer); v.removeEventListener('seeked', done); res(!!e); };
     const timer = setTimeout(done, 3000);   // some phones skip the event on tiny seeks
     v.addEventListener('seeked', done);
     v.currentTime = t;
@@ -102,15 +103,15 @@ function seekTo(v, t) {
 // they stop arriving; the caller fills in whatever was missed.
 function playFrames(v, from, dur, fps, onFrame) {
   if (!v.requestVideoFrameCallback) return Promise.resolve();
-  return new Promise(res => {
+  return new Promise((res, rej) => {
     let lastT = -1, took = 0, finished = false, watchdog;
-    const finish = () => {
+    const finish = err => {
       if (finished) return;
       finished = true; clearTimeout(watchdog);
       v.pause(); v.onended = null; v.playbackRate = 1;
-      res();
+      err instanceof Error ? rej(err) : res();
     };
-    const arm = () => { clearTimeout(watchdog); watchdog = setTimeout(finish, 3000); };
+    const arm = () => { clearTimeout(watchdog); watchdog = setTimeout(() => finish(), 3000); };
     const tick = (now, meta) => {
       if (finished) return;
       if (vc.cancel) return finish();
@@ -119,18 +120,19 @@ function playFrames(v, from, dur, fps, onFrame) {
       arm();
       if (t - lastT >= .9 / fps) {
         const start = performance.now();
-        onFrame(t); lastT = t;
+        try { onFrame(t); } catch (e) { return finish(e); }
+        lastT = t;
         took = took ? took * .8 + (performance.now() - start) / 5000 : (performance.now() - start) / 1000;
         const rate = Math.max(.1, Math.min(2, .7 / (fps * took)));
         if (Math.abs(rate - v.playbackRate) / v.playbackRate > .15) v.playbackRate = rate;
       }
       v.requestVideoFrameCallback(tick);
     };
-    v.onended = finish;
+    v.onended = () => finish();
     seekTo(v, from).then(() => {
       v.requestVideoFrameCallback(tick);
       arm();
-      v.play().catch(finish);
+      v.play().catch(() => finish());   // not allowed to play: the caller jumps through instead
     });
   });
 }
@@ -139,8 +141,7 @@ function playFrames(v, from, dur, fps, onFrame) {
 async function seekFrames(v, times, onFrame) {
   for (const [n, t] of times.entries()) {
     if (vc.cancel) return;
-    await seekTo(v, t);
-    onFrame(t);
+    if (await seekTo(v, t)) onFrame(t);   // (a stale picture would be read as the wrong moment)
     if (n % 4 === 3) await new Promise(r => setTimeout(r));   // let the screen update
   }
 }
@@ -160,7 +161,7 @@ async function findPeople(v) {
   const d = v.duration;
   let best = [];
   for (const t of [.05, Math.min(1, d * .2), d * .5, d * .8]) {
-    await seekTo(v, t);
+    if (!(await seekTo(v, t))) continue;
     const a = vc.aspect, people = [];
     for (const area of [null, [0, 0, a * .6, 1], [a * .2, 0, a * .8, 1], [a * .4, 0, a, 1]]) {
       for (const L of detectPeople(v, a, area)) {
@@ -184,12 +185,12 @@ function follow(people, last, away) {
   for (const L of people) {
     if (!seen(L, J.lHip, J.rHip, J.lSh, J.rSh)) continue;
     const size = torsoOf(L) / last.scale;
-    if (size < .65 || size > 1.5) continue;   // someone nearer or further from the camera
+    if (size < .8 || size > 1.25) continue;   // someone nearer or further from the camera
     const g = gap(hipsOf(L), last.hip) / last.scale;
     if (g < bestGap) { best = L; bestGap = g; }
   }
   // Better to lose them for a moment than to start following someone else
-  return best && bestGap < .6 + .8 * Math.min(away, 1.5) ? best : null;
+  return best && bestGap < .5 + .6 * Math.min(away, 1.5) ? best : null;
 }
 
 /* ---------- Flow ---------- */
@@ -205,7 +206,17 @@ async function vcPickFile(file) {
     Object.assign(v, { muted: true, playsInline: true, preload: 'auto', src: vc.url });
     v.setAttribute('playsinline', '');
     holdVideo(v);
-    await new Promise((res, rej) => { v.onloadedmetadata = res; v.onerror = () => rej(new Error('video')); });
+    await new Promise((res, rej) => {
+      v.onloadedmetadata = res; v.onerror = () => rej(new Error('video'));
+      setTimeout(() => rej(new Error('video')), 20000);   // some phones never say they can't open it
+    });
+    // Some recordings (often from apps and screen recorders) don't say how long they are until
+    // you jump to the end
+    if (!isFinite(v.duration)) {
+      await new Promise(res => { v.ondurationchange = () => isFinite(v.duration) && res(); setTimeout(res, 5000); v.currentTime = 1e9; });
+      v.ondurationchange = null;
+      if (!isFinite(v.duration)) throw new Error('video');
+    }
     still(await seekTo(v, .01));
     vc.aspect = v.videoWidth / v.videoHeight || 1;
     vc.msg = 'Loading the body tracker…'; render();
@@ -226,7 +237,18 @@ async function vcPickFile(file) {
   }
 }
 
+// Run a check, keeping the screen on, and come back to the start with a message if it fails
 async function vcAnalyse(pick) {
+  const run = vc.run;
+  try { if ('wakeLock' in navigator) vc.wake = await navigator.wakeLock.request('screen'); } catch (e) { /* not allowed */ }
+  try { await analyseClip(pick); }
+  catch (e) {
+    if (run === vc.run) { vcReset(); vc.err = 'Something went wrong while checking this video. Try again, or try a shorter clip.'; render(); }
+  }
+  if (vc.wake) { vc.wake.release().catch(() => {}); vc.wake = null; }
+}
+
+async function analyseClip(pick) {
   vc.pick = pick; vc.step = 'analysing'; vc.cancel = false; vc.progress = 0; render();
   const v = vc.video, dur = Math.min(v.duration, MAX_SECS), fps = dur <= 60 ? 10 : 6;
   holdVideo(v);
@@ -241,6 +263,7 @@ async function vcAnalyse(pick) {
     let L = area && follow(detectPeople(v, vc.aspect, area), last, away);
     if (!L) L = follow(detectPeople(v, vc.aspect), last, away);
     frames.splice(i, 0, { t, L });
+    vc.live = L;
     vc.progress = Math.min(frames.length / (dur * fps), 1); paintProgress();
   };
   // Playing the video through is much quicker than jumping frame by frame (each jump decodes
@@ -268,7 +291,7 @@ function vcReset() {
   if (vc.video) { vc.video.pause(); vc.video.remove(); }
   if (vc.url) URL.revokeObjectURL(vc.url);
   vc.run++;
-  Object.assign(vc, { step: 'pick', url: '', video: null, people: [], track: null, report: null, err: '', cancel: false });
+  Object.assign(vc, { step: 'pick', url: '', video: null, people: [], track: null, report: null, live: null, err: '', cancel: false });
 }
 
 /* ---------- Turning joints into coaching notes ---------- */
@@ -473,7 +496,9 @@ function videoScreen() {
   const head = banner('video', 'Video check', 'Film your pads, bag work or sparring. Get notes on your technique.');
   if (vc.step === 'loading') return head + `<section class="card center"><div class="spin"></div><p>${esc(vc.msg)}</p></section>`;
   if (vc.step === 'analysing') return head + `<section class="card" id="vcProg"><h2>Checking your technique…</h2>
-    <div class="bar"><i style="width:0%"></i></div><p class="muted small vc-at"></p>
+    <div class="vc-stage" id="vcStage"><canvas class="vc-ov"></canvas></div>
+    <div class="bar"><i style="width:${Math.round(vc.progress * 100)}%"></i></div><p class="muted small vc-at"></p>
+    <p class="muted small">Keep this screen open until it's done.</p>
     <button class="btn ghost wide" data-act="vc-cancel">Cancel</button></section>`;
   if (vc.step === 'choose') return head + `<section class="card"><h2>Which one is you?</h2>
     <p class="muted small">There's more than one person in this video. Tap yourself.</p>
@@ -520,7 +545,10 @@ function reportView() {
 // Put the video element into the page after each render and keep the skeleton overlay drawn
 function mountVideo() {
   const stage = document.getElementById('vcStage');
-  if (!stage || !vc.video) return;
+  if (!vc.video) return;
+  // Off this screen (or on one without a picture) the video waits in the hidden holder, so a
+  // check keeps going if you switch tabs
+  if (!stage) return holdVideo(vc.video);
   const v = vc.video;
   v.controls = vc.step === 'report';
   if (v.parentNode !== stage) stage.prepend(v);
@@ -540,7 +568,7 @@ const BONES = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 
 function drawOverlay(cv) {
   if (!cv || !cv.isConnected) return;
   const w = cv.clientWidth, h = cv.clientHeight;
-  if (cv.width !== w) { cv.width = w; cv.height = h; }
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
   const g = cv.getContext('2d');
   g.clearRect(0, 0, w, h);
   const skeleton = (L, color) => {
@@ -550,6 +578,7 @@ function drawOverlay(cv) {
       g.beginPath(); g.moveTo(L[a][0] / vc.aspect * w, L[a][1] * h); g.lineTo(L[b][0] / vc.aspect * w, L[b][1] * h); g.stroke();
     }
   };
+  if (vc.step === 'analysing' && vc.live) skeleton(vc.live, '#ff2d55');
   if (vc.step === 'report' && vc.track) {
     const t = vc.video.currentTime, f = vc.track.frames.reduce((b, f) => Math.abs(f.t - t) < Math.abs(b.t - t) ? f : b);
     if (f.L) skeleton(f.L, '#ff2d55');
@@ -565,6 +594,12 @@ function paintProgress() {
 
 /* ---------- Events ---------- */
 
+// Phones drop the screen wake lock when you switch apps; take it back if a check is running
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState !== 'visible' || vc.step !== 'analysing' || !('wakeLock' in navigator)) return;
+  try { vc.wake = await navigator.wakeLock.request('screen'); } catch (e) { /* not allowed */ }
+});
+
 document.addEventListener('change', e => {
   const k = e.target.dataset && e.target.dataset.vc;
   if (!k) return;
@@ -576,7 +611,7 @@ document.addEventListener('click', e => {
   const el = e.target.closest('[data-act^="vc-"]');
   if (!el) return;
   switch (el.dataset.act) {
-    case 'vc-pick': vcAnalyse(+el.dataset.i); break;
+    case 'vc-pick': if (vc.step === 'choose') vcAnalyse(+el.dataset.i); break;   // (once, even if tapped twice)
     case 'vc-cancel': vc.cancel = true; break;
     case 'vc-reset': vcReset(); render(); scrollTo(0, 0); break;
     case 'vc-seek': vc.video.pause(); vc.video.currentTime = Math.max(0, +el.dataset.t - .3); document.getElementById('vcStage').scrollIntoView({ behavior: 'smooth' }); break;

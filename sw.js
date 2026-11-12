@@ -1,5 +1,5 @@
 /* Offline cache. Bump CACHE on every release so phones pick up the new version. */
-const CACHE = 'fightcamp-v12';
+const CACHE = 'fightcamp-v13';
 // The video-check tracker has its own cache so app updates don't download its 20 MB again.
 // Change the name only when the files in js/vendor/mediapipe change.
 const TRACKER = 'fightcamp-tracker-mediapipe-1.1.1';

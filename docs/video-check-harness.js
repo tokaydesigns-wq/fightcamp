@@ -11,7 +11,7 @@
      (python's http.server can't serve byte ranges, so a clip must be loaded as a whole File.)
    - sheet(times): contact sheet of video frames with the tracked skeleton, over the page. */
 window.CLIP_BASE = window.CLIP_BASE || 'http://localhost:8131/';
-window.testClip = async (name, kind='pads', pickI) => { const b = await (await fetch(CLIP_BASE + name)).blob(); vc.kind = kind; window._t0 = performance.now(); vcPickFile(new File([b], name, {type:'video/webm'})); if (pickI != null) { (async () => { while (vc.step !== 'choose') await new Promise(r=>setTimeout(r,300)); vcAnalyse(pickI); })(); } return b.size; };
+window.testClip = async (name, kind='pads', pickI) => { const b = await (await fetch(CLIP_BASE + name)).blob(); vc.kind = kind; window._t0 = performance.now(); vcPickFile(new File([b], name, {type:'video/webm'})); if (pickI != null) { (async () => { while (vc.step === 'loading') await new Promise(r=>setTimeout(r,300)); if (vc.step === 'choose') vcAnalyse(pickI); })(); } return b.size; };
 window.st = () => ({step: vc.step, msg: vc.msg, err: vc.err, people: vc.people.map(p=>p.box.map(x=>x.toFixed(2)).join(',')), pickTime: vc.pickTime, p: vc.progress, secs: (performance.now()-_t0)/1000, rep: vc.report && {...vc.report, notes: vc.report.notes.map(n=>(n.good?'+ ':'- ')+n.area+': '+n.text+' '+n.times.map(t=>t.toFixed(1)).join(','))}, seen: vc.track && vc.track.frames.filter(f=>f.L).length, n: vc.track && vc.track.frames.length, dur: vc.track && vc.track.dur});
 window.mannequin = async (script, az = 58, el = 10, fps = 10, W = 640, H = 360, stance = 'orthodox') => {
   const T = await loadThree(); await loadPoseModel();
@@ -59,3 +59,8 @@ window.recordMannequin = async (script, az = 58, el = 10, W = 640, H = 360) => {
   rec.stop(); await done; sc.dispose(); gl.remove();
   return new File(chunks, 'mannequin.webm', { type: 'video/webm' });
 };
+// A phone clip saved in the app folder (e.g. "Test videos", which git ignores), as if picked on a phone
+window.testClipMp4 = async (name, kind = 'pads', pickI, dir = '/Test%20videos/') => { const b = await (await fetch(dir + encodeURIComponent(name))).blob(); vc.kind = kind; window._t0 = performance.now(); vcPickFile(new File([b], name, { type: 'video/mp4' })); if (pickI != null) { (async () => { while (vc.step === 'loading') await new Promise(r => setTimeout(r, 300)); if (vc.step === 'choose') vcAnalyse(pickI); })(); } return b.size; };
+// Who was followed: time, hip position and top colour every half second
+window.trackSum = () => vc.track.frames.filter((f, i) => i % 5 == 0).map(f => f.t.toFixed(1) + (f.L ? ':' + hipsOf(f.L)[0].toFixed(2) + ' ' + (f.look && f.look.top || []).map(Math.round).join(',') : ':-')).join('\n');
+window.waitReport = async () => { while (vc.step !== 'report' && vc.step !== 'pick') await new Promise(r => setTimeout(r, 500)); return [vc.step, vc.err, Math.round((performance.now() - _t0) / 1000) + 's', vc.report && vc.report.notes.map(n => (n.good ? '+ ' : n.good === null ? 'i ' : '- ') + n.text.slice(0, 90) + ' ' + n.times.map(t => t.toFixed(1))), vc.report && 'seen ' + vc.report.cover.toFixed(2)]; };

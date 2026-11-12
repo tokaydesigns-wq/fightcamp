@@ -1,5 +1,10 @@
 /* FightCamp core: helpers, dates, saved state and training/food maths */
 
+// The app's version, shown on the Home screen. Keep it equal to the number in CACHE in sw.js
+// (bump both on every release).
+const APP_VERSION = 14;
+
+
 const KEY = 'fightcamp.v1';
 const $ = (sel, el = document) => el.querySelector(sel);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);

@@ -22,7 +22,7 @@ window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 function homeScreen() {
   const wk = weekTotals(1)[0], day = dayFood(ymd()), p = state.programs[0];
   const c = state.camp && campStatus(state.camp);
-  return `${banner('home', 'FightCamp', greeting(), '', niceDate(ymd()))}
+  return `${banner('home', 'FightCamp', greeting(), `<p class="app-ver">Version ${APP_VERSION}</p>`, niceDate(ymd()))}
   ${c ? `<a class="card camp-mini" href="#/camp"><div class="count"><b>${Math.max(c.daysOut, 0)}</b><span>${c.daysOut === 1 ? 'day' : 'days'}</span></div>
       <div><p class="eyebrow">${c.daysOut >= 0 ? 'To fight night' : 'Fight done'}</p><h2>${esc(c.phase.name)}</h2><p class="muted small">${esc(c.phase.goal)}</p></div></a>`
     : `<a class="card cta" href="#/camp"><span>Got a fight coming up?</span><b>Set your fight date ›</b></a>`}
@@ -34,6 +34,19 @@ function homeScreen() {
   <div class="quick"><a class="btn primary" href="#/train">+ Log training</a><a class="btn" href="#/food">+ Log food</a></div>
   ${backupCard()}`;
 }
+
+/* ---------- Updates ---------- */
+
+// A new version has downloaded and taken over in the background. The screen still shows the old
+// one until the page reloads, so say so and offer to switch now.
+function updateReady() {
+  if (document.getElementById('updateBar')) return;
+  const bar = document.createElement('div');
+  bar.id = 'updateBar'; bar.className = 'update-bar';
+  bar.innerHTML = '<span>A new version of FightCamp is ready.</span><button class="btn primary" data-act="update-now">Update now</button>';
+  document.body.append(bar);
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-act="update-now"]')) location.reload(); });
 
 /* ---------- Backup and restore ---------- */
 

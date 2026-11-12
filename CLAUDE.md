@@ -39,7 +39,7 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | `js/timer.js` | Round timer (`#/timer/R-WORK-REST`): bell via Web Audio, 10-second warning, vibration, screen wake lock, `drillTimerBtn` for drill doses |
 | `js/video.js` | Video check (`#/video`): MediaPipe pose tracking on the phone (`js/vendor/mediapipe`, loaded on first use), "which one is you?", play-through frame sampling, `measure`/`findStrikes`/`buildReport` rules that turn joints into notes |
 | `js/ui.js` | Router, Home/Train/Food/Camp screens, click/input/submit handlers. Must load last. |
-| `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release; add new files to `SHELL`. |
+| `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release **and set `APP_VERSION` in core.js to the same N** (shown on Home so the owner can see which version they have); add new files to `SHELL`. |
 
 - Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`, `#/video`.
 - Animations exist for jab, cross, hook, roundhouse, teep, angles and distance. To add one, add keyframes to

@@ -14,14 +14,13 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## Up next
 
-- [ ] `[animation]` Low kick: 2D and 3D animation with a strike-path trail. It should clearly chop down into the thigh, not look like a roundhouse to the body.
-- [ ] `[animation]` Body shot (lead hook to the liver): 2D and 3D, knees bending to drop the level, head off the centre line.
 - [ ] `[animation]` Head movement (slip and roll): 2D and 3D, moving from the legs and hips, eyes on the target.
 - [ ] `[animation]` Switch kick: 2D and 3D, a small quick switch of the feet, then the kick.
 
 ## In review
 
-- [ ] `[feature]` Backup and restore (PR: "Add backup and restore of all your data"). Cards on the Home screen: save a backup file, load it back.
+- [ ] `[animation]` Low kick (PR #11: "Add low kick animation (2D and 3D)"), still waiting for your review.
+- [ ] `[animation]` Body shot (PR: "Add body shot (liver shot) animation, 2D and 3D").
 
 ## Needs the owner
 
@@ -41,6 +40,7 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## Done
 
+- [x] Backup and restore of all your data (Home screen cards)
 - [x] Training log with weekly totals, streak and 8-week chart
 - [x] Food and weight tracking with targets and a weight chart
 - [x] Fight camp countdown with tips for each stage and a safe-pace weight check

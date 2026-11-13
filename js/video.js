@@ -46,13 +46,13 @@ function detectPeople(v, aspect, area) {
   return poseModel.detect(cropCv).landmarks.map(L => L.map(p => [x0 + p.x * (x1 - x0), y0 + p.y * (y1 - y0), p.visibility]));
 }
 
-// A square around someone (hips and torso length), clamped to the frame. Null when they
-// already fill most of it.
+// A box around someone (hips and torso length), clamped to the frame: square where it fits, and
+// as wide as the picture in a tall, upright phone video. Null when they already fill most of it.
 function areaAround(hip, scale, aspect) {
-  const half = 2.6 * scale;
-  if (half * 2 > .8 * Math.min(aspect, 1)) return null;
-  const cx = Math.min(Math.max(hip[0], half), aspect - half), cy = Math.min(Math.max(hip[1] - .3 * scale, half), 1 - half);
-  return [cx - half, cy - half, cx + half, cy + half];
+  const hw = Math.min(2.6 * scale, aspect / 2), hh = Math.min(2.6 * scale, .5);
+  if (hw * 2 > .8 * aspect && hh * 2 > .8) return null;
+  const cx = Math.min(Math.max(hip[0], hw), aspect - hw), cy = Math.min(Math.max(hip[1] - .3 * scale, hh), 1 - hh);
+  return [cx - hw, cy - hh, cx + hw, cy + hh];
 }
 
 /* ---------- Geometry helpers (MediaPipe joint numbers) ---------- */
@@ -252,11 +252,14 @@ function follow(people, last, away, look, img) {
   for (const L of people) {
     if (!seen(L, J.lHip, J.rHip, J.lSh, J.rSh)) continue;
     const size = torsoOf(L) / last.scale;
-    if (size < .8 || size > 1.25) continue;   // someone nearer or further from the camera
     const g = gap(hipsOf(L), last.hip) / last.scale;
     if (g > .5 + .6 * Math.min(away, 1.5)) continue;   // better to lose them for a moment than follow someone else
     const dress = look && img ? outfitGap(look, outfit(img, L)) : null;
     if (dress != null && dress > .4) continue;   // clearly different clothes: someone else
+    // Someone nearer or further from the camera looks bigger or smaller. Bending and turning
+    // change the size a bit too, so allow more when the clothes clearly match.
+    const roomy = dress != null && dress < .15;
+    if (size < (roomy ? .65 : .8) || size > (roomy ? 1.5 : 1.25)) continue;
     const score = g + (dress || 0) * 4;
     if (score < bestScore) { best = L; bestScore = score; }
   }
@@ -339,16 +342,22 @@ async function analyseClip(pick) {
     const away = Math.abs(t - lastT), area = areaAround(last.hip, last.scale * (1 + Math.min(away, 2) * .5), vc.aspect);
     const img = look && grabColors(v);
     let L = area && follow(detectPeople(v, vc.aspect, area), last, away, look, img);
+    let everyone = null;
     if (!L) {
-      const all = detectPeople(v, vc.aspect);
-      L = follow(all, last, away, look, img);
-      // Lost them for a while (they may have swapped sides with a partner): pick them up again
-      // anywhere if one person clearly wears their clothes and nobody else does
-      if (!L && look && away > .5 && distinct) {
-        const c = detectEveryone(v).filter(P => seen(P, J.lHip, J.rHip, J.lSh, J.rSh) && torsoOf(P) / last.scale > .6 && torsoOf(P) / last.scale < 1.6)
-          .map(P => ({ P, d: outfitGap(look, outfit(img, P)) })).filter(x => x.d != null).sort((a, b) => a.d - b.d);
-        if (c.length && c[0].d < .2 && (c.length === 1 || c[1].d - c[0].d > .08)) L = c[0].P;
-      }
+      // Not found close up: look at the whole picture and its slices (the tracker often only
+      // spots the biggest person in a wide shot)
+      everyone = detectEveryone(v);
+      L = follow(everyone, last, away, look, img);
+    }
+    // Lost them for a while, or following someone whose clothes don't look right (they slipped
+    // behind a partner and the tracker slid onto the partner): look at everyone and switch to the
+    // person who clearly wears their clothes, if nobody else does
+    const dressNow = L && look ? outfitGap(look, outfit(img, L)) : null;
+    if (look && distinct && ((!L && away > .5) || (dressNow != null && dressNow > .25))) {
+      everyone = everyone || detectEveryone(v);
+      const c = everyone.filter(P => seen(P, J.lHip, J.rHip, J.lSh, J.rSh) && torsoOf(P) / last.scale > .6 && torsoOf(P) / last.scale < 1.6)
+        .map(P => ({ P, d: outfitGap(look, outfit(img, P)) })).filter(x => x.d != null).sort((a, b) => a.d - b.d);
+      if (c.length && c[0].d < .2 && (c.length === 1 || c[1].d - c[0].d > .08) && (dressNow == null || dressNow - c[0].d > .1)) L = c[0].P;
     }
     const lookNow = L && img ? outfit(img, L) : null;
     if (lookNow && Math.abs(t - vc.pickTime) < 1.5 && early.length < 15) { early.push(lookNow); if (early.length >= 3) look = usualOutfit(early); }
@@ -408,10 +417,13 @@ function vcReset() {
 // away the camera is
 function measure(track, stance) {
   const S = sides(stance);
-  const tl = median(track.frames.filter(f => f.L).map(f => torsoOf(f.L))) || .2;
+  // Their size (torso length) around each moment, over about two seconds: walking toward or away
+  // from the camera changes it, so each frame is compared with its neighbours, not the whole clip
+  const seenF = track.frames.filter(f => f.L).map(f => ({ t: f.t, s: torsoOf(f.L) }));
+  const sizeAt = t => median(seenF.filter(x => Math.abs(x.t - t) <= 1).map(x => x.s)) || median(seenF.map(x => x.s)) || .2;
   const M = track.frames.map(({ t, L }) => {
     if (!L) return { t };
-    const size = torsoOf(L) / tl;
+    const tl = sizeAt(t), size = torsoOf(L) / tl;
     if (size < .7 || size > 1.4) return { t };   // a garbled frame: the tracker lost the shape
     const sh = midPt(L[J.lSh], L[J.rSh]), hp = hipsOf(L), m = { t, hip: hp };
     // Hands: how far below the shoulders (for the guard) and, when the face is in view, how far

@@ -25,6 +25,15 @@ const KICK = pose({ head: [130, 66], neck: [135, 88], hip: [150, 152], lE: [166,
 const TEEP_CHAMBER = pose({ head: [146, 58], neck: [146, 82], hip: [146, 152], lK: [188, 168], lA: [186, 206] });
 const TEEP = pose({ head: [138, 60], neck: [140, 84], hip: [148, 154], lE: [166, 114], lF: [172, 88], lK: [196, 158], lA: [242, 148] });
 
+// Slip and roll: a small dip to slip off the line (SLIP), sink low through the knees (ROLL), then come
+// up on the other side with the hands still up (ROLL_UP). In this side view you see the dip and lean.
+const SLIP = pose({ head: [153, 64], neck: [152, 87], hip: [146, 153], lE: [176, 118], lF: [182, 92], rF: [162, 86],
+  lK: [174, 196], rK: [130, 196] });
+const ROLL = pose({ head: [171, 84], neck: [162, 106], hip: [137, 166], lE: [186, 136], lF: [190, 110], rE: [148, 142], rF: [170, 114],
+  lK: [184, 190], lA: [186, 236], rK: [156, 212], rA: [112, 236] });
+const ROLL_UP = pose({ head: [158, 70], neck: [155, 93], hip: [141, 158], lE: [178, 124], lF: [182, 98], rE: [140, 126], rF: [162, 92],
+  lK: [178, 192], rK: [134, 200] });
+
 // Top-down feet: [x, y, angle in degrees]. Orthodox: lead (left) foot in front, rear foot behind and to the right.
 const feet = (lead, rear) => ({ lead, rear });
 
@@ -48,6 +57,13 @@ const DEMOS = {
     [HOOK, 240, 'Rear hand stays glued to your cheek'],
     [GUARD, 260, 'Back to guard'],
     [GUARD, 400, 'Guard up, chin down'] ] },
+  slip: { type: 'side', hot: 'head', seq: [
+    [GUARD, 700, 'Guard up, eyes on them'],
+    [SLIP, 170, 'Slip: move your head just off the line, inches not feet'],
+    [ROLL, 260, 'Bend the knees and roll under, hands stay up'],
+    [ROLL_UP, 240, 'Come up on the other side, eyes never leave them'],
+    [GUARD, 260, 'Back in guard, ready to counter'],
+    [GUARD, 400, 'Guard up, eyes on them'] ] },
   roundhouse: { type: 'side', hot: 'rear-leg', seq: [
     [GUARD, 700, 'Stance, hands up'],
     [KICK_STEP, 240, 'Step out at an angle with the lead foot'],
@@ -139,7 +155,7 @@ function drawSide(p, hot) {
       <path class="${cls('rear-leg')}" d="${parts['rear-leg']}"/><path class="${cls('rear-arm')}" d="${parts['rear-arm']}"/>${fist('rF', 'rear-arm')}
       <path d="M${pt(p.neck)} L${pt(p.hip)}"/>
       <path class="${cls('lead-leg')}" d="${parts['lead-leg']}"/><path class="${cls('lead-arm')}" d="${parts['lead-arm']}"/>${fist('lF', 'lead-arm')}
-      <circle class="head" cx="${p.head[0]}" cy="${p.head[1]}" r="17"/>
+      <circle class="head ${hot === 'head' ? 'hot' : ''}" cx="${p.head[0]}" cy="${p.head[1]}" r="17"/>
     </g>`;
 }
 

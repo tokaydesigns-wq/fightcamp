@@ -568,21 +568,33 @@ function buildReport(track, kind, stance) {
   const sideOn = median(track.frames.filter(f => f.L).map(f => gap(f.L[J.lSh], f.L[J.rSh]) / torsoOf(f.L))) < .45;
   const share = side => handFrames(side).length >= 10 ? pct(handFrames(side).filter(m => low(m, side)).length, handFrames(side).length) : 0;
   const lowLead = share('lead'), lowRear = share('rear');
+  // How far a hand sank below the shoulders between two moments, and when (null if it couldn't be seen)
+  const sank = (side, a, b) => M.filter(m => m[side] && m.t >= a && m.t <= b).reduce((d, m) => !d || m[side].low > d.low ? { low: m[side].low, t: m.t } : d, null);
+  const otherSide = side => side === 'lead' ? 'rear' : 'lead';
   if (lowLead >= 20 && lowRear >= 20) {
     note('Guard', false, `Both hands drop below your shoulders about ${Math.round((lowLead + lowRear) / 2)}% of the time. Keep them up by your face.`,
-      runs(M, m => (low(m, 'lead') || low(m, 'rear')) && !kicking(m.t)), 'slip');
+      runs(M, m => (low(m, 'lead') || low(m, 'rear')) && !kicking(m.t), .4), 'slip');
   } else {
     for (const [side, label, lowShare] of [['rear', 'Your rear hand', lowRear], ['lead', 'Your lead hand', lowLead]]) {
       if (lowShare >= 20) note('Guard', false, sideOn ? `One of your hands sits below your shoulders about ${lowShare}% of the time. Keep both hands up by your face.`
         : `${label} sits below your shoulders about ${lowShare}% of the time. Keep it up by your ${side === 'rear' ? 'cheek' : 'face'}.`,
-        runs(M, m => low(m, side) && !kicking(m.t)), 'slip');
+        runs(M, m => low(m, side) && !kicking(m.t), .4), 'slip');
     }
+    // A hand that's usually up but dropped at certain moments (e.g. while the other hand throws)
+    const drops = ['lead', 'rear'].filter(side => share(side) < 20).flatMap(side => runs(M, m => low(m, side) && !kicking(m.t), .4))
+      .sort((a, b) => a - b).filter((t, i, a) => !i || t - a[i - 1] > 1);
+    if (drops.length) note('Guard', false, 'A hand dropped below your shoulders at these moments. Bring it straight back up by your face.', drops, 'slip');
   }
   if (guardFrames.length >= 10 && up >= 85) note('Guard', true, `Hands stayed up ${up}% of the time. Good habit.`);
   if (guardFrames.length < 10) note('Guard', null, "Couldn't see your hands clearly enough to check your guard. Film with your body turned a little toward the camera.");
-  const mine = punches.filter(p => p.otherOut !== null), lazy = mine.filter(p => p.otherOut);
-  if (!sideOn && mine.length >= 3 && lazy.length / mine.length >= .3) {
-    note('Guard', false, `When you punch, the other hand drifts away from your face (${lazy.length} of ${mine.length} punches). Keep it home by your chin.`,
+  // While one hand punches, the other should stay by the chin. It dropping (sinking well below
+  // the shoulders) is easy to see from any angle, so each one counts; it drifting forward or out is
+  // harder to judge, so only a habit of it (3+ punches, 30%) counts, and not side-on.
+  const sankOn = punches.filter(p => { const x = sank(otherSide(p.side), p.start - .1, p.t + .3); return x && x.low > .6; });
+  const mine = punches.filter(p => p.otherOut !== null), drift = mine.filter(p => p.otherOut);
+  const lazy = [...new Set([...sankOn, ...(!sideOn && mine.length >= 3 && drift.length / mine.length >= .3 ? drift : [])])].sort((a, b) => a.t - b.t);
+  if (lazy.length) {
+    note('Guard', false, `When you punch, the other hand drops away from your face (${lazy.length} of ${punches.length} punches). Keep it home by your chin.`,
       lazy.map(p => p.t), 'jab');
   }
 
@@ -607,10 +619,17 @@ function buildReport(track, kind, stance) {
     const count = c => kicks.filter(k => h(k) === c).length;
     const parts = ['low', 'body', 'head'].filter(count).map(c => `${count(c)} ${c} height`).join(', ');
     note('Kicks', true, `${kicks.length} kick${kicks.length === 1 ? '' : 's'} or knee${kicks.length === 1 ? '' : 's'} picked up: ${parts}.`);
-    const open = kicks.filter(k => k.bothDown);
-    if (open.length && open.length / kicks.length >= .5) {
-      note('Kicks', false, `Both hands drop when you kick (${open.length} of ${kicks.length}). The arm on the kicking side can swing down, but keep the other hand by your face.`,
-        open.map(k => k.t), 'roundhouse');
+    // The guard hand should stay up through the kick and as it lands. Mid-kick the body turns so
+    // far that the tracker can mix up the arms (the kicking-side arm swinging down is fine), so
+    // there it takes both hands down at once; once the foot is back down, the guard hand alone.
+    const open = kicks.map(k => {
+      const both = M.find(m => m.t >= k.start && m.t <= k.last + .05 && m.lead && m.rear && m.lead.low > .6 && m.rear.low > .6);
+      const after = sank(otherSide(k.side), k.last + .05, k.last + .6);
+      return both ? { t: both.t } : after && after.low > .6 ? after : null;
+    }).filter(Boolean);
+    if (open.length) {
+      note('Kicks', false, `Your guard drops when you kick (${open.length} of ${kicks.length}). The arm on the kicking side can swing down, but keep the other hand by your face.`,
+        open.map(x => x.t), 'roundhouse');
     }
   }
 

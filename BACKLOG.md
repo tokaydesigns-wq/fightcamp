@@ -14,12 +14,12 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## Up next
 
-- [ ] `[animation]` Low kick: 2D and 3D animation with a strike-path trail. It should clearly chop down into the thigh, not look like a roundhouse to the body.
-- [ ] `[animation]` Body shot (lead hook to the liver): 2D and 3D, knees bending to drop the level, head off the centre line.
 - [ ] `[animation]` Switch kick: 2D and 3D, a small quick switch of the feet, then the kick.
 
 ## In review
 
+- [ ] `[animation]` Low kick (PR #11: "Add low kick animation (2D and 3D)"), still waiting for your review.
+- [ ] `[animation]` Body shot (PR: "Add body shot (liver shot) animation, 2D and 3D").
 - [ ] `[animation]` Head movement, slip and roll (PR: "Add head movement (slip and roll) animation, 2D and 3D"). Please watch it on your phone before merging.
 
 ## Needs the owner

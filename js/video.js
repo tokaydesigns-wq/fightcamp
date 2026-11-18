@@ -46,13 +46,13 @@ function detectPeople(v, aspect, area) {
   return poseModel.detect(cropCv).landmarks.map(L => L.map(p => [x0 + p.x * (x1 - x0), y0 + p.y * (y1 - y0), p.visibility]));
 }
 
-// A square around someone (hips and torso length), clamped to the frame. Null when they
-// already fill most of it.
+// A box around someone (hips and torso length), clamped to the frame: square where it fits, and
+// as wide as the picture in a tall, upright phone video. Null when they already fill most of it.
 function areaAround(hip, scale, aspect) {
-  const half = 2.6 * scale;
-  if (half * 2 > .8 * Math.min(aspect, 1)) return null;
-  const cx = Math.min(Math.max(hip[0], half), aspect - half), cy = Math.min(Math.max(hip[1] - .3 * scale, half), 1 - half);
-  return [cx - half, cy - half, cx + half, cy + half];
+  const hw = Math.min(2.6 * scale, aspect / 2), hh = Math.min(2.6 * scale, .5);
+  if (hw * 2 > .8 * aspect && hh * 2 > .8) return null;
+  const cx = Math.min(Math.max(hip[0], hw), aspect - hw), cy = Math.min(Math.max(hip[1] - .3 * scale, hh), 1 - hh);
+  return [cx - hw, cy - hh, cx + hw, cy + hh];
 }
 
 /* ---------- Geometry helpers (MediaPipe joint numbers) ---------- */
@@ -252,11 +252,14 @@ function follow(people, last, away, look, img) {
   for (const L of people) {
     if (!seen(L, J.lHip, J.rHip, J.lSh, J.rSh)) continue;
     const size = torsoOf(L) / last.scale;
-    if (size < .8 || size > 1.25) continue;   // someone nearer or further from the camera
     const g = gap(hipsOf(L), last.hip) / last.scale;
     if (g > .5 + .6 * Math.min(away, 1.5)) continue;   // better to lose them for a moment than follow someone else
     const dress = look && img ? outfitGap(look, outfit(img, L)) : null;
     if (dress != null && dress > .4) continue;   // clearly different clothes: someone else
+    // Someone nearer or further from the camera looks bigger or smaller. Bending and turning
+    // change the size a bit too, so allow more when the clothes clearly match.
+    const roomy = dress != null && dress < .15;
+    if (size < (roomy ? .65 : .8) || size > (roomy ? 1.5 : 1.25)) continue;
     const score = g + (dress || 0) * 4;
     if (score < bestScore) { best = L; bestScore = score; }
   }
@@ -339,16 +342,22 @@ async function analyseClip(pick) {
     const away = Math.abs(t - lastT), area = areaAround(last.hip, last.scale * (1 + Math.min(away, 2) * .5), vc.aspect);
     const img = look && grabColors(v);
     let L = area && follow(detectPeople(v, vc.aspect, area), last, away, look, img);
+    let everyone = null;
     if (!L) {
-      const all = detectPeople(v, vc.aspect);
-      L = follow(all, last, away, look, img);
-      // Lost them for a while (they may have swapped sides with a partner): pick them up again
-      // anywhere if one person clearly wears their clothes and nobody else does
-      if (!L && look && away > .5 && distinct) {
-        const c = detectEveryone(v).filter(P => seen(P, J.lHip, J.rHip, J.lSh, J.rSh) && torsoOf(P) / last.scale > .6 && torsoOf(P) / last.scale < 1.6)
-          .map(P => ({ P, d: outfitGap(look, outfit(img, P)) })).filter(x => x.d != null).sort((a, b) => a.d - b.d);
-        if (c.length && c[0].d < .2 && (c.length === 1 || c[1].d - c[0].d > .08)) L = c[0].P;
-      }
+      // Not found close up: look at the whole picture and its slices (the tracker often only
+      // spots the biggest person in a wide shot)
+      everyone = detectEveryone(v);
+      L = follow(everyone, last, away, look, img);
+    }
+    // Lost them for a while, or following someone whose clothes don't look right (they slipped
+    // behind a partner and the tracker slid onto the partner): look at everyone and switch to the
+    // person who clearly wears their clothes, if nobody else does
+    const dressNow = L && look ? outfitGap(look, outfit(img, L)) : null;
+    if (look && distinct && ((!L && away > .5) || (dressNow != null && dressNow > .25))) {
+      everyone = everyone || detectEveryone(v);
+      const c = everyone.filter(P => seen(P, J.lHip, J.rHip, J.lSh, J.rSh) && torsoOf(P) / last.scale > .6 && torsoOf(P) / last.scale < 1.6)
+        .map(P => ({ P, d: outfitGap(look, outfit(img, P)) })).filter(x => x.d != null).sort((a, b) => a.d - b.d);
+      if (c.length && c[0].d < .2 && (c.length === 1 || c[1].d - c[0].d > .08) && (dressNow == null || dressNow - c[0].d > .1)) L = c[0].P;
     }
     const lookNow = L && img ? outfit(img, L) : null;
     if (lookNow && Math.abs(t - vc.pickTime) < 1.5 && early.length < 15) { early.push(lookNow); if (early.length >= 3) look = usualOutfit(early); }
@@ -408,10 +417,13 @@ function vcReset() {
 // away the camera is
 function measure(track, stance) {
   const S = sides(stance);
-  const tl = median(track.frames.filter(f => f.L).map(f => torsoOf(f.L))) || .2;
+  // Their size (torso length) around each moment, over about two seconds: walking toward or away
+  // from the camera changes it, so each frame is compared with its neighbours, not the whole clip
+  const seenF = track.frames.filter(f => f.L).map(f => ({ t: f.t, s: torsoOf(f.L) }));
+  const sizeAt = t => median(seenF.filter(x => Math.abs(x.t - t) <= 1).map(x => x.s)) || median(seenF.map(x => x.s)) || .2;
   const M = track.frames.map(({ t, L }) => {
     if (!L) return { t };
-    const size = torsoOf(L) / tl;
+    const tl = sizeAt(t), size = torsoOf(L) / tl;
     if (size < .7 || size > 1.4) return { t };   // a garbled frame: the tracker lost the shape
     const sh = midPt(L[J.lSh], L[J.rSh]), hp = hipsOf(L), m = { t, hip: hp };
     // Hands: how far below the shoulders (for the guard) and, when the face is in view, how far
@@ -556,21 +568,33 @@ function buildReport(track, kind, stance) {
   const sideOn = median(track.frames.filter(f => f.L).map(f => gap(f.L[J.lSh], f.L[J.rSh]) / torsoOf(f.L))) < .45;
   const share = side => handFrames(side).length >= 10 ? pct(handFrames(side).filter(m => low(m, side)).length, handFrames(side).length) : 0;
   const lowLead = share('lead'), lowRear = share('rear');
+  // How far a hand sank below the shoulders between two moments, and when (null if it couldn't be seen)
+  const sank = (side, a, b) => M.filter(m => m[side] && m.t >= a && m.t <= b).reduce((d, m) => !d || m[side].low > d.low ? { low: m[side].low, t: m.t } : d, null);
+  const otherSide = side => side === 'lead' ? 'rear' : 'lead';
   if (lowLead >= 20 && lowRear >= 20) {
     note('Guard', false, `Both hands drop below your shoulders about ${Math.round((lowLead + lowRear) / 2)}% of the time. Keep them up by your face.`,
-      runs(M, m => (low(m, 'lead') || low(m, 'rear')) && !kicking(m.t)), 'slip');
+      runs(M, m => (low(m, 'lead') || low(m, 'rear')) && !kicking(m.t), .4), 'slip');
   } else {
     for (const [side, label, lowShare] of [['rear', 'Your rear hand', lowRear], ['lead', 'Your lead hand', lowLead]]) {
       if (lowShare >= 20) note('Guard', false, sideOn ? `One of your hands sits below your shoulders about ${lowShare}% of the time. Keep both hands up by your face.`
         : `${label} sits below your shoulders about ${lowShare}% of the time. Keep it up by your ${side === 'rear' ? 'cheek' : 'face'}.`,
-        runs(M, m => low(m, side) && !kicking(m.t)), 'slip');
+        runs(M, m => low(m, side) && !kicking(m.t), .4), 'slip');
     }
+    // A hand that's usually up but dropped at certain moments (e.g. while the other hand throws)
+    const drops = ['lead', 'rear'].filter(side => share(side) < 20).flatMap(side => runs(M, m => low(m, side) && !kicking(m.t), .4))
+      .sort((a, b) => a - b).filter((t, i, a) => !i || t - a[i - 1] > 1);
+    if (drops.length) note('Guard', false, 'A hand dropped below your shoulders at these moments. Bring it straight back up by your face.', drops, 'slip');
   }
   if (guardFrames.length >= 10 && up >= 85) note('Guard', true, `Hands stayed up ${up}% of the time. Good habit.`);
   if (guardFrames.length < 10) note('Guard', null, "Couldn't see your hands clearly enough to check your guard. Film with your body turned a little toward the camera.");
-  const mine = punches.filter(p => p.otherOut !== null), lazy = mine.filter(p => p.otherOut);
-  if (!sideOn && mine.length >= 3 && lazy.length / mine.length >= .3) {
-    note('Guard', false, `When you punch, the other hand drifts away from your face (${lazy.length} of ${mine.length} punches). Keep it home by your chin.`,
+  // While one hand punches, the other should stay by the chin. It dropping (sinking well below
+  // the shoulders) is easy to see from any angle, so each one counts; it drifting forward or out is
+  // harder to judge, so only a habit of it (3+ punches, 30%) counts, and not side-on.
+  const sankOn = punches.filter(p => { const x = sank(otherSide(p.side), p.start - .1, p.t + .3); return x && x.low > .6; });
+  const mine = punches.filter(p => p.otherOut !== null), drift = mine.filter(p => p.otherOut);
+  const lazy = [...new Set([...sankOn, ...(!sideOn && mine.length >= 3 && drift.length / mine.length >= .3 ? drift : [])])].sort((a, b) => a.t - b.t);
+  if (lazy.length) {
+    note('Guard', false, `When you punch, the other hand drops away from your face (${lazy.length} of ${punches.length} punches). Keep it home by your chin.`,
       lazy.map(p => p.t), 'jab');
   }
 
@@ -595,10 +619,17 @@ function buildReport(track, kind, stance) {
     const count = c => kicks.filter(k => h(k) === c).length;
     const parts = ['low', 'body', 'head'].filter(count).map(c => `${count(c)} ${c} height`).join(', ');
     note('Kicks', true, `${kicks.length} kick${kicks.length === 1 ? '' : 's'} or knee${kicks.length === 1 ? '' : 's'} picked up: ${parts}.`);
-    const open = kicks.filter(k => k.bothDown);
-    if (open.length && open.length / kicks.length >= .5) {
-      note('Kicks', false, `Both hands drop when you kick (${open.length} of ${kicks.length}). The arm on the kicking side can swing down, but keep the other hand by your face.`,
-        open.map(k => k.t), 'roundhouse');
+    // The guard hand should stay up through the kick and as it lands. Mid-kick the body turns so
+    // far that the tracker can mix up the arms (the kicking-side arm swinging down is fine), so
+    // there it takes both hands down at once; once the foot is back down, the guard hand alone.
+    const open = kicks.map(k => {
+      const both = M.find(m => m.t >= k.start && m.t <= k.last + .05 && m.lead && m.rear && m.lead.low > .6 && m.rear.low > .6);
+      const after = sank(otherSide(k.side), k.last + .05, k.last + .6);
+      return both ? { t: both.t } : after && after.low > .6 ? after : null;
+    }).filter(Boolean);
+    if (open.length) {
+      note('Kicks', false, `Your guard drops when you kick (${open.length} of ${kicks.length}). The arm on the kicking side can swing down, but keep the other hand by your face.`,
+        open.map(x => x.t), 'roundhouse');
     }
   }
 

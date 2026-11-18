@@ -18,9 +18,7 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## In review
 
-- [ ] `[animation]` Low kick (PR #11: "Add low kick animation (2D and 3D)"), still waiting for your review.
-- [ ] `[animation]` Body shot (PR: "Add body shot (liver shot) animation, 2D and 3D").
-- [ ] `[animation]` Head movement, slip and roll (PR: "Add head movement (slip and roll) animation, 2D and 3D"). Please watch it on your phone before merging.
+- [ ] `[animation]` Low kick (PR: "Add low kick animation (2D and 3D)"). Chops down into the thigh; watch it on your phone before merging.
 
 ## Needs the owner
 

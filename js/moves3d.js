@@ -34,19 +34,20 @@ const HL3 = pose3({ hip: [.18, .92, .02], yaw: 40, chestYaw: 40, lean: 8,
 const H3 = pose3({ hip: [.25, .92, 0], yaw: 60, chestYaw: 70, lean: 8,
   lF: [.82, 1.45, -.05], rF: [.33, 1.54, .27], lA: [.46, .13, -.12], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
 
-// Body shot (lead hook to the liver): drop the level by bending the knees, with the head tipped
-// off the centre line to the left (BD3), then turn the hip and hook the fist in at belt height (BH3).
-const BD3 = pose3({ hip: [.1, .74, -.14], yaw: 40, chestYaw: 35, lean: 18, tilt: -16,
-  lF: [.5, 1, -.3], rF: [.48, 1.32, .08], lA: [.42, .08, -.12], rA: [-.24, .14, .2], lElb: [0, -1, -.5], lKn: [1, 0, -.3], rPoint: 0 });
-const BH3 = pose3({ hip: [.22, .72, -.12], yaw: 62, chestYaw: 72, lean: 4, tilt: -18,
-  lF: [.82, .98, -.05], rF: [.53, 1.31, .22], lA: [.46, .15, -.12], rA: [-.24, .14, .2], lElb: [0, .2, -1], lKn: [.5, 0, 1], lPoint: .3, rPoint: 0 });
+// Body shot (lead hook to the liver): step the lead foot off to the left of the bag as the knees
+// bend to drop the level, head off the centre line (BD3), then pivot the back foot round to cut the
+// angle, turn the hip and hook the fist into the side of the bag at belt height (BH3).
+const BD3 = pose3({ hip: [.14, .74, -.3], yaw: 45, chestYaw: 40, lean: 18, tilt: -16,
+  lF: [.52, 1, -.44], rF: [.54, 1.31, -.18], lA: [.44, .08, -.42], rA: [-.24, .14, .12], lElb: [0, -1, -.5], lKn: [1, 0, -.5], rPoint: .1 });
+const BH3 = pose3({ hip: [.26, .72, -.26], yaw: 75, chestYaw: 85, lean: 4, tilt: -18,
+  lF: [.88, .98, -.17], rF: [.58, 1.33, -.1], lA: [.46, .16, -.42], rA: [-.32, .15, -.04], lElb: [0, .2, -1], lKn: [.5, 0, 1], rKn: [1, 0, .3], lPoint: .3, rPoint: 0 });
 
 // Teep: weight back on the rear leg, lift the lead knee high (TC3), then push the hips
 // through and drive the ball of the foot straight into the bag (T3), leaning back slightly.
 const TC3 = pose3({ hip: [-.06, .95, .08], yaw: 20, chestYaw: 25, lean: 0,
-  lF: [.28, 1.55, -.1], rF: [.14, 1.5, .14], lA: [.35, .55, -.1], lKn: [1, .3, 0] });
+  lF: [.18, 1.57, -.04], rF: [.14, 1.5, .14], lA: [.35, .55, -.1], lKn: [1, .3, 0] });
 const T3 = pose3({ hip: [.02, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
-  lF: [.25, 1.55, -.12], rF: [.12, 1.5, .12], lA: [.76, 1, -.05], lKn: [0, 1, 0] });
+  lF: [.08, 1.58, -.13], rF: [.12, 1.5, .12], lA: [.76, 1, -.05], lKn: [0, 1, 0] });
 
 // Muay Thai round kick with the rear (right) leg: step out at an angle with the lead foot,
 // pivot on its ball so the heel turns toward the bag, turn the hips right over, and swing the
@@ -54,8 +55,8 @@ const T3 = pose3({ hip: [.02, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
 const RSTEP3 = pose3({ hip: [.14, .94, -.08], yaw: 15, chestYaw: 15, lean: 4,
   lF: [.36, 1.52, -.16], rF: [.22, 1.47, .04], lA: [.4, .1, -.32], rA: [-.2, .16, .2], lKn: [1, 0, -.6], rPoint: .5 });
 const RSWING3 = pose3({ hip: [.22, .97, -.14], yaw: -40, chestYaw: -20, lean: -4, tilt: -12,
-  lF: [.3, 1.55, -.26], rF: [.12, 1.05, .2], lA: [.4, .12, -.32], rA: [.42, .7, .79],
-  lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -1, .4], lPoint: .35, rPoint: .7 });
+  lF: [.3, 1.55, -.26], rF: [.42, .96, .3], lA: [.4, .12, -.32], rA: [.42, .7, .79],
+  lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
 const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -5, tilt: -25,
   lF: [.25, 1.6, -.35], rF: [-.1, 1, .1], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .85 });
@@ -74,8 +75,8 @@ const RU3 = pose3({ hip: [.05, .88, -.04], yaw: 35, chestYaw: 25, lean: 8, tilt:
 // (LSWING3), then the shin chops down and through the bag's thigh height (LKICK3). The body
 // leans over the kick and the hands stay up, so it reads as a downward cut, not a body kick.
 const LSWING3 = pose3({ hip: [.22, .95, -.14], yaw: -40, chestYaw: -20, lean: 2, tilt: -8,
-  lF: [.36, 1.55, -.38], rF: [.12, 1.05, .2], lA: [.4, .145, -.32], rA: [.55, 1.15, .6],
-  lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -1, .4], lPoint: .35, rPoint: .7 });
+  lF: [.36, 1.55, -.38], rF: [.42, .96, .3], lA: [.4, .145, -.32], rA: [.6, .75, .5],
+  lKn: [-.2, 0, -1], rKn: [.5, .1, -.3], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
 const LKICK3 = pose3({ hip: [.3, .95, -.2], yaw: -100, chestYaw: -55, lean: 12, tilt: -12,
   lF: [.36, 1.56, -.52], rF: [-.1, 1, .1], lA: [.4, .145, -.32], rA: [1.0, .55, .3],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .6 });
@@ -109,7 +110,7 @@ function trailPoints(T, move, hot) {
 // where you see the leg come round (from behind it looks like a push kick)
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
-const START_VIEW = { roundhouse: [110, 26], 'low-kick': [95, 8], hook: [35, 40], body: [60, 18], teep: [-75, 12], slip: [205, 14] };
+const START_VIEW = { roundhouse: [110, 26], 'low-kick': [95, 8], hook: [35, 40], body: [40, 35], teep: [-75, 12], slip: [205, 14] };
 
 /* ---------- Pose maths ---------- */
 

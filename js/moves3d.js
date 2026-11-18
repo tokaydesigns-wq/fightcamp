@@ -34,6 +34,13 @@ const HL3 = pose3({ hip: [.18, .92, .02], yaw: 40, chestYaw: 40, lean: 8,
 const H3 = pose3({ hip: [.25, .92, 0], yaw: 60, chestYaw: 70, lean: 8,
   lF: [.82, 1.45, -.05], rF: [.21, 1.58, .176], lA: [.46, .13, -.12], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
 
+// Body shot (lead hook to the liver): drop the level by bending the knees, with the head tipped
+// off the centre line to the left (BD3), then turn the hip and hook the fist in at belt height (BH3).
+const BD3 = pose3({ hip: [.1, .74, -.06], yaw: 40, chestYaw: 35, lean: 18, tilt: -12,
+  lF: [.5, 1, -.3], rF: [.22, 1.36, .14], lA: [.42, .08, -.12], rA: [-.24, .14, .2], lElb: [0, -1, -.5], lKn: [1, 0, -.3], rPoint: 0 });
+const BH3 = pose3({ hip: [.22, .72, -.04], yaw: 62, chestYaw: 72, lean: 16, tilt: -12,
+  lF: [.82, .98, -.05], rF: [.22, 1.36, .14], lA: [.46, .15, -.12], rA: [-.24, .14, .2], lElb: [0, .2, -1], lKn: [1, 0, -.2], lPoint: .3, rPoint: 0 });
+
 // Teep: weight back on the rear leg, lift the lead knee high (TC3), then push the hips
 // through and drive the ball of the foot straight into the bag (T3), leaning back slightly.
 const TC3 = pose3({ hip: [-.06, .95, .08], yaw: 20, chestYaw: 25, lean: 0,
@@ -58,6 +65,7 @@ const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
   cross: [G3, C3, C3, G3, G3],
   hook: [G3, HL3, H3, H3, G3, G3],
+  body: [G3, BD3, BH3, BH3, G3, G3],
   teep: [G3, TC3, T3, T3, TC3, G3, G3],
   roundhouse: [G3, RSTEP3, RSWING3, RKICK3, RKICK3, G3, G3],
 };
@@ -65,7 +73,7 @@ const POSES3D = {
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
-const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], teep: [0, 2], roundhouse: [1, 3] };
+const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL' };
 
 function trailPoints(T, move, hot) {
@@ -79,7 +87,7 @@ function trailPoints(T, move, hot) {
 // where you see the leg come round (from behind it looks like a push kick)
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
-const START_VIEW = { roundhouse: [110, 26], hook: [35, 40], teep: [-75, 12] };
+const START_VIEW = { roundhouse: [110, 26], hook: [35, 40], body: [60, 18], teep: [-75, 12] };
 
 /* ---------- Pose maths ---------- */
 

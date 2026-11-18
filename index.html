@@ -39,10 +39,16 @@
   <script src="js/moves3d.js"></script>
   <script src="js/art.js"></script>
   <script src="js/timer.js"></script>
+  <script src="js/video.js"></script>
   <script src="js/ui.js"></script>
   <script>
     render();
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    if ('serviceWorker' in navigator) {
+      // Only an update if an older version was already running (not the very first visit)
+      const hadOld = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadOld) updateReady(); });
+      navigator.serviceWorker.register('sw.js');
+    }
   </script>
 </body>
 </html>

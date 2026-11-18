@@ -19,16 +19,31 @@ const HOOK = pose({ head: [154, 62], neck: [153, 84], hip: [147, 150], lE: [184,
 // Round kick: step out, then the leg swings up and round nearly straight (not a knee lift)
 const KICK_STEP = pose({ head: [154, 58], neck: [153, 82], hip: [152, 150], lK: [180, 194], lA: [200, 236], rK: [132, 196], rA: [116, 234] });
 const KICK_SWING = pose({ head: [142, 62], neck: [144, 86], hip: [156, 152], rE: [130, 122], rF: [122, 140],
-  lK: [176, 196], lA: [196, 234], rK: [178, 186], rA: [212, 206] });
+  lK: [176, 196], lA: [196, 234], rK: [186, 182], rA: [222, 196] });
 const KICK = pose({ head: [130, 66], neck: [135, 88], hip: [150, 152], lE: [166, 112], lF: [170, 88], rE: [112, 128], rF: [98, 150],
   lK: [176, 196], lA: [196, 234], rK: [192, 140], rA: [238, 128] });
+// Body shot: bend the knees to drop the level (head off to the side, hand low), then the hip
+// turns and the lead fist hooks into the ribs at belt height while the rear hand guards the chin
+const BODY_DIP = pose({ head: [175, 79], neck: [168, 102], hip: [150, 170], lE: [178, 132], lF: [198, 142], rE: [154, 120], rF: [180, 96],
+  lK: [196, 193], lA: [206, 236], rK: [150, 221], rA: [108, 236] });
+const BODY_HIT = pose({ head: [181, 79], neck: [174, 102], hip: [156, 170], lE: [208, 128], lF: [238, 140], rE: [158, 118], rF: [184, 96],
+  lK: [202, 192], lA: [210, 236], rK: [152, 221], rA: [110, 236] });
 // Low kick: same step and turn as the round kick, but the leg starts higher and chops DOWN into the thigh
 const LOW_SWING = pose({ head: [146, 66], neck: [147, 90], hip: [154, 154], rE: [132, 124], rF: [126, 142],
-  lK: [176, 196], lA: [196, 234], rK: [176, 168], rA: [206, 152] });
+  lK: [176, 196], lA: [196, 234], rK: [176, 168], rA: [204, 164] });
 const LOW_KICK = pose({ head: [140, 74], neck: [143, 97], hip: [150, 156], lE: [166, 116], lF: [170, 92], rE: [118, 134], rF: [106, 154],
-  lK: [176, 196], lA: [196, 234], rK: [190, 170], rA: [240, 192] });
+  lK: [176, 196], lA: [196, 234], rK: [192, 172], rA: [232, 196] });
 const TEEP_CHAMBER = pose({ head: [146, 58], neck: [146, 82], hip: [146, 152], lK: [188, 168], lA: [186, 206] });
 const TEEP = pose({ head: [138, 60], neck: [140, 84], hip: [148, 154], lE: [166, 114], lF: [172, 88], lK: [196, 158], lA: [242, 148] });
+
+// Slip and roll: a small dip to slip off the line (SLIP), sink low through the knees (ROLL), then come
+// up on the other side with the hands still up (ROLL_UP). In this side view you see the dip and lean.
+const SLIP = pose({ head: [153, 64], neck: [152, 87], hip: [146, 153], lE: [176, 118], lF: [182, 92], rF: [162, 86],
+  lK: [174, 196], rK: [130, 196] });
+const ROLL = pose({ head: [162, 78], neck: [157, 101], hip: [142, 170], lE: [181, 131], lF: [185, 105], rE: [143, 137], rF: [165, 109],
+  lK: [188, 192], lA: [186, 236], rK: [153, 220], rA: [112, 236] });
+const ROLL_UP = pose({ head: [158, 70], neck: [155, 93], hip: [141, 158], lE: [178, 124], lF: [182, 98], rE: [140, 126], rF: [162, 92],
+  lK: [178, 192], rK: [134, 200] });
 
 // Top-down feet: [x, y, angle in degrees]. Orthodox: lead (left) foot in front, rear foot behind and to the right.
 const feet = (lead, rear) => ({ lead, rear });
@@ -53,6 +68,20 @@ const DEMOS = {
     [HOOK, 240, 'Rear hand stays glued to your cheek'],
     [GUARD, 260, 'Back to guard'],
     [GUARD, 400, 'Guard up, chin down'] ] },
+  body: { type: 'side', hot: 'lead-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [BODY_DIP, 200, 'Bend the knees to drop your level, head off the centre line'],
+    [BODY_HIT, 160, 'Turn the hip and hook the fist into the ribs'],
+    [BODY_HIT, 240, 'Rear hand stays up by your chin'],
+    [GUARD, 300, 'Stand back up to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+  slip: { type: 'side', hot: 'head', seq: [
+    [GUARD, 700, 'Guard up, eyes on them'],
+    [SLIP, 170, 'Slip: move your head just off the line, inches not feet'],
+    [ROLL, 260, 'Bend the knees and roll under, hands stay up'],
+    [ROLL_UP, 240, 'Come up on the other side, eyes never leave them'],
+    [GUARD, 260, 'Back in guard, ready to counter'],
+    [GUARD, 400, 'Guard up, eyes on them'] ] },
   roundhouse: { type: 'side', hot: 'rear-leg', seq: [
     [GUARD, 700, 'Stance, hands up'],
     [KICK_STEP, 240, 'Step out at an angle with the lead foot'],
@@ -66,7 +95,7 @@ const DEMOS = {
     [KICK_STEP, 240, 'Step out at an angle with the lead foot'],
     [LOW_SWING, 220, 'Turn the hip over and lift the leg a little above your target'],
     [LOW_KICK, 180, 'Chop down through the thigh, hit with the lower shin'],
-    [LOW_KICK, 300, 'Lean over it, hands stay up, kick goes through'],
+    [LOW_KICK, 300, 'Lean over it, lead hand guards your face, kick goes through'],
     [GUARD, 340, 'Back to stance'],
     [GUARD, 400, 'Stance, hands up'] ] },
   teep: { type: 'side', hot: 'lead-leg', seq: [
@@ -78,7 +107,7 @@ const DEMOS = {
     [GUARD, 240, 'Snap it back'],
     [GUARD, 400, 'Stance, hands up'] ] },
   angles: { type: 'top', ghost: true, line: true, seq: [
-    [feet([150, 150, 10], [176, 194, 45]), 900, 'You are square, right on their line of attack'],
+    [feet([150, 150, 10], [176, 194, 45]), 900, 'You are right on their line of attack'],
     [feet([186, 136, 10], [176, 194, 45]), 300, 'Step outside their lead foot', 'lead'],
     [feet([186, 136, 10], [176, 194, 45]), 250, 'Step outside their lead foot', 'lead'],
     [feet([186, 136, -20], [227, 168, 15]), 380, 'Pivot on the lead foot, swing the back foot round', 'rear'],
@@ -152,7 +181,7 @@ function drawSide(p, hot) {
       <path class="${cls('rear-leg')}" d="${parts['rear-leg']}"/><path class="${cls('rear-arm')}" d="${parts['rear-arm']}"/>${fist('rF', 'rear-arm')}
       <path d="M${pt(p.neck)} L${pt(p.hip)}"/>
       <path class="${cls('lead-leg')}" d="${parts['lead-leg']}"/><path class="${cls('lead-arm')}" d="${parts['lead-arm']}"/>${fist('lF', 'lead-arm')}
-      <circle class="head" cx="${p.head[0]}" cy="${p.head[1]}" r="17"/>
+      <circle class="head ${hot === 'head' ? 'hot' : ''}" cx="${p.head[0]}" cy="${p.head[1]}" r="17"/>
     </g>`;
 }
 

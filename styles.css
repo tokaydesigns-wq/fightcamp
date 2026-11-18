@@ -185,6 +185,15 @@ details.card[open] > summary::after { content: '–'; }
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 99px; font-weight: 600; font-size: 14px;
   z-index: 9; animation: up .2s ease-out; white-space: nowrap;
 }
+/* Home screen version label and the "new version is ready" bar */
+.banner .app-ver { margin-top: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); }
+.update-bar {
+  position: fixed; left: 12px; right: 12px; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 10;
+  display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 16px; border-radius: 14px;
+  background: var(--ink); color: var(--bg); font-weight: 600; font-size: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.25);
+}
+.update-bar span { flex: 1; }
+.update-bar .btn { min-height: 38px; padding: 0 14px; font-size: 14px; white-space: nowrap; }
 @keyframes up { from { opacity: 0; transform: translate(-50%, 8px); } }
 
 /* Technique animations (moves.js) */
@@ -268,3 +277,24 @@ button.back { border: 0; background: none; color: var(--accent); font: inherit; 
 .filebtn { display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .filebtn input { display: none; }
 .quick + details.card { margin-top: 14px; }
+
+/* Video check (video.js) */
+.vc-stage { position: relative; width: 100%; margin: 0 auto; background: #000; border-radius: 12px; overflow: hidden; }
+.vc-stage video, .vc-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vc-stage canvas { pointer-events: none; }
+.vc-person { position: absolute; border: 3px solid var(--accent); background: rgba(214,40,57,.15); border-radius: 8px; padding: 0; cursor: pointer; }
+.vc-person span { position: absolute; top: -2px; left: -2px; background: var(--accent); color: #fff; font-weight: 800; font-size: 13px; padding: 2px 8px; border-radius: 6px 0 6px 0; }
+.vc-file { position: relative; }
+.vc-file input { display: none; }
+.vc-notes { list-style: none; padding: 0; margin: 0; }
+.vc-notes li { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); margin: 0; }
+.vc-notes li:first-child { border-top: 0; }
+.vc-notes li > b { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; color: #fff; }
+.vc-notes li.good > b { background: var(--good); }
+.vc-notes li.fix > b { background: var(--warn); }
+.vc-notes li.info > b { background: var(--muted); }
+.vc-notes p { margin: 0; }
+.vc-notes .chips { margin-top: 6px; }
+.spin { width: 34px; height: 34px; margin: 6px auto 10px; border-radius: 50%; border: 4px solid var(--line); border-top-color: var(--accent); animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.banner .btn + .btn { margin-left: 6px; }

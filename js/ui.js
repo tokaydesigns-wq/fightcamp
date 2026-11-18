@@ -3,16 +3,17 @@
 
 let foodDay = ymd();
 
-const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen };
+const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen, video: videoScreen };
 
 function render() {
   const [name = 'home', arg] = location.hash.replace(/^#\/?/, '').split('/');
   const fn = ROUTES[name] || homeScreen;
   $('#app').innerHTML = fn(arg && decodeURIComponent(arg));
-  const tab = { p: 'learn', timer: 'train' }[name] || (ROUTES[name] ? name : 'home');
+  const tab = { p: 'learn', timer: 'train', video: 'train' }[name] || (ROUTES[name] ? name : 'home');
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   startDemos();
   paintTimer();
+  mountVideo();
 }
 window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 
@@ -21,7 +22,7 @@ window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 function homeScreen() {
   const wk = weekTotals(1)[0], day = dayFood(ymd()), p = state.programs[0];
   const c = state.camp && campStatus(state.camp);
-  return `${banner('home', 'FightCamp', greeting(), '', niceDate(ymd()))}
+  return `${banner('home', 'FightCamp', greeting(), `<p class="app-ver">Version ${APP_VERSION}</p>`, niceDate(ymd()))}
   ${c ? `<a class="card camp-mini" href="#/camp"><div class="count"><b>${Math.max(c.daysOut, 0)}</b><span>${c.daysOut === 1 ? 'day' : 'days'}</span></div>
       <div><p class="eyebrow">${c.daysOut >= 0 ? 'To fight night' : 'Fight done'}</p><h2>${esc(c.phase.name)}</h2><p class="muted small">${esc(c.phase.goal)}</p></div></a>`
     : `<a class="card cta" href="#/camp"><span>Got a fight coming up?</span><b>Set your fight date ›</b></a>`}
@@ -33,6 +34,19 @@ function homeScreen() {
   <div class="quick"><a class="btn primary" href="#/train">+ Log training</a><a class="btn" href="#/food">+ Log food</a></div>
   ${backupCard()}`;
 }
+
+/* ---------- Updates ---------- */
+
+// A new version has downloaded and taken over in the background. The screen still shows the old
+// one until the page reloads, so say so and offer to switch now.
+function updateReady() {
+  if (document.getElementById('updateBar')) return;
+  const bar = document.createElement('div');
+  bar.id = 'updateBar'; bar.className = 'update-bar';
+  bar.innerHTML = '<span>A new version of FightCamp is ready.</span><button class="btn primary" data-act="update-now">Update now</button>';
+  document.body.append(bar);
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-act="update-now"]')) location.reload(); });
 
 /* ---------- Backup and restore ---------- */
 
@@ -81,7 +95,7 @@ function trainScreen() {
   const weeks = weekTotals(8);
   const avg = Math.round(weeks.slice(0, 7).reduce((t, w) => t + w.mins, 0) / 7);
   const list = [...state.sessions].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)).slice(0, 50);
-  return `${banner('train', 'Training', 'Log it, track it, get better.', '<a class="btn" href="#/timer">⏱ Round timer</a>')}
+  return `${banner('train', 'Training', 'Log it, track it, get better.', '<a class="btn" href="#/timer">⏱ Round timer</a> <a class="btn" href="#/video">🎥 Video check</a>')}
   <form class="card" data-form="session"><h2>Log a session</h2>
     <div class="grid2">
       <label>Date<input type="date" name="date" value="${ymd()}" max="${ymd()}" required></label>

@@ -19,15 +19,15 @@ const HOOK = pose({ head: [154, 62], neck: [153, 84], hip: [147, 150], lE: [184,
 // Round kick: step out, then the leg swings up and round nearly straight (not a knee lift)
 const KICK_STEP = pose({ head: [154, 58], neck: [153, 82], hip: [152, 150], lK: [180, 194], lA: [200, 236], rK: [132, 196], rA: [116, 234] });
 const KICK_SWING = pose({ head: [142, 62], neck: [144, 86], hip: [156, 152], rE: [130, 122], rF: [122, 140],
-  lK: [176, 196], lA: [196, 234], rK: [178, 186], rA: [212, 206] });
+  lK: [176, 196], lA: [196, 234], rK: [186, 182], rA: [222, 196] });
 const KICK = pose({ head: [130, 66], neck: [135, 88], hip: [150, 152], lE: [166, 112], lF: [170, 88], rE: [112, 128], rF: [98, 150],
   lK: [176, 196], lA: [196, 234], rK: [192, 140], rA: [238, 128] });
 // Body shot: bend the knees to drop the level (head off to the side, hand low), then the hip
 // turns and the lead fist hooks into the ribs at belt height while the rear hand guards the chin
-const BODY_DIP = pose({ head: [168, 90], neck: [160, 110], hip: [150, 166], lE: [170, 140], lF: [190, 150], rE: [146, 128], rF: [172, 104],
-  lK: [186, 204], lA: [206, 236], rK: [132, 206], rA: [108, 236] });
-const BODY_HIT = pose({ head: [172, 92], neck: [164, 112], hip: [156, 166], lE: [204, 134], lF: [238, 140], rE: [148, 128], rF: [174, 104],
-  lK: [190, 204], lA: [210, 236], rK: [136, 206], rA: [110, 236] });
+const BODY_DIP = pose({ head: [175, 79], neck: [168, 102], hip: [150, 170], lE: [178, 132], lF: [198, 142], rE: [154, 120], rF: [180, 96],
+  lK: [196, 193], lA: [206, 236], rK: [150, 221], rA: [108, 236] });
+const BODY_HIT = pose({ head: [181, 79], neck: [174, 102], hip: [156, 170], lE: [208, 128], lF: [238, 140], rE: [158, 118], rF: [184, 96],
+  lK: [202, 192], lA: [210, 236], rK: [152, 221], rA: [110, 236] });
 const TEEP_CHAMBER = pose({ head: [146, 58], neck: [146, 82], hip: [146, 152], lK: [188, 168], lA: [186, 206] });
 const TEEP = pose({ head: [138, 60], neck: [140, 84], hip: [148, 154], lE: [166, 114], lF: [172, 88], lK: [196, 158], lA: [242, 148] });
 
@@ -35,8 +35,8 @@ const TEEP = pose({ head: [138, 60], neck: [140, 84], hip: [148, 154], lE: [166,
 // up on the other side with the hands still up (ROLL_UP). In this side view you see the dip and lean.
 const SLIP = pose({ head: [153, 64], neck: [152, 87], hip: [146, 153], lE: [176, 118], lF: [182, 92], rF: [162, 86],
   lK: [174, 196], rK: [130, 196] });
-const ROLL = pose({ head: [171, 84], neck: [162, 106], hip: [137, 166], lE: [186, 136], lF: [190, 110], rE: [148, 142], rF: [170, 114],
-  lK: [184, 190], lA: [186, 236], rK: [156, 212], rA: [112, 236] });
+const ROLL = pose({ head: [162, 78], neck: [157, 101], hip: [142, 170], lE: [181, 131], lF: [185, 105], rE: [143, 137], rF: [165, 109],
+  lK: [188, 192], lA: [186, 236], rK: [153, 220], rA: [112, 236] });
 const ROLL_UP = pose({ head: [158, 70], neck: [155, 93], hip: [141, 158], lE: [178, 124], lF: [182, 98], rE: [140, 126], rF: [162, 92],
   lK: [178, 192], rK: [134, 200] });
 
@@ -94,7 +94,7 @@ const DEMOS = {
     [GUARD, 240, 'Snap it back'],
     [GUARD, 400, 'Stance, hands up'] ] },
   angles: { type: 'top', ghost: true, line: true, seq: [
-    [feet([150, 150, 10], [176, 194, 45]), 900, 'You are square, right on their line of attack'],
+    [feet([150, 150, 10], [176, 194, 45]), 900, 'You are right on their line of attack'],
     [feet([186, 136, 10], [176, 194, 45]), 300, 'Step outside their lead foot', 'lead'],
     [feet([186, 136, 10], [176, 194, 45]), 250, 'Step outside their lead foot', 'lead'],
     [feet([186, 136, -20], [227, 168, 15]), 380, 'Pivot on the lead foot, swing the back foot round', 'rear'],

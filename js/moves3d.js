@@ -25,28 +25,28 @@ const J3 = pose3({ hip: [.07, .92, .02], yaw: 40, chestYaw: 45, lean: 8,
 // Cross: hips and shoulders turn so the right shoulder drives forward, the back heel turns out
 // (up on the ball of the foot), and the lead hand stays home by the face.
 const C3 = pose3({ hip: [.11, .92, .03], yaw: 0, chestYaw: -10, lean: 10,
-  lF: [.24, 1.56, -.1], rF: [.79, 1.48, .03], rA: [-.2, .19, .17], rKn: [1, 0, -.4], rElb: [0, -1, .3], rPoint: .45 });
+  lF: [.36, 1.52, -.14], rF: [.79, 1.48, .03], rA: [-.2, .15, .17], rKn: [1, 0, -.4], rElb: [0, -1, .3], rPoint: .2 });
 
 // Lead hook: a small step in, then the elbow lifts and the fist swings out wide (HL3) and
 // round into the side of the bag (H3) as the lead foot, hip and shoulder turn together.
 const HL3 = pose3({ hip: [.18, .92, .02], yaw: 40, chestYaw: 40, lean: 8,
-  lF: [.6, 1.5, -.45], rF: [.2, 1.55, .14], lA: [.42, .08, -.12], lElb: [0, .5, -1], lKn: [1, 0, -.1] });
+  lF: [.5, 1.52, -.3], rF: [.3, 1.5, .24], lA: [.42, .08, -.12], lElb: [0, .5, -1], lKn: [1, 0, -.1] });
 const H3 = pose3({ hip: [.25, .92, 0], yaw: 60, chestYaw: 70, lean: 8,
-  lF: [.82, 1.45, -.05], rF: [.21, 1.58, .176], lA: [.46, .13, -.12], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
+  lF: [.82, 1.45, -.05], rF: [.33, 1.54, .27], lA: [.46, .13, -.12], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
 
 // Body shot (lead hook to the liver): drop the level by bending the knees, with the head tipped
 // off the centre line to the left (BD3), then turn the hip and hook the fist in at belt height (BH3).
-const BD3 = pose3({ hip: [.1, .74, -.06], yaw: 40, chestYaw: 35, lean: 18, tilt: -12,
-  lF: [.5, 1, -.3], rF: [.22, 1.36, .14], lA: [.42, .08, -.12], rA: [-.24, .14, .2], lElb: [0, -1, -.5], lKn: [1, 0, -.3], rPoint: 0 });
-const BH3 = pose3({ hip: [.22, .72, -.04], yaw: 62, chestYaw: 72, lean: 16, tilt: -12,
-  lF: [.82, .98, -.05], rF: [.22, 1.36, .14], lA: [.46, .15, -.12], rA: [-.24, .14, .2], lElb: [0, .2, -1], lKn: [1, 0, -.2], lPoint: .3, rPoint: 0 });
+const BD3 = pose3({ hip: [.1, .74, -.14], yaw: 40, chestYaw: 35, lean: 18, tilt: -16,
+  lF: [.5, 1, -.3], rF: [.48, 1.32, .08], lA: [.42, .08, -.12], rA: [-.24, .14, .2], lElb: [0, -1, -.5], lKn: [1, 0, -.3], rPoint: 0 });
+const BH3 = pose3({ hip: [.22, .72, -.12], yaw: 62, chestYaw: 72, lean: 4, tilt: -18,
+  lF: [.82, .98, -.05], rF: [.53, 1.31, .22], lA: [.46, .15, -.12], rA: [-.24, .14, .2], lElb: [0, .2, -1], lKn: [.5, 0, 1], lPoint: .3, rPoint: 0 });
 
 // Teep: weight back on the rear leg, lift the lead knee high (TC3), then push the hips
 // through and drive the ball of the foot straight into the bag (T3), leaning back slightly.
 const TC3 = pose3({ hip: [-.06, .95, .08], yaw: 20, chestYaw: 25, lean: 0,
   lF: [.28, 1.55, -.1], rF: [.14, 1.5, .14], lA: [.35, .55, -.1], lKn: [1, .3, 0] });
-const T3 = pose3({ hip: [-.08, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
-  lF: [.25, 1.55, -.12], rF: [.12, 1.5, .12], lA: [.8, 1, -.05], lKn: [0, 1, 0] });
+const T3 = pose3({ hip: [.02, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
+  lF: [.25, 1.55, -.12], rF: [.12, 1.5, .12], lA: [.76, 1, -.05], lKn: [0, 1, 0] });
 
 // Muay Thai round kick with the rear (right) leg: step out at an angle with the lead foot,
 // pivot on its ball so the heel turns toward the bag, turn the hips right over, and swing the
@@ -58,17 +58,17 @@ const RSWING3 = pose3({ hip: [.22, .97, -.14], yaw: -40, chestYaw: -20, lean: -4
   lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -1, .4], lPoint: .35, rPoint: .7 });
 const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -5, tilt: -25,
   lF: [.25, 1.6, -.35], rF: [-.1, 1, .1], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
-  lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-.5, 0, -1], rKn: [0, .5, -1], lPoint: .35, rPoint: .85 });
+  lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .85 });
 
 // Slip and roll: slip the head a hand-width off the centre line (SL3) by shifting the hips and
 // tilting, sink through the knees and let the head travel under (RL3), then come up on the other
 // side (RU3). The hands go with the head and the eyes stay on the target.
 const SL3 = pose3({ hip: [.04, .9, .06], yaw: 40, chestYaw: 52, lean: 8, tilt: 10,
   rA: [-.24, .17, .2], rPoint: .2, lF: [.36, 1.47, .1], rF: [.22, 1.44, .26] });
-const RL3 = pose3({ hip: [.04, .79, .03], yaw: 40, chestYaw: 30, lean: 20, tilt: 0,
-  rA: [-.24, .17, .2], rPoint: .15, lF: [.4, 1.22, -.12], rF: [.3, 1.2, .1], lElb: [0, -1, -.6], rElb: [0, -1, .6] });
+const RL3 = pose3({ hip: [.04, .79, -.05], yaw: 40, chestYaw: 30, lean: 20, tilt: 0,
+  rA: [-.24, .17, .2], rPoint: .15, lF: [.4, 1.4, -.08], rF: [.4, 1.38, .22], lElb: [0, -1, -.6], rElb: [0, -1, .6] });
 const RU3 = pose3({ hip: [.05, .88, -.04], yaw: 35, chestYaw: 25, lean: 8, tilt: -12,
-  rA: [-.24, .17, .2], rPoint: .2, lF: [.34, 1.5, -.22], rF: [.2, 1.45, -.02] });
+  rA: [-.24, .17, .2], rPoint: .2, lF: [.34, 1.5, -.22], rF: [.3, 1.45, 0] });
 
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
@@ -187,9 +187,9 @@ function buildScene(T, canvas, hot, move) {
 
   // Heavy bag in front of the fighter, so you can see where the shots land
   const bag = new T.Mesh(new T.CylinderGeometry(.17, .17, 1, 24), new T.MeshStandardMaterial({ color: 0x7a2630, roughness: .6 }));
-  bag.position.set(.97, 1.15, 0); bag.castShadow = true; scene.add(bag);
+  bag.position.set(1.04, move === 'low-kick' ? .85 : 1.15, 0); bag.castShadow = true; scene.add(bag);
   const chain = new T.Mesh(new T.CylinderGeometry(.008, .008, .5, 6), new T.MeshStandardMaterial({ color: 0x777777 }));
-  chain.position.set(.97, 1.9, 0); scene.add(chain);
+  chain.position.set(1.04, move === 'low-kick' ? 1.6 : 1.9, 0); scene.add(chain);
 
   // The strike's path: a see-through red tube with an arrowhead at the end
   if (trail) {
@@ -202,7 +202,7 @@ function buildScene(T, canvas, hot, move) {
   }
 
   const mat = c => new T.MeshStandardMaterial({ color: c, roughness: .55 });
-  const wood = mat(0xd9b48c), joint = mat(0xb0845a), glove = mat(0x26262c), red = mat(0xd62839);
+  const wood = mat(0xd9b48c), joint = mat(0xb0845a), glove = mat(matchMedia('(prefers-color-scheme: dark)').matches ? 0x4a4a56 : 0x26262c), red = mat(0xd62839);
   const add = m => { m.castShadow = true; scene.add(m); return m; };
   const cap = (r, len, m) => add(new T.Mesh(new T.CapsuleGeometry(r, len, 6, 14), m));
   const ball = (r, m) => add(new T.Mesh(new T.SphereGeometry(r, 20, 14), m));

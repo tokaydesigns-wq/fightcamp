@@ -161,6 +161,8 @@ const WRONG3D = {
   elbow: { text: 'Dropping the other hand as you throw', why: 'At this range, their elbow lands on your open face.',
     keys: { 2: { lF: [.5, 1.12, -.26] }, 3: { lF: [.5, 1.12, -.26] } } },
 };
+// Combinations use the 3D poses of the moves they're made of, frame for frame (see COMBOS in moves.js)
+for (const c of COMBOS) POSES3D[c.id] = DEMOS[c.id].frames.map(([m, i]) => m ? POSES3D[m][i] : G3);
 for (const [move, w] of Object.entries(WRONG3D)) POSES3D[move + '~wrong'] = POSES3D[move].map((p, i) => w.keys[i] ? Object.assign({}, p, w.keys[i]) : p);
 
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
@@ -295,10 +297,12 @@ function buildScene(T, canvas, hot, move) {
 
   // Heavy bag in front of the fighter, so you can see where the shots land
   // It hangs from the top of its chain and swings a little when a strike lands.
-  const bagY = move === 'low-kick' ? .85 : 1.15, swing = new T.Group();
-  swing.position.set(1.04, bagY + 1, 0); scene.add(swing);
-  const bag = new T.Mesh(new T.CylinderGeometry(.17, .17, 1, 24), new T.MeshStandardMaterial({ color: 0x7a2630, roughness: .6 }));
-  bag.position.y = -1; bag.castShadow = true; swing.add(bag);
+  // (low kicks need it lower; a combination with a low kick gets a longer bag, for head and leg)
+  const lowKick = move === 'low-kick', comboLow = !!(DEMOS[move] && DEMOS[move].combo && DEMOS[move].combo.moves.includes('low-kick'));
+  const bagY = lowKick ? .85 : comboLow ? 1 : 1.15, bagH = comboLow ? 1.3 : 1, swing = new T.Group();
+  swing.position.set(1.04, bagY + bagH / 2 + .5, 0); scene.add(swing);
+  const bag = new T.Mesh(new T.CylinderGeometry(.17, .17, bagH, 24), new T.MeshStandardMaterial({ color: 0x7a2630, roughness: .6 }));
+  bag.position.y = -.5 - bagH / 2; bag.castShadow = true; swing.add(bag);
   const chain = new T.Mesh(new T.CylinderGeometry(.008, .008, .5, 6), new T.MeshStandardMaterial({ color: 0x777777 }));
   chain.position.y = -.25; swing.add(chain);
 
@@ -331,6 +335,15 @@ function buildScene(T, canvas, hot, move) {
     elL: ball(.05, joint), elR: ball(.05, joint), knL: ball(.07, joint), knR: ball(.07, joint),
   };
 
+  // Which limb is red can change during a combination: one per strike
+  const LIMBS = { 'lead-arm': ['upperL', 'foreL', 'gloveL'], 'rear-arm': ['upperR', 'foreR', 'gloveR'], 'lead-leg': ['thighL', 'shinL', 'footL'], 'rear-leg': ['thighR', 'shinR', 'footR'] };
+  let hotNow = hot;
+  const setHot = h => {
+    if (h === hotNow) return;
+    hotNow = h;
+    for (const [limb, names] of Object.entries(LIMBS)) for (const k of names) parts[k].material = limb === h ? red : k.startsWith('glove') ? glove : wood;
+  };
+
   const UP = new T.Vector3(0, 1, 0), tmp = new T.Vector3();
   const place = (m, a, b) => {
     m.position.copy(a).add(b).multiplyScalar(.5);
@@ -348,7 +361,7 @@ function buildScene(T, canvas, hot, move) {
     bob.t = now;
     if (dt > 0 && bob.prev) for (const [j, r] of STRIKERS) {
       const p = s[j], q = bob.prev[j], dx = 1.04 - p.x, dz = -p.z, d = Math.hypot(dx, dz) || 1;
-      if (p.y < bagY - .55 || p.y > bagY + .55 || d - .17 - r > .03 || Object.values(bob.hit).some(h => now - h < 400)) continue;
+      if (p.y < bagY - bagH / 2 - .05 || p.y > bagY + bagH / 2 + .05 || d - .17 - r > .03 || now - (bob.hit[j] || 0) < 400 || Object.values(bob.hit).some(h => now - h < 150)) continue;   // (once per strike; combinations can land a few tenths apart)
       const toward = ((p.x - q.x) * dx + (p.z - q.z) * dz) / d / dt;   // speed toward the bag, m/s
       if (toward < .2) continue;
       bob.hit[j] = now;
@@ -394,7 +407,7 @@ function buildScene(T, canvas, hot, move) {
     scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
     renderer.dispose(); renderer.forceContextLoss();
   };
-  return { pose, render, view, dispose, bob, setMirror };   // (bob: the bag swing, read by tests)
+  return { pose, render, view, dispose, bob, setMirror, setHot };   // (bob: the bag swing, read by tests)
 }
 
 /* ---------- Opening and closing the 3D view ---------- */
@@ -451,6 +464,8 @@ function dragToTurn(canvas, el) {
 function draw3d(el, prev, i, k) {
   const v = el._3d;
   if (!v.ready) return false;
+  const d = DEMOS[el.dataset.move];
+  if (d.combo) v.setHot(d.seq[i][3] || null);
   v.pose(splinePose3(el.dataset.move + (el._wrong ? '~wrong' : ''), prev, i, k));
   v.render();
   return true;

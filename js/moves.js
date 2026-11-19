@@ -173,10 +173,36 @@ const DEMOS = {
     [feet([150, 152, 10], [176, 202, 45]), 500, 'Wait just outside their reach'] ] },
 };
 
+// Combinations: existing moves played back to back. Each move's own opening hold and closing
+// hold are dropped and its return to guard is kept short, so one strike flows into the next.
+// The striking limb lights up per strike (the 4th item of each step).
+const COMBOS = [
+  { id: 'combo-12', name: '1-2', moves: ['jab', 'cross'] },
+  { id: 'combo-123', name: '1-2-3', moves: ['jab', 'cross', 'hook'] },
+  { id: 'combo-12-low', name: '1-2, low kick', moves: ['jab', 'cross', 'low-kick'] },
+  { id: 'combo-123-kick', name: '1-2-3, body kick', moves: ['jab', 'cross', 'hook', 'roundhouse'] },
+  { id: 'combo-body', name: 'Jab, body, hook', moves: ['jab', 'body', 'hook'] },
+  { id: 'combo-upper', name: 'Jab, uppercut, hook', moves: ['jab', 'uppercut', 'hook'] },
+];
+const SHORT_NAME = { jab: 'Jab', cross: 'Cross', hook: 'Hook', uppercut: 'Uppercut', body: 'Body shot', roundhouse: 'Body kick', 'low-kick': 'Low kick' };
+// Which frames of each move a combination uses: [move, index into that move's frames] in order
+const comboFrames = c => [['', -1], ...c.moves.flatMap(m => DEMOS[m].seq.slice(1, -1).map((_, i) => [m, i + 1])), ['', -1]];
+for (const c of COMBOS) {
+  const steps = comboFrames(c);
+  DEMOS[c.id] = { type: 'side', hot: null, combo: c, frames: steps, seq: steps.map(([m, i], k) => {
+    if (!m) return [GUARD, k ? 600 : 700, k ? 'Back to guard, hands up' : `${c.name}: stance, hands up`];
+    const [pose, ms, cue] = DEMOS[m].seq[i], next = steps[k + 1][0];
+    // (between strikes the return to guard is quick: the next one starts on the way back)
+    return [pose, next && next !== m ? Math.min(ms, 200) : ms, `${SHORT_NAME[m]}: ${cue}`, DEMOS[m].hot];
+  }) };
+}
+
 /* ---------- Markup ---------- */
 
-// The demo card for a technique, or '' if it has no animation yet
+// The demo card for a technique, or '' if it has no animation yet. Combinations get a row of
+// buttons to pick which combination plays.
 function moveDemo(id) {
+  if (id === 'combos') return moveDemo(COMBOS[0].id);
   const d = DEMOS[id];
   if (!d) return '';
   // Moves with a 3D version are shown in 3D only (the 2D drawing is kept as a backup for phones
@@ -185,6 +211,7 @@ function moveDemo(id) {
     <button class="stance-chip${state.southpaw ? ' on' : ''}" data-act="demo-stance" aria-label="Stance: ${state.southpaw ? 'southpaw' : 'orthodox'}. Tap to switch">${state.southpaw ? 'Southpaw' : 'Orthodox'} ⇄</button>
     <svg class="demo-svg" viewBox="0 0 300 250" role="img" aria-label="Animation of the technique"></svg>
     <p class="demo-cue" aria-live="polite">${esc(d.seq[0][2])}</p>
+    ${d.combo ? `<div class="combo-pick" role="group" aria-label="Pick a combination">${COMBOS.map(c => `<button class="${c.id === id ? 'on' : ''}" data-act="demo-combo" data-id="${c.id}" aria-pressed="${c.id === id}">${esc(c.name)}</button>`).join('')}</div>` : ''}
     ${WRONG3D[id] ? `<div class="rw" role="group" aria-label="Right way or common mistake"><button class="on" data-act="demo-right" aria-pressed="true">✓ Right</button><button data-act="demo-wrong" aria-pressed="false">✗ Common mistake</button></div>` : ''}
     <div class="demo-ctl"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
     <button class="btn" data-act="demo-slow">Slow-mo</button></div></div>`;
@@ -308,7 +335,7 @@ function drawDemo(el, now) {
   if (el._3d) { st.drawn = draw3d(el, prev, i, k); return; }
   d._P = d._P || d.seq.map(f => f[0]); d._D = d._D || d.seq.map(f => f[1]);
   const out = splinePose(d._P, d._D, prev, i, k);
-  el.querySelector('svg').innerHTML = d.type === 'side' ? drawSide(state.southpaw ? mirrorSide(out) : out, d.hot) : drawTop(d, out, hot, state.southpaw);
+  el.querySelector('svg').innerHTML = d.type === 'side' ? drawSide(state.southpaw ? mirrorSide(out) : out, hot || d.hot) : drawTop(d, out, hot, state.southpaw);
   st.drawn = true;
 }
 
@@ -316,6 +343,15 @@ document.addEventListener('click', e => {
   const btn = e.target.closest('[data-act^="demo-"]');
   if (!btn) return;
   const el = btn.closest('.demo'), now = performance.now(), st = demoState(el, now);
+  if (btn.dataset.act === 'demo-combo') {
+    // Swap which combination this card plays, and start it from the top
+    el.dataset.move = btn.dataset.id;
+    el.querySelectorAll('.combo-pick button').forEach(b => { const on = b === btn; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    const playing = st.playing; delete el._st; Object.assign(demoState(el, now), { playing });
+    el.querySelector('.demo-cue').textContent = DEMOS[btn.dataset.id].seq[0][2];
+    if (el._3d) { close3d(el); open3d(el); }
+    return;
+  }
   if (btn.dataset.act === 'demo-right' || btn.dataset.act === 'demo-wrong') {
     el._wrong = btn.dataset.act === 'demo-wrong';
     el.classList.toggle('wrong', el._wrong);

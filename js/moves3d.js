@@ -25,14 +25,14 @@ const J3 = pose3({ hip: [.07, .92, .02], yaw: 40, chestYaw: 45, lean: 8,
 // Cross: hips and shoulders turn so the right shoulder drives forward, the back heel turns out
 // (up on the ball of the foot), and the lead hand stays home by the face.
 const C3 = pose3({ hip: [.11, .92, .03], yaw: 0, chestYaw: -10, lean: 10,
-  lF: [.36, 1.52, -.14], rF: [.79, 1.48, .03], rA: [-.2, .15, .17], rKn: [1, 0, -.4], rElb: [0, -1, .3], rPoint: .2 });
+  lF: [.36, 1.52, -.14], rF: [.79, 1.48, .03], rA: [-.25, .15, .29], rKn: [1, 0, -.4], rElb: [0, -1, .3], rPoint: .2 });
 
 // Lead hook: a small step in, then the elbow lifts and the fist swings out wide (HL3) and
 // round into the side of the bag (H3) as the lead foot, hip and shoulder turn together.
 const HL3 = pose3({ hip: [.18, .92, .02], yaw: 40, chestYaw: 40, lean: 8,
   lF: [.5, 1.52, -.3], rF: [.3, 1.5, .24], lA: [.42, .08, -.12], lElb: [0, .5, -1], lKn: [1, 0, -.1] });
 const H3 = pose3({ hip: [.25, .92, 0], yaw: 60, chestYaw: 70, lean: 8,
-  lF: [.82, 1.45, -.05], rF: [.33, 1.54, .27], lA: [.46, .13, -.12], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
+  lF: [.82, 1.45, -.05], rF: [.33, 1.54, .27], lA: [.51, .13, -.21], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
 
 // Body shot (lead hook to the liver): step the lead foot off to the left of the bag as the knees
 // bend to drop the level, head off the centre line (BD3), then pivot the back foot round to cut the
@@ -40,7 +40,7 @@ const H3 = pose3({ hip: [.25, .92, 0], yaw: 60, chestYaw: 70, lean: 8,
 const BD3 = pose3({ hip: [.14, .74, -.3], yaw: 45, chestYaw: 40, lean: 18, tilt: -16,
   lF: [.52, 1, -.44], rF: [.54, 1.31, -.18], lA: [.44, .08, -.42], rA: [-.24, .14, .12], lElb: [0, -1, -.5], lKn: [1, 0, -.5], rPoint: .1 });
 const BH3 = pose3({ hip: [.26, .72, -.26], yaw: 75, chestYaw: 85, lean: 4, tilt: -18,
-  lF: [.88, .98, -.17], rF: [.58, 1.33, -.1], lA: [.46, .16, -.42], rA: [-.32, .15, -.04], lElb: [0, .2, -1], lKn: [.5, 0, 1], rKn: [1, 0, .3], lPoint: .3, rPoint: 0 });
+  lF: [.88, .98, -.17], rF: [.58, 1.33, -.1], lA: [.52, .16, -.48], rA: [-.32, .15, -.04], lElb: [0, .2, -1], lKn: [.5, 0, 1], rKn: [1, 0, .3], lPoint: .3, rPoint: 0 });
 
 // Teep: weight back on the rear leg, lift the lead knee high (TC3), then push the hips
 // through and drive the ball of the foot straight into the bag (T3), leaning back slightly.
@@ -127,10 +127,32 @@ function relPoses(move) {
     return r;
   }));
 }
+// A foot that's on the floor at both ends of a step is worked out on the floor instead (from the
+// hips, a planted foot drifts as the body turns over it): it stays put, pivots on the ball of the
+// foot (the toes stay where they are and the heel turns), or steps, lifting a little on the way.
+const toeCache = new WeakMap();
+const toesOf = p => toeCache.get(p) || toeCache.set(p, (s => ({ lA: s.toeL, rA: s.toeR }))(skeleton(THREE3, p))).get(p);
+const lerp3 = (a, b, e) => a.map((v, i) => v + (b[i] - v) * e);
 function splinePose3(move, a, b, u) {
   const D = durCache[move] || (durCache[move] = DEMOS[move].seq.map(f => f[1]));
   const p = splinePose(relPoses(move), D, a, b, u), out = Object.assign({}, p);
+  const pa = POSES3D[move][a], pb = POSES3D[move][b], e = u * u * (3 - 2 * u);
   for (const k of ['lA', 'rA']) {
+    if (pa[k][1] < .22 && pb[k][1] < .22) {
+      const moved = Math.hypot(...pa[k].map((v, i) => v - pb[k][i]));
+      const ta = toesOf(pa)[k].toArray(), tb = toesOf(pb)[k].toArray();
+      if (moved < .03) out[k] = lerp3(pa[k], pb[k], e);
+      else if (Math.hypot(...ta.map((v, i) => v - tb[i])) < .06) {
+        // pivot: turn the heel round the toes, keeping the foot its own length
+        const oa = pa[k].map((v, i) => v - ta[i]), ob = pb[k].map((v, i) => v - tb[i]), o = lerp3(oa, ob, e);
+        const len = Math.hypot(...oa) + (Math.hypot(...ob) - Math.hypot(...oa)) * e, ol = Math.hypot(...o) || 1;
+        out[k] = lerp3(ta, tb, e).map((v, i) => v + o[i] / ol * len);
+      } else {
+        out[k] = lerp3(pa[k], pb[k], e);
+        out[k][1] += Math.sin(Math.PI * u) * Math.min(.05, moved * .25);
+      }
+      continue;
+    }
     const len = Math.hypot(...p[k]);
     out[k] = p.hip.map((h, i) => h + p[k][i] / len * p[k + 'Len']);
   }
@@ -198,10 +220,13 @@ function buildScene(T, canvas, hot, move) {
   ring.rotation.x = -Math.PI / 2; ring.position.y = .002; scene.add(ring);
 
   // Heavy bag in front of the fighter, so you can see where the shots land
+  // It hangs from the top of its chain and swings a little when a strike lands.
+  const bagY = move === 'low-kick' ? .85 : 1.15, swing = new T.Group();
+  swing.position.set(1.04, bagY + 1, 0); scene.add(swing);
   const bag = new T.Mesh(new T.CylinderGeometry(.17, .17, 1, 24), new T.MeshStandardMaterial({ color: 0x7a2630, roughness: .6 }));
-  bag.position.set(1.04, move === 'low-kick' ? .85 : 1.15, 0); bag.castShadow = true; scene.add(bag);
+  bag.position.y = -1; bag.castShadow = true; swing.add(bag);
   const chain = new T.Mesh(new T.CylinderGeometry(.008, .008, .5, 6), new T.MeshStandardMaterial({ color: 0x777777 }));
-  chain.position.set(1.04, move === 'low-kick' ? 1.6 : 1.9, 0); scene.add(chain);
+  chain.position.y = -.25; swing.add(chain);
 
   // The strike's path: a see-through red tube with an arrowhead at the end
   if (trail) {
@@ -237,8 +262,32 @@ function buildScene(T, canvas, hot, move) {
     m.position.copy(a).add(b).multiplyScalar(.5);
     m.quaternion.setFromUnitVectors(UP, tmp.copy(b).sub(a).normalize());
   };
+  // The bag swings like a pendulum (about 2 seconds a swing, settling quickly). A fist, shin or
+  // foot that reaches it while moving toward it gives it a push, once per strike.
+  const bob = { x: 0, z: 0, vx: 0, vz: 0, t: 0, prev: null, hit: {} };
+  const STRIKERS = [['fiL', .075], ['fiR', .075], ['knL', .07], ['knR', .07], ['anL', .055], ['anR', .055], ['toeL', .04], ['toeR', .04],
+    ['shinL', .06], ['shinR', .06]];
+  const swingBag = s => {
+    s = Object.assign({}, s, { shinL: s.knL.clone().lerp(s.anL, .6), shinR: s.knR.clone().lerp(s.anR, .6) });
+    const now = performance.now(), dt = bob.t ? Math.min((now - bob.t) / 1000, .05) : 0;
+    bob.t = now;
+    if (dt > 0 && bob.prev) for (const [j, r] of STRIKERS) {
+      const p = s[j], q = bob.prev[j], dx = 1.04 - p.x, dz = -p.z, d = Math.hypot(dx, dz) || 1;
+      if (p.y < bagY - .55 || p.y > bagY + .55 || d - .17 - r > .03 || Object.values(bob.hit).some(h => now - h < 400)) continue;
+      const toward = ((p.x - q.x) * dx + (p.z - q.z) * dz) / d / dt;   // speed toward the bag, m/s
+      if (toward < .2) continue;
+      bob.hit[j] = now;
+      const push = Math.min((.15 + .05 * toward) * (j.startsWith('fi') ? 1 : 2), .6);   // a leg hits harder than a fist
+      bob.vx += push * dx / d; bob.vz += push * dz / d;
+    }
+    bob.vx += (-10.9 * bob.x - 1.8 * bob.vx) * dt; bob.vz += (-10.9 * bob.z - 1.8 * bob.vz) * dt;
+    bob.x = Math.max(-.15, Math.min(.15, bob.x + bob.vx * dt)); bob.z = Math.max(-.15, Math.min(.15, bob.z + bob.vz * dt));
+    swing.rotation.z = bob.x; swing.rotation.x = -bob.z;
+    bob.prev = Object.fromEntries(STRIKERS.map(([j]) => [j, s[j].clone()]));
+  };
   const pose = p => {
     const s = skeleton(T, p), P = parts;
+    swingBag(s);
     place(P.torso, s.H, s.chest); place(P.hips, s.hipL, s.hipR); place(P.shoulders, s.shL, s.shR);
     place(P.neck, s.chest, s.head); P.head.position.copy(s.head);
     P.face.position.copy(s.head).addScaledVector(s.cf, .075);
@@ -265,7 +314,7 @@ function buildScene(T, canvas, hot, move) {
     scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
     renderer.dispose(); renderer.forceContextLoss();
   };
-  return { pose, render, view, dispose };
+  return { pose, render, view, dispose, bob };   // (bob: the bag swing, read by tests)
 }
 
 /* ---------- Opening and closing the 3D view ---------- */

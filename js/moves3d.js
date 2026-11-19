@@ -116,6 +116,12 @@ const E3 = pose3({ hip: [.35, .93, .04], yaw: -5, chestYaw: -40, lean: 10,
   lF: [.431, 1.6, -.21], rF: [.562, 1.477, -.116], lA: [.6, .08, -.12], rA: [.034, .138, .294],
   lElb: [0, -1, -.4], rElb: [.989, .093, .113], rKn: [1, 0, -.4], rPoint: .2 });
 
+// Checking a kick: lift the lead knee up toward the lead elbow, shin turned a little out to meet
+// the kick, tall on the standing leg (CK3). Then the foot goes straight back down and a cross
+// counters (the cross poses).
+const CK3 = pose3({ hip: [-.02, .97, .05], yaw: 35, chestYaw: 30, lean: 10,
+  lF: [.37, 1.49, -.19], rF: [.2, 1.5, .08], lA: [.38, .62, -.34], lElb: [1, -.8, -.6], lKn: [.5, 1, .1], lPoint: .2 });
+
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
@@ -129,6 +135,7 @@ const POSES3D = {
   roundhouse: [G3, RSTEP3, RSWING3, RKICK3, RKICK3, G3, G3],
   'switch-kick': [G3, SW3, SWS3, SWK3, SWK3, G3, G3],
   clinch: [G3, KC3, KK3, KK3, KC3, G3],
+  check: [G3, CK3, CK3, G3, C3, C3, G3, G3],
   elbow: [G3, ES3, E3, E3, G3, G3],
 };
 
@@ -158,6 +165,8 @@ const WRONG3D = {
     keys: { 2: { lean: -36 }, 3: { lean: -36 } } },
   clinch: { text: 'Elbows open wide', why: 'They can slip their arms inside and break your hold.',
     keys: { 1: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 2: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 3: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 4: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] } } },
+  check: { text: 'Leaning away from the kick', why: 'You fall off balance and can\'t counter, or get knocked over.',
+    keys: { 1: { lean: -14, tilt: 20, hip: [-.1, .95, .1] }, 2: { lean: -14, tilt: 20, hip: [-.1, .95, .1] } } },
   elbow: { text: 'Dropping the other hand as you throw', why: 'At this range, their elbow lands on your open face.',
     keys: { 2: { lF: [.5, 1.12, -.26] }, 3: { lF: [.5, 1.12, -.26] } } },
 };
@@ -185,7 +194,7 @@ function trailPoints(T, move, hot) {
 // where you see the leg come round (from behind it looks like a push kick)
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
-const START_VIEW = { roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
+const START_VIEW = { check: [-70, 12], roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
   clinch: [75, 12], elbow: [75, 40] };
 
 /* ---------- Pose maths ---------- */
@@ -465,7 +474,7 @@ function draw3d(el, prev, i, k) {
   const v = el._3d;
   if (!v.ready) return false;
   const d = DEMOS[el.dataset.move];
-  if (d.combo) v.setHot(d.seq[i][3] || null);
+  if (d.combo || d.perStep) v.setHot(d.seq[i][3] || null);
   v.pose(splinePose3(el.dataset.move + (el._wrong ? '~wrong' : ''), prev, i, k));
   v.render();
   return true;

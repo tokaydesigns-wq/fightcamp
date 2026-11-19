@@ -55,6 +55,7 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
   knee, shin or foot reaches it (`STRIKERS` in `buildScene`); in the clinch the gloves only hold it.
 - 3D exists for jab, cross, hook, uppercut, body shot, slip, teep, roundhouse, switch kick, low kick, clinch knee and elbow
 - Right vs wrong: `WRONG3D` in moves3d.js gives each 3D move one common mistake (text, why, and the keyframes that change). It's registered as `POSES3D[move + '~wrong']`; the ✓ Right / ✗ Common mistake switch on the card plays it (`el._wrong`).
+- Combinations: `COMBOS` in moves.js lists moves played back to back (each move's opening and closing holds dropped, the return to guard shortened). The 'combos' technique shows a picker; `setHot` lights the striking limb per step; a combo with a low kick gets a longer bag.
   (footwork stays 2D). The switch kick is the round kick mirrored (`mirrorPose3`, `swapSides` in 2D). To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
   2D `seq`, with the same number of keyframes. Poses are hip/fist/ankle positions in metres, fighter facing +X, orthodox.
 - Quality checks every 3D move should pass: no glove within 0.15 m of the head centre; strikes reach the bag (centre

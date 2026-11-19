@@ -17,7 +17,7 @@ const TECHS = [
     live: ['Jab-only sparring, light: only jabs and defence'] },
 
   { id: 'cross', name: 'The straight right (cross)', style: 'boxing',
-    words: ['cross', 'straight right', 'straight left', 'rear straight', 'one two', '1 2', 'right hand', 'left hand', 'power punch'],
+    words: ['cross', 'straight right', 'straight left', 'rear straight', 'right hand', 'left hand', 'power punch'],
     what: 'The straight punch with your rear hand, your main power shot. Power comes from the back foot and hips, not the arm.',
     keys: ['Pivot the back foot and turn the hip through', 'Punch in a straight line to the target and turn the fist over', 'Keep the lead hand home by your face', 'Return to guard straight away and be ready to move'],
     mistakes: ['Pulling the arm back before throwing (telegraphing)', 'Dropping the lead hand as you throw', 'Over-reaching so your weight falls forward', 'Leaving the chin up and open'],
@@ -55,6 +55,16 @@ const TECHS = [
     gear: ['Heavy bag: hook to the body, hook to the head, 3 sets of 10', 'Heavy bag: uppercut-hook to the body in close'],
     partner: ['Body pads or belly pad: coach covers up, you work the body', 'Pads: show the head, finish to the body'],
     live: ['Light sparring: goal is to start every exchange with a body shot'] },
+
+  { id: 'combos', name: 'Combinations', style: 'boxing',
+    words: ['combination', 'combinations', 'combo', 'combos', 'one two', '1-2', '1 2', 'jab cross', '1-2-3', 'jab cross hook', 'punch combo', 'punch combos', 'kick combo'],
+    what: 'Strikes thrown in a flowing chain, where each one sets up the next. Single shots are easy to see coming; combinations get through.',
+    keys: ['Each strike starts from where the last one ended, with no reset in between', 'The hands come straight back to your face between strikes', 'Turn the hips one way then the other, so each shot loads the next', 'Finish with your feet under you, ready to defend or go again'],
+    mistakes: ['Pausing between strikes, so it turns into single shots', 'Dropping the hands as the combination goes on', 'Throwing so many strikes you lose your balance', 'Always finishing with the same strike, so it gets read'],
+    solo: ['Shadowbox each combination slowly 10 times, then at full speed', 'Shadowbox: combination, then step out at an angle'],
+    gear: ['Heavy bag: one combination per round, full power on the last strike', 'Heavy bag: combination, then slip or block, and go again'],
+    partner: ['Pads: coach calls the combination, you throw it', 'Pads: coach throws back after each combination, you defend and reply'],
+    live: ['Light sparring: land at least one 3-strike combination every round'] },
 
   { id: 'slip', name: 'Head movement (slip and roll)', style: 'boxing',
     words: ['slip', 'head movement', 'bob and weave', 'bob', 'weave', 'roll', 'peek a boo', 'peekaboo', 'defence', 'defense', 'dodge'],

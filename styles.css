@@ -210,6 +210,10 @@ details.card[open] > summary::after { content: '–'; }
 .rw button.on[data-act="demo-right"] { background: #1f8f4e; color: #fff; }
 .rw button.on[data-act="demo-wrong"] { background: var(--accent); color: #fff; }
 .demo.wrong .demo-cue { color: var(--accent); }
+.combo-pick { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 0 0 8px; }
+.combo-pick button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 99px; padding: 6px 12px;
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.combo-pick button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 .demo-svg { width: 100%; height: auto; display: block; max-height: 260px; }
 .demo-cue { text-align: center; font-weight: 600; min-height: 2.9em; margin: 4px 6px 8px; }
 .demo-ctl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

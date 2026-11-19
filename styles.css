@@ -205,6 +205,11 @@ details.card[open] > summary::after { content: '–'; }
 .stance-chip { position: absolute; top: 14px; left: 14px; z-index: 1; border: 1px solid var(--line); background: var(--card); color: var(--ink);
   border-radius: 99px; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .stance-chip.on { border-color: var(--accent); color: var(--accent); }
+.rw { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0 0 8px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.rw button { border: 0; background: var(--card); color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; min-height: 40px; cursor: pointer; }
+.rw button.on[data-act="demo-right"] { background: #1f8f4e; color: #fff; }
+.rw button.on[data-act="demo-wrong"] { background: var(--accent); color: #fff; }
+.demo.wrong .demo-cue { color: var(--accent); }
 .demo-svg { width: 100%; height: auto; display: block; max-height: 260px; }
 .demo-cue { text-align: center; font-weight: 600; min-height: 2.9em; margin: 4px 6px 8px; }
 .demo-ctl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

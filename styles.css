@@ -22,7 +22,11 @@ body {
   font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
-#app { max-width: 560px; margin: 0 auto; padding: 16px 14px calc(96px + env(safe-area-inset-bottom)); }
+#app { max-width: 560px; margin: 0 auto; padding: 16px 14px calc(96px + env(safe-area-inset-bottom)); overflow-wrap: break-word; }
+/* Long words or pasted links in notes, meal names and opponent names wrap instead of pushing the page sideways */
+.row > div, .camp-mini > div, .countdown > div, .prog-row > span:first-child, .chip,
+.fighter > *, .prog-head > *, .checks li label, .checks label > span { min-width: 0; overflow-wrap: anywhere; }
+.prog-head > div:first-child { grid-column: 1 / -1; }   /* no fighter photo: the title takes the full width */
 a { color: var(--accent); }
 h1, h2, h3 { margin: 0 0 6px; line-height: 1.2; }
 h1 { font-size: 28px; letter-spacing: -.02em; }

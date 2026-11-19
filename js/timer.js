@@ -47,26 +47,32 @@ document.addEventListener('visibilitychange', () => {
 
 /* ---------- Ticking ---------- */
 
+// Moves on to the next phase and returns the bell to ring for it. Each phase starts exactly when
+// the last one was due to end, so a late tick (or a phone that slept) doesn't add time.
 function nextPhase() {
   const s = tset();
+  let ring;
   if (timer.phase === 'prep' || timer.phase === 'rest') {
     if (timer.phase === 'rest') timer.round++;
-    timer.phase = 'work'; timer.left = s.work; timer.warned = false; bell(1);
+    timer.phase = 'work'; timer.left = s.work; timer.warned = false; ring = [1];
   } else if (timer.round >= s.rounds) {
-    timer.phase = 'done'; timer.running = false; timer.left = 0; bell(3); releaseWake();
-    return;
+    timer.phase = 'done'; timer.running = false; timer.left = 0; releaseWake();
+    return [3];
   } else if (s.rest > 0) {
-    timer.phase = 'rest'; timer.left = s.rest; bell(2, 660);
+    timer.phase = 'rest'; timer.left = s.rest; ring = [2, 660];
   } else {
-    timer.round++; timer.left = s.work; timer.warned = false; bell(1);
+    timer.round++; timer.left = s.work; timer.warned = false; ring = [1];
   }
-  timer.endsAt = Date.now() + timer.left * 1000;
+  timer.endsAt += timer.left * 1000;
+  return ring;
 }
 
 function timerTick() {
   if (!timer.running) return;
-  // Loop in case the phone slept through more than one phase
-  while (timer.running && Date.now() >= timer.endsAt) nextPhase();
+  // Loop in case the phone slept through more than one phase; only the latest bell rings
+  let ring = null;
+  while (timer.running && Date.now() >= timer.endsAt) ring = nextPhase();
+  if (ring) bell(...ring);
   if (!timer.running) return paintTimer();
   timer.left = Math.ceil((timer.endsAt - Date.now()) / 1000);
   if (timer.phase === 'work' && timer.left <= 10 && !timer.warned && tset().work > 20) { timer.warned = true; bell(2, 1320); }

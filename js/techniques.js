@@ -7,7 +7,7 @@ const STYLES = { boxing: 'Boxing', muaythai: 'Muay Thai & Kickboxing', grappling
 const TECHS = [
   /* ---------- Boxing ---------- */
   { id: 'jab', name: 'The jab', style: 'boxing',
-    words: ['jab'],
+    words: ['jab', 'double jab', 'triple jab'],
     what: 'A fast straight punch with the lead hand. It measures distance, sets up everything else and keeps your opponent busy.',
     keys: ['Punch straight from your guard with no wind-up', 'Turn the fist over and raise the lead shoulder to cover your chin', 'Let the front foot land with the punch when you step in', 'Bring it back on the same line, as fast as it went out'],
     mistakes: ['Dropping the rear hand as you jab', 'Pawing with no weight behind it', 'Leaning over the front foot'],

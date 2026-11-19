@@ -185,6 +185,7 @@ function moveDemo(id) {
     <button class="stance-chip${state.southpaw ? ' on' : ''}" data-act="demo-stance" aria-label="Stance: ${state.southpaw ? 'southpaw' : 'orthodox'}. Tap to switch">${state.southpaw ? 'Southpaw' : 'Orthodox'} ⇄</button>
     <svg class="demo-svg" viewBox="0 0 300 250" role="img" aria-label="Animation of the technique"></svg>
     <p class="demo-cue" aria-live="polite">${esc(d.seq[0][2])}</p>
+    ${WRONG3D[id] ? `<div class="rw" role="group" aria-label="Right way or common mistake"><button class="on" data-act="demo-right" aria-pressed="true">✓ Right</button><button data-act="demo-wrong" aria-pressed="false">✗ Common mistake</button></div>` : ''}
     <div class="demo-ctl"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
     <button class="btn" data-act="demo-slow">Slow-mo</button></div></div>`;
 }
@@ -300,7 +301,9 @@ function drawDemo(el, now) {
     t -= dur; prev = i;
   }
   i = Math.min(i, d.seq.length - 1);
-  const [, , cue0, hot] = d.seq[i], cue = state.southpaw ? mirrorWords(cue0) : cue0;
+  // (showing the mistake: the cue says what's wrong and why, the whole time)
+  const [, , cue1, hot] = d.seq[i], w = el._wrong && WRONG3D[el.dataset.move], cue0 = w ? `✗ ${w.text}. ${w.why}` : cue1;
+  const cue = state.southpaw ? mirrorWords(cue0) : cue0;
   if (cue !== st.cue) { el.querySelector('.demo-cue').textContent = st.cue = cue; }
   if (el._3d) { st.drawn = draw3d(el, prev, i, k); return; }
   d._P = d._P || d.seq.map(f => f[0]); d._D = d._D || d.seq.map(f => f[1]);
@@ -313,6 +316,13 @@ document.addEventListener('click', e => {
   const btn = e.target.closest('[data-act^="demo-"]');
   if (!btn) return;
   const el = btn.closest('.demo'), now = performance.now(), st = demoState(el, now);
+  if (btn.dataset.act === 'demo-right' || btn.dataset.act === 'demo-wrong') {
+    el._wrong = btn.dataset.act === 'demo-wrong';
+    el.classList.toggle('wrong', el._wrong);
+    el.querySelectorAll('.rw button').forEach(b => { const on = (b.dataset.act === 'demo-wrong') === el._wrong; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    st.start = now; st.at = 0; st.drawn = false; st.cue = '';   // start the move again from the top
+    return;
+  }
   if (btn.dataset.act === 'demo-stance') {
     // One setting for every animation (and remembered): redraw them all mirrored or not
     state.southpaw = !state.southpaw; save();

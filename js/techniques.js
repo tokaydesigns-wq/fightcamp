@@ -20,7 +20,7 @@ const TECHS = [
     words: ['cross', 'straight right', 'straight left', 'rear straight', 'one two', '1 2', 'right hand', 'left hand', 'power punch'],
     what: 'The straight punch with your rear hand, your main power shot. Power comes from the back foot and hips, not the arm.',
     keys: ['Pivot the back foot and turn the hip through', 'Punch in a straight line to the target and turn the fist over', 'Keep the lead hand home by your face', 'Return to guard straight away and be ready to move'],
-    mistakes: ['Pulling the arm back before throwing (telegraphing)', 'Over-reaching so your weight falls forward', 'Leaving the chin up and open'],
+    mistakes: ['Pulling the arm back before throwing (telegraphing)', 'Dropping the lead hand as you throw', 'Over-reaching so your weight falls forward', 'Leaving the chin up and open'],
     solo: ['Shadowbox the 1-2 slowly, freezing at full extension to check your shape', 'Mirror work: watch your back heel and hip turn on every cross'],
     gear: ['Heavy bag: 1-2, step out, repeat', 'Heavy bag: 1-2-3 (jab, cross, hook) for power'],
     partner: ['Pads: 1-2 then slip the coach\'s return jab', 'Pads: coach calls "two" at random moments, react fast'],

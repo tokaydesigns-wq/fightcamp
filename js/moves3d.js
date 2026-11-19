@@ -132,6 +132,37 @@ const POSES3D = {
   elbow: [G3, ES3, E3, E3, G3, G3],
 };
 
+// Right vs wrong: each move can also be played with one common mistake, so you can compare.
+// Only the keyframes that change are listed; the rest are the same as the right version.
+// (The red trail still shows the right path.)
+const WRONG3D = {
+  jab: { text: 'Rear hand drops as you jab', why: 'Your chin is open to their counter.',
+    keys: { 1: { rF: [.3, 1.15, .22], rElb: [0, -1, .5] }, 2: { rF: [.3, 1.15, .22], rElb: [0, -1, .5] } } },
+  cross: { text: 'Lead hand drops as you throw', why: 'Your chin is open to their left hook.',
+    keys: { 1: { lF: [.32, 1.12, -.24], lElb: [0, -1, -.4] }, 2: { lF: [.32, 1.12, -.24], lElb: [0, -1, -.4] } } },
+  hook: { text: 'Swinging it wide and loopy', why: 'It takes longer to land and they see it coming.',
+    keys: { 1: { lF: [.42, 1.38, -.66], lElb: [0, -1, -.6] }, 2: { lF: [.8, 1.36, -.14], lElb: [0, -1, -.5] }, 3: { lF: [.8, 1.36, -.14], lElb: [0, -1, -.5] } } },
+  uppercut: { text: 'Dropping the hand to the waist to load up', why: 'It shows the punch coming and opens your head.',
+    keys: { 1: { rF: [.2, .96, .26] } } },
+  body: { text: 'Reaching down by bending at the waist', why: 'Your head ends up low and in front, open to a knee or uppercut.',
+    keys: { 1: { hip: [.14, .9, -.22], lean: 42, rF: [.48, 1.12, .16] }, 2: { hip: [.26, .9, -.2], lean: 36, rF: [.52, 1.12, .24] }, 3: { hip: [.26, .9, -.2], lean: 36, rF: [.52, 1.12, .24] } } },
+  slip: { text: 'Ducking down and looking at the floor', why: 'You can\'t see the next punch coming.',
+    keys: { 2: { hip: [.02, .82, 0], lean: 62, lF: [.58, 1.02, -.16], rF: [.58, 1.02, .24] } } },
+  roundhouse: { text: 'Leaning back too far', why: 'You lose balance and power, and can\'t follow up.',
+    keys: { 2: { lean: -20, tilt: -24 }, 3: { lean: -34, tilt: -40 }, 4: { lean: -34, tilt: -40 } } },
+  'switch-kick': { text: 'Dropping your hands as you switch', why: 'They can hit you while you kick.',
+    keys: { 1: { lF: [.3, 1.12, -.15], rF: [.3, 1.12, .3] }, 2: { rF: [.3, 1.1, .3] }, 3: { rF: [.3, 1.1, .3] }, 4: { rF: [.3, 1.1, .3] } } },
+  'low-kick': { text: 'Dropping your hands', why: 'A low kick puts you in range, so they can hit you as you kick.',
+    keys: { 2: { lF: [.36, 1.12, -.42] }, 3: { lF: [.4, 1.1, -.5] }, 4: { lF: [.4, 1.1, -.5] } } },
+  teep: { text: 'Leaning back and falling off balance', why: 'There\'s no push behind it, and it\'s easy to sweep you.',
+    keys: { 2: { lean: -36 }, 3: { lean: -36 } } },
+  clinch: { text: 'Elbows open wide', why: 'They can slip their arms inside and break your hold.',
+    keys: { 1: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 2: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 3: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 4: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] } } },
+  elbow: { text: 'Dropping the other hand as you throw', why: 'At this range, their elbow lands on your open face.',
+    keys: { 2: { lF: [.5, 1.12, -.26] }, 3: { lF: [.5, 1.12, -.26] } } },
+};
+for (const [move, w] of Object.entries(WRONG3D)) POSES3D[move + '~wrong'] = POSES3D[move].map((p, i) => w.keys[i] ? Object.assign({}, p, w.keys[i]) : p);
+
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
@@ -177,7 +208,7 @@ const toeCache = new WeakMap();
 const toesOf = p => toeCache.get(p) || toeCache.set(p, (s => ({ lA: s.toeL, rA: s.toeR }))(skeleton(THREE3, p))).get(p);
 const lerp3 = (a, b, e) => a.map((v, i) => v + (b[i] - v) * e);
 function splinePose3(move, a, b, u) {
-  const D = durCache[move] || (durCache[move] = DEMOS[move].seq.map(f => f[1]));
+  const D = durCache[move] || (durCache[move] = DEMOS[move.split('~')[0]].seq.map(f => f[1]));
   const p = splinePose(relPoses(move), D, a, b, u), out = Object.assign({}, p);
   const pa = POSES3D[move][a], pb = POSES3D[move][b], e = u * u * (3 - 2 * u);
   for (const k of ['lA', 'rA']) {
@@ -392,7 +423,8 @@ async function open3d(el) {
     dragToTurn(box.querySelector('canvas'), el);
     demoState(el, performance.now()).drawn = false;
   } catch (e) {
-    if (el._3d && el._3d.box === box) close3d(el);
+    // (no 3D: keep the 2D drawing, and drop the right/wrong switch, which only works in 3D)
+    if (el._3d && el._3d.box === box) { close3d(el); el.querySelector('.rw')?.remove(); el._wrong = false; }
   }
 }
 
@@ -419,7 +451,7 @@ function dragToTurn(canvas, el) {
 function draw3d(el, prev, i, k) {
   const v = el._3d;
   if (!v.ready) return false;
-  v.pose(splinePose3(el.dataset.move, prev, i, k));
+  v.pose(splinePose3(el.dataset.move + (el._wrong ? '~wrong' : ''), prev, i, k));
   v.render();
   return true;
 }

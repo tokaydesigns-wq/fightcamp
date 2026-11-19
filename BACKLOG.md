@@ -14,11 +14,11 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## Up next
 
-- [ ] `[animation]` Switch kick: 2D and 3D, a small quick switch of the feet, then the kick.
+- (nothing queued)
 
 ## In review
 
-- [ ] `[animation]` Low kick (PR: "Add low kick animation (2D and 3D)"). Chops down into the thigh; watch it on your phone before merging.
+- [ ] `[animation]` Switch kick (PR: "Switch kick animation, 2D and 3D"). Watch it on your phone before merging.
 
 ## Needs the owner
 

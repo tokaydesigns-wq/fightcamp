@@ -42,12 +42,12 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release **and set `APP_VERSION` in core.js to the same N** (shown on Home so the owner can see which version they have); add new files to `SHELL`. |
 
 - Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`, `#/video`.
-- Animations exist for jab, cross, hook, uppercut, body shot, slip, roundhouse, low kick, teep, angles and distance.
+- Animations exist for jab, cross, hook, uppercut, body shot, slip, roundhouse, switch kick, low kick, teep, angles and distance.
   The Orthodox/Southpaw chip on each card mirrors them all (`state.southpaw`, cues swap left/right via `mirrorWords`). To add one, add keyframes to
   `DEMOS` in moves.js with the technique's id; it then shows on the Learn result and program page automatically.
 - Moves with 3D open in 3D first (`data-start3d`). `TRAILS` in moves3d.js draws the path of the striking foot/fist;
   `START_VIEW` sets the opening camera angle per move.
-- 3D exists for jab, cross, hook, uppercut, body shot, slip, teep, roundhouse and low kick (footwork stays 2D). To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
+- 3D exists for jab, cross, hook, uppercut, body shot, slip, teep, roundhouse, switch kick and low kick (footwork stays 2D). The switch kick is the round kick mirrored (`mirrorPose3`, `swapSides` in 2D). To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
   2D `seq`. Poses are hip/fist/ankle positions in metres, fighter facing +X, orthodox.
 - Clicks use `data-act`, forms use `data-form`.
 - Saved data: one object in `localStorage['fightcamp.v1']`. New fields need a default in `loadState()`.

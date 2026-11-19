@@ -99,6 +99,23 @@ const mirrorPose3 = p => {
 };
 const SW3 = mirrorPose3(RSTEP3), SWS3 = mirrorPose3(RSWING3), SWK3 = mirrorPose3(RKICK3);
 
+// Clinch knee: close in with both hands on the sides of the bag, as if holding the back of the
+// head (KC3), then pull down, drive the hips forward and bring the rear knee up into the bag at
+// about hip height with the toes pointed down (KK3). The lead foot stays put, up on its ball.
+const KC3 = pose3({ hip: [.42, .93, .02], yaw: 15, chestYaw: 5, lean: 8,
+  lF: [.98, 1.5, -.25], rF: [.98, 1.5, .25], lA: [.62, .1, -.14], rA: [.2, .14, .18], lElb: [0, -1, -.3], rElb: [0, -1, .3], lPoint: .2 });
+const KK3 = pose3({ hip: [.38, .98, .02], yaw: 15, chestYaw: 5, lean: -6,
+  lF: [.95, 1.42, -.25], rF: [.95, 1.42, .25], lA: [.62, .1, -.14], rA: [.6, .64, .13], rKn: [1, .6, 0],
+  lElb: [0, -1, -.3], rElb: [0, -1, .3], lPoint: .35, rPoint: .85 });
+
+// Rear horizontal elbow: step in close (ES3), then turn the back heel, hips and shoulders through,
+// further than on a cross, so the folded forearm swings level and the point of the elbow leads
+// into the bag at head height. The fist ends by your own left ear; the lead hand guards the face (E3).
+const ES3 = pose3({ hip: [.3, .92, .03], lF: [.64, 1.52, -.08], rF: [.5, 1.48, .1], lA: [.6, .08, -.12], rA: [.06, .14, .2] });
+const E3 = pose3({ hip: [.35, .93, .04], yaw: -5, chestYaw: -40, lean: 10,
+  lF: [.431, 1.6, -.21], rF: [.562, 1.477, -.116], lA: [.6, .08, -.12], rA: [.034, .138, .294],
+  lElb: [0, -1, -.4], rElb: [.989, .093, .113], rKn: [1, 0, -.4], rPoint: .2 });
+
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
@@ -111,16 +128,21 @@ const POSES3D = {
   'low-kick': [G3, RSTEP3, LSWING3, LKICK3, LKICK3, G3, G3],
   roundhouse: [G3, RSTEP3, RSWING3, RKICK3, RKICK3, G3, G3],
   'switch-kick': [G3, SW3, SWS3, SWK3, SWK3, G3, G3],
+  clinch: [G3, KC3, KK3, KK3, KC3, G3],
+  elbow: [G3, ES3, E3, E3, G3, G3],
 };
 
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
-const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], uppercut: [1, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3] };
+const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], uppercut: [1, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3],
+  clinch: [1, 2], elbow: [1, 2] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL', head: 'head' };
+// ...except moves that strike with the knee or elbow, where the trail follows that joint
+const TRAIL_JOINT_MOVE = { clinch: 'knR', elbow: 'elR' };
 
 function trailPoints(T, move, hot) {
-  const [a, b] = TRAILS[move], joint = TRAIL_JOINT[hot], pts = [];
+  const [a, b] = TRAILS[move], joint = TRAIL_JOINT_MOVE[move] || TRAIL_JOINT[hot], pts = [];
   for (let i = a; i < b; i++) for (let k = 0; k < 1; k += .1) pts.push(skeleton(T, splinePose3(move, i, i + 1, k))[joint]);
   pts.push(skeleton(T, splinePose3(move, b - 1, b, 1))[joint]);
   return pts;
@@ -130,7 +152,8 @@ function trailPoints(T, move, hot) {
 // where you see the leg come round (from behind it looks like a push kick)
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
-const START_VIEW = { roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14] };
+const START_VIEW = { roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
+  clinch: [75, 12], elbow: [75, 40] };
 
 /* ---------- Pose maths ---------- */
 
@@ -283,10 +306,11 @@ function buildScene(T, canvas, hot, move) {
     m.quaternion.setFromUnitVectors(UP, tmp.copy(b).sub(a).normalize());
   };
   // The bag swings like a pendulum (about 2 seconds a swing, settling quickly). A fist, shin or
-  // foot that reaches it while moving toward it gives it a push, once per strike.
+  // foot, knee or elbow that reaches it while moving toward it gives it a push, once per strike.
   const bob = { x: 0, z: 0, vx: 0, vz: 0, t: 0, prev: null, hit: {} };
-  const STRIKERS = [['fiL', .075], ['fiR', .075], ['knL', .07], ['knR', .07], ['anL', .055], ['anR', .055], ['toeL', .04], ['toeR', .04],
-    ['shinL', .06], ['shinR', .06]];
+  const STRIKERS = [['fiL', .075], ['fiR', .075], ['elL', .05], ['elR', .05], ['knL', .07], ['knR', .07], ['anL', .055], ['anR', .055],
+    ['toeL', .04], ['toeR', .04], ['shinL', .06], ['shinR', .06]]
+    .filter(([j]) => !(move === 'clinch' && j.startsWith('fi')));   // in the clinch the gloves only hold the bag
   const swingBag = s => {
     s = Object.assign({}, s, { shinL: s.knL.clone().lerp(s.anL, .6), shinR: s.knR.clone().lerp(s.anR, .6) });
     const now = performance.now(), dt = bob.t ? Math.min((now - bob.t) / 1000, .05) : 0;
@@ -297,7 +321,7 @@ function buildScene(T, canvas, hot, move) {
       const toward = ((p.x - q.x) * dx + (p.z - q.z) * dz) / d / dt;   // speed toward the bag, m/s
       if (toward < .2) continue;
       bob.hit[j] = now;
-      const push = Math.min((.15 + .05 * toward) * (j.startsWith('fi') ? 1 : 2), .6);   // a leg hits harder than a fist
+      const push = Math.min((.15 + .05 * toward) * (/^(fi|el)/.test(j) ? 1 : 2), .6);   // a leg hits harder than a fist or elbow
       bob.vx += push * dx / d; bob.vz += push * dz / d;
     }
     bob.vx += (-10.9 * bob.x - 1.8 * bob.vx) * dt; bob.vz += (-10.9 * bob.z - 1.8 * bob.vz) * dt;

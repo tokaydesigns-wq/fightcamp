@@ -56,6 +56,18 @@ const ROLL = pose({ head: [162, 78], neck: [157, 101], hip: [142, 170], lE: [181
 const ROLL_UP = pose({ head: [158, 70], neck: [155, 93], hip: [141, 158], lE: [178, 124], lF: [182, 98], rE: [140, 126], rF: [162, 92],
   lK: [178, 192], rK: [134, 200] });
 
+// Clinch knee: step in with both hands up on their head (CLINCH), then lean back a little, drive
+// the hips forward and bring the rear knee up to hip height (KNEE)
+const CLINCH = pose({ head: [172, 58], neck: [170, 82], hip: [164, 150], lE: [206, 98], lF: [228, 66], rE: [202, 104], rF: [226, 72],
+  lK: [186, 192], lA: [198, 236], rK: [146, 194], rA: [132, 236] });
+const KNEE = pose({ head: [166, 58], neck: [167, 82], hip: [170, 150], lE: [198, 106], lF: [232, 86], rE: [194, 110], rF: [228, 92],
+  lK: [186, 194], lA: [196, 236], rK: [212, 132], rA: [206, 176] });
+// Rear horizontal elbow: step in close (ELBOW_STEP), then turn through so the rear elbow comes
+// level at head height with the fist folded back by the face (ELBOW)
+const ELBOW_STEP = Object.fromEntries(Object.entries(GUARD).map(([k, [x, y]]) => [k, [x + 16, y]]));
+const ELBOW = pose({ head: [170, 58], neck: [168, 82], hip: [160, 150], lE: [178, 118], lF: [188, 84], rE: [206, 72], rF: [172, 70],
+  lK: [186, 192], lA: [200, 236], rK: [146, 196], rA: [128, 232] });
+
 // Top-down feet: [x, y, angle in degrees]. Orthodox: lead (left) foot in front, rear foot behind and to the right.
 const feet = (lead, rear) => ({ lead, rear });
 
@@ -132,6 +144,20 @@ const DEMOS = {
     [TEEP_CHAMBER, 160, 'Snap it back'],
     [GUARD, 240, 'Snap it back'],
     [GUARD, 400, 'Stance, hands up'] ] },
+  clinch: { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [CLINCH, 300, 'Close in, hands on the back of the head'],
+    [KNEE, 240, 'Pull down, drive the hips forward, knee up'],
+    [KNEE, 260, 'Lean back a little, toes pointed down'],
+    [CLINCH, 240, 'Foot down, keep hold'],
+    [GUARD, 340, 'Push off back to stance'] ] },
+  elbow: { type: 'side', hot: 'rear-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [ELBOW_STEP, 240, 'Step in close: elbows are for short range'],
+    [ELBOW, 180, 'Turn the back heel, hips and shoulders, elbow leads'],
+    [ELBOW, 260, 'Forearm level, fist by your ear, lead hand guards your face'],
+    [GUARD, 300, 'Back to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
   angles: { type: 'top', ghost: true, line: true, seq: [
     [feet([150, 150, 10], [176, 194, 45]), 900, 'You are right on their line of attack'],
     [feet([186, 136, 10], [176, 194, 45]), 300, 'Step outside their lead foot', 'lead'],

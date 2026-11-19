@@ -51,9 +51,10 @@ const FIGHTERS = [
     feints: 'He fakes constantly with his feet and hips, then lands from an unexpected angle.' } },
   { name: 'Yodsanklai Fairtex', alias: ['yodsanklai'], sig: ['roundhouse'], how: {
     roundhouse: 'Yodsanklai is a southpaw famous for a heavy left body kick, timed as opponents step in or set up.' } },
-  { name: 'Rodtang Jitmuangnon', alias: ['rodtang'], sig: ['pressure', 'clinch'], how: {
+  { name: 'Rodtang Jitmuangnon', alias: ['rodtang'], sig: ['pressure', 'clinch', 'elbow'], how: {
     pressure: 'Rodtang walks straight through opponents\' shots, accepts exchanges and drowns them in volume.',
-    clinch: 'In close he uses short elbows and knees and keeps them trapped against the ropes.' } },
+    clinch: 'In close he uses short elbows and knees and keeps them trapped against the ropes.',
+    elbow: 'He walks forward into the pocket and throws short elbows in the middle of exchanges, when opponents expect another punch.' } },
   { name: 'Ramon Dekkers', alias: ['dekkers'], sig: ['low-kick', 'hook'], how: {
     'low-kick': 'Dekkers finished his punching combinations with brutal low kicks, especially left hook then right low kick.',
     hook: 'His left hook to the head often set up the low kick, or the other way round.' } },

@@ -188,7 +188,7 @@ const TECHS = [
     live: ['Controlled clinch rounds with a coach watching: touch the elbow on the headgear, never land it hard'] },
 
   { id: 'check', name: 'Checking kicks', style: 'muaythai',
-    words: ['check', 'checking', 'block kick', 'block kicks', 'kick defence', 'kick defense', 'shin block'],
+    words: ['check', 'checking', 'check kick', 'check kicks', 'checking kicks', 'kick check', 'block kick', 'block kicks', 'kick defence', 'kick defense', 'shin block'],
     what: 'Lifting your shin to block a kick so the kicker\'s shin hits yours, not your thigh.',
     keys: ['Lift the knee towards the same-side elbow', 'Turn the shin slightly out to meet the kick', 'Stay tall and keep your balance on the standing leg', 'Put the foot down and counter straight away'],
     mistakes: ['Lifting too late', 'Leaning away and falling over', 'Checking but never countering'],

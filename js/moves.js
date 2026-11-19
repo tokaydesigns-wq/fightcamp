@@ -33,6 +33,8 @@ const KICK = pose({ head: [130, 66], neck: [135, 88], hip: [150, 152], lE: [166,
 const swapSides = p => ({ ...p, lE: p.rE, lF: p.rF, rE: p.lE, rF: p.lF, lK: p.rK, lA: p.rA, rK: p.lK, rA: p.lA });
 const SWITCH = pose({ head: [150, 50], neck: [150, 74], hip: [147, 144], lK: [130, 188], lA: [116, 228], rK: [172, 188], rA: [188, 228] });
 const SWITCH_SWING = swapSides(KICK_SWING), SWITCH_KICK = swapSides(KICK);
+// Checking a kick: the lead knee comes up toward the lead elbow, then the foot goes down and a cross counters
+const CHECK = pose({ head: [148, 58], neck: [148, 82], hip: [146, 150], lE: [170, 124], lF: [176, 94], lK: [188, 170], lA: [196, 214] });
 // Body shot: bend the knees to drop the level (head off to the side, hand low), then the hip
 // turns and the lead fist hooks into the ribs at belt height while the rear hand guards the chin
 const BODY_DIP = pose({ head: [175, 79], neck: [168, 102], hip: [150, 170], lE: [178, 132], lF: [198, 142], rE: [154, 120], rF: [180, 96],
@@ -120,6 +122,15 @@ const DEMOS = {
     [KICK, 300, 'Lean away, same-side arm swings just past the leg'],
     [GUARD, 340, 'Back to stance'],
     [GUARD, 400, 'Stance, hands up'] ] },
+  check: { type: 'side', hot: 'lead-leg', perStep: true, seq: [
+    [GUARD, 700, 'Stance, hands up', null],
+    [CHECK, 160, 'Kick coming: lift the lead knee up toward your elbow', 'lead-leg'],
+    [CHECK, 320, 'Shin turned a little out, stay tall on the standing leg', 'lead-leg'],
+    [GUARD, 180, 'Put the foot straight back down', null],
+    [CROSS, 200, 'And counter straight away', 'rear-arm'],
+    [CROSS, 220, 'Cross lands while they\'re on one leg', 'rear-arm'],
+    [GUARD, 260, 'Back to guard', null],
+    [GUARD, 400, 'Stance, hands up', null] ] },
   'switch-kick': { type: 'side', hot: 'lead-leg', seq: [
     [GUARD, 700, 'Stance, hands up'],
     [SWITCH, 200, 'Small quick hop: lead foot back, rear foot forward'],

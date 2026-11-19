@@ -63,10 +63,10 @@ const T3 = pose3({ hip: [.02, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
 const RSTEP3 = pose3({ hip: [.14, .94, -.08], yaw: 15, chestYaw: 15, lean: 4,
   lF: [.36, 1.52, -.16], rF: [.22, 1.47, .04], lA: [.4, .1, -.32], rA: [-.2, .16, .2], lKn: [1, 0, -.6], rPoint: .5 });
 const RSWING3 = pose3({ hip: [.22, .97, -.14], yaw: -40, chestYaw: -20, lean: -4, tilt: -12,
-  lF: [.3, 1.55, -.26], rF: [.42, .96, .3], lA: [.4, .12, -.32], rA: [.42, .7, .79],
+  lF: [.3, 1.55, -.26], rF: [.3, 1.12, .38], lA: [.4, .12, -.32], rA: [.42, .7, .79],
   lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
 const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -5, tilt: -25,
-  lF: [.25, 1.6, -.35], rF: [-.1, 1, .1], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
+  lF: [.25, 1.6, -.35], rF: [.26, .98, .08], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .85 });
 
 // Slip and roll: slip the head a hand-width off the centre line (SL3) by shifting the hips and
@@ -86,8 +86,18 @@ const LSWING3 = pose3({ hip: [.22, .95, -.14], yaw: -40, chestYaw: -20, lean: 2,
   lF: [.36, 1.55, -.38], rF: [.42, .96, .3], lA: [.4, .145, -.32], rA: [.6, .75, .5],
   lKn: [-.2, 0, -1], rKn: [.5, .1, -.3], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
 const LKICK3 = pose3({ hip: [.3, .95, -.2], yaw: -100, chestYaw: -55, lean: 12, tilt: -12,
-  lF: [.36, 1.56, -.52], rF: [-.1, 1, .1], lA: [.4, .145, -.32], rA: [1.0, .55, .3],
+  lF: [.36, 1.56, -.52], rF: [.26, .93, .08], lA: [.4, .145, -.32], rA: [1.0, .55, .3],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .6 });
+
+// Switch kick: the switch puts the feet in a southpaw stance, so the kick is the mirror image of
+// the round kick: left and right swap, and everything on the other side of the centre line.
+const mirrorPose3 = p => {
+  const z = v => [v[0], v[1], -v[2]], out = { ...p, yaw: -p.yaw, chestYaw: -p.chestYaw, tilt: -p.tilt, hip: z(p.hip) };
+  for (const [l, r] of [['lF', 'rF'], ['lA', 'rA'], ['lElb', 'rElb'], ['lKn', 'rKn']]) [out[l], out[r]] = [z(p[r]), z(p[l])];
+  [out.lPoint, out.rPoint] = [p.rPoint, p.lPoint];
+  return out;
+};
+const SW3 = mirrorPose3(RSTEP3), SWS3 = mirrorPose3(RSWING3), SWK3 = mirrorPose3(RKICK3);
 
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
@@ -100,12 +110,13 @@ const POSES3D = {
   slip: [G3, SL3, RL3, RU3, G3, G3],
   'low-kick': [G3, RSTEP3, LSWING3, LKICK3, LKICK3, G3, G3],
   roundhouse: [G3, RSTEP3, RSWING3, RKICK3, RKICK3, G3, G3],
+  'switch-kick': [G3, SW3, SWS3, SWK3, SWK3, G3, G3],
 };
 
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
-const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], uppercut: [1, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3], 'low-kick': [1, 3], slip: [0, 3] };
+const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], uppercut: [1, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL', head: 'head' };
 
 function trailPoints(T, move, hot) {
@@ -119,7 +130,7 @@ function trailPoints(T, move, hot) {
 // where you see the leg come round (from behind it looks like a push kick)
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
-const START_VIEW = { roundhouse: [110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14] };
+const START_VIEW = { roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14] };
 
 /* ---------- Pose maths ---------- */
 

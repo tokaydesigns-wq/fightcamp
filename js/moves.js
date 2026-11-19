@@ -26,8 +26,13 @@ const UPPER_HIT = pose({ head: [156, 58], neck: [155, 82], hip: [150, 150], lE: 
 const KICK_STEP = pose({ head: [154, 58], neck: [153, 82], hip: [152, 150], lK: [180, 194], lA: [200, 236], rK: [132, 196], rA: [116, 234] });
 const KICK_SWING = pose({ head: [142, 62], neck: [144, 86], hip: [156, 152], rE: [138, 124], rF: [146, 163],
   lK: [176, 196], lA: [196, 234], rK: [186, 182], rA: [222, 196] });
-const KICK = pose({ head: [130, 66], neck: [135, 88], hip: [150, 152], lE: [166, 112], lF: [170, 88], rE: [116, 122], rF: [96, 157],
+const KICK = pose({ head: [130, 66], neck: [135, 88], hip: [150, 152], lE: [166, 112], lF: [170, 88], rE: [128, 124], rF: [136, 162],
   lK: [176, 196], lA: [196, 234], rK: [192, 140], rA: [238, 128] });
+// Switch kick: a small hop swaps the feet (the lead foot goes back), then the lead leg kicks like a
+// round kick. Side-on, that's the round kick with the two legs and two arms swapped.
+const swapSides = p => ({ ...p, lE: p.rE, lF: p.rF, rE: p.lE, rF: p.lF, lK: p.rK, lA: p.rA, rK: p.lK, rA: p.lA });
+const SWITCH = pose({ head: [150, 50], neck: [150, 74], hip: [147, 144], lK: [130, 188], lA: [116, 228], rK: [172, 188], rA: [188, 228] });
+const SWITCH_SWING = swapSides(KICK_SWING), SWITCH_KICK = swapSides(KICK);
 // Body shot: bend the knees to drop the level (head off to the side, hand low), then the hip
 // turns and the lead fist hooks into the ribs at belt height while the rear hand guards the chin
 const BODY_DIP = pose({ head: [175, 79], neck: [168, 102], hip: [150, 170], lE: [178, 132], lF: [198, 142], rE: [154, 120], rF: [180, 96],
@@ -37,7 +42,7 @@ const BODY_HIT = pose({ head: [181, 79], neck: [174, 102], hip: [156, 170], lE: 
 // Low kick: same step and turn as the round kick, but the leg starts higher and chops DOWN into the thigh
 const LOW_SWING = pose({ head: [146, 66], neck: [147, 90], hip: [154, 154], rE: [142, 128], rF: [150, 167],
   lK: [176, 196], lA: [196, 234], rK: [188, 184], rA: [232, 176] });
-const LOW_KICK = pose({ head: [140, 74], neck: [143, 97], hip: [150, 156], lE: [166, 116], lF: [170, 92], rE: [124, 131], rF: [104, 166],
+const LOW_KICK = pose({ head: [140, 74], neck: [143, 97], hip: [150, 156], lE: [166, 116], lF: [170, 92], rE: [136, 134], rF: [142, 172],
   lK: [176, 196], lA: [196, 234], rK: [190, 184], rA: [232, 200] });
 const TEEP_CHAMBER = pose({ head: [146, 58], neck: [146, 82], hip: [146, 152], lK: [188, 168], lA: [186, 206] });
 const TEEP = pose({ head: [138, 60], neck: [140, 84], hip: [148, 154], lE: [166, 114], lF: [172, 88], lK: [196, 158], lA: [242, 148] });
@@ -100,8 +105,16 @@ const DEMOS = {
     [KICK_STEP, 240, 'Step out at an angle with the lead foot'],
     [KICK_SWING, 220, 'Pivot on the ball of that foot, turn the hip right over'],
     [KICK, 200, 'Swing the leg round flat and hit with the shin'],
-    [KICK, 300, 'Lean away, same-side arm swings down'],
+    [KICK, 300, 'Lean away, same-side arm swings just past the leg'],
     [GUARD, 340, 'Back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'switch-kick': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [SWITCH, 200, 'Small quick hop: lead foot back, rear foot forward'],
+    [SWITCH_SWING, 200, 'Kick straight off the switch, turn the hip over'],
+    [SWITCH_KICK, 200, 'Swing the leg round flat and hit with the shin'],
+    [SWITCH_KICK, 300, 'Other hand up, same-side arm swings just past the leg'],
+    [GUARD, 340, 'Land back in your stance'],
     [GUARD, 400, 'Stance, hands up'] ] },
   'low-kick': { type: 'side', hot: 'rear-leg', seq: [
     [GUARD, 700, 'Stance, hands up'],

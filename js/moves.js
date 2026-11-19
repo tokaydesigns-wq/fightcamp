@@ -153,14 +153,14 @@ const DEMOS = {
 function moveDemo(id) {
   const d = DEMOS[id];
   if (!d) return '';
-  // Moves with a 3D version open in 3D, because some (like the round kick) can't be read side-on
+  // Moves with a 3D version are shown in 3D only (the 2D drawing is kept as a backup for phones
+  // that can't run 3D). Footwork has no 3D version, so it stays a 2D diagram of the feet.
   return `<div class="demo" data-move="${id}"${POSES3D[id] ? ' data-start3d' : ''}>
     <button class="stance-chip${state.southpaw ? ' on' : ''}" data-act="demo-stance" aria-label="Stance: ${state.southpaw ? 'southpaw' : 'orthodox'}. Tap to switch">${state.southpaw ? 'Southpaw' : 'Orthodox'} ⇄</button>
     <svg class="demo-svg" viewBox="0 0 300 250" role="img" aria-label="Animation of the technique"></svg>
     <p class="demo-cue" aria-live="polite">${esc(d.seq[0][2])}</p>
-    <div class="demo-ctl ${POSES3D[id] ? 'three' : ''}"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
-    <button class="btn" data-act="demo-slow">Slow-mo</button>
-    ${POSES3D[id] ? '<button class="btn d3-btn" data-act="demo-3d">3D view</button>' : ''}</div></div>`;
+    <div class="demo-ctl"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
+    <button class="btn" data-act="demo-slow">Slow-mo</button></div></div>`;
 }
 
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -243,7 +243,7 @@ function startDemos() {
   document.querySelectorAll('.demo[data-start3d]').forEach(el => {
     if (el._opened3d) return;
     el._opened3d = true;
-    toggle3d(el, el.querySelector('[data-act="demo-3d"]'));
+    open3d(el);
   });
   if (!demoRaf && document.querySelector('.demo')) demoRaf = requestAnimationFrame(demoTick);
 }
@@ -287,7 +287,6 @@ document.addEventListener('click', e => {
   const btn = e.target.closest('[data-act^="demo-"]');
   if (!btn) return;
   const el = btn.closest('.demo'), now = performance.now(), st = demoState(el, now);
-  if (btn.dataset.act === 'demo-3d') { toggle3d(el, btn); return; }
   if (btn.dataset.act === 'demo-stance') {
     // One setting for every animation (and remembered): redraw them all mirrored or not
     state.southpaw = !state.southpaw; save();

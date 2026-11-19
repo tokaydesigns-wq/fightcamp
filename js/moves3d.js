@@ -1,6 +1,6 @@
 /* 3D mannequin demos. A wooden-mannequin figure built from simple shapes and posed in code,
    so there are no model files or licences to worry about. three.js (js/vendor) only loads
-   when someone taps "3D view".
+   when a technique with a 3D animation is first shown.
    A pose gives positions for the hips, fists and ankles plus body turn and lean; the elbows
    and knees are worked out with two-bone IK (the "pole" says which way they bend).
    The fighter faces +X, toward the bag, in orthodox stance. Units are metres. */
@@ -346,9 +346,10 @@ function buildScene(T, canvas, hot, move) {
 
 const viewers = new Set();
 
-// Swap a demo card between the 2D drawing and the 3D mannequin
-async function toggle3d(el, btn) {
-  if (el._3d) { close3d(el); btn.textContent = '3D view'; return; }
+// Swap a demo card's 2D drawing for the 3D mannequin. If 3D can't run on this phone, the card
+// quietly keeps the 2D drawing instead.
+async function open3d(el) {
+  if (el._3d) return;
   const box = document.createElement('div');
   box.className = 'demo3d';
   box.innerHTML = `<canvas aria-label="3D animation of the technique. Drag sideways to turn it."></canvas>
@@ -356,7 +357,6 @@ async function toggle3d(el, btn) {
     <div class="d3-views">${['side', 'front', 'behind'].map(v => `<button data-act="demo-view" data-view="${v}">${v[0].toUpperCase() + v.slice(1)}</button>`).join('')}</div>`;
   el.querySelector('svg').style.display = 'none';
   el.querySelector('svg').after(box);
-  btn.textContent = '2D view';
   el._3d = { ready: false, box };
   try {
     const T = await loadThree();
@@ -368,7 +368,7 @@ async function toggle3d(el, btn) {
     dragToTurn(box.querySelector('canvas'), el);
     demoState(el, performance.now()).drawn = false;
   } catch (e) {
-    box.querySelector('.d3-msg').textContent = '3D isn\'t available on this device.';
+    if (el._3d && el._3d.box === box) close3d(el);
   }
 }
 

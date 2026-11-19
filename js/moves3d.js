@@ -63,10 +63,10 @@ const T3 = pose3({ hip: [.02, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
 const RSTEP3 = pose3({ hip: [.14, .94, -.08], yaw: 15, chestYaw: 15, lean: 4,
   lF: [.36, 1.52, -.16], rF: [.22, 1.47, .04], lA: [.4, .1, -.32], rA: [-.2, .16, .2], lKn: [1, 0, -.6], rPoint: .5 });
 const RSWING3 = pose3({ hip: [.22, .97, -.14], yaw: -40, chestYaw: -20, lean: -4, tilt: -12,
-  lF: [.3, 1.55, -.26], rF: [.42, .96, .3], lA: [.4, .12, -.32], rA: [.42, .7, .79],
+  lF: [.3, 1.55, -.26], rF: [.3, 1.12, .38], lA: [.4, .12, -.32], rA: [.42, .7, .79],
   lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
 const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -5, tilt: -25,
-  lF: [.25, 1.6, -.35], rF: [-.1, 1, .1], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
+  lF: [.25, 1.6, -.35], rF: [.26, .98, .08], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .85 });
 
 // Slip and roll: slip the head a hand-width off the centre line (SL3) by shifting the hips and
@@ -86,7 +86,7 @@ const LSWING3 = pose3({ hip: [.22, .95, -.14], yaw: -40, chestYaw: -20, lean: 2,
   lF: [.36, 1.55, -.38], rF: [.42, .96, .3], lA: [.4, .145, -.32], rA: [.6, .75, .5],
   lKn: [-.2, 0, -1], rKn: [.5, .1, -.3], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
 const LKICK3 = pose3({ hip: [.3, .95, -.2], yaw: -100, chestYaw: -55, lean: 12, tilt: -12,
-  lF: [.36, 1.56, -.52], rF: [-.1, 1, .1], lA: [.4, .145, -.32], rA: [1.0, .55, .3],
+  lF: [.36, 1.56, -.52], rF: [.26, .93, .08], lA: [.4, .145, -.32], rA: [1.0, .55, .3],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .6 });
 
 // Switch kick: the switch puts the feet in a southpaw stance, so the kick is the mirror image of

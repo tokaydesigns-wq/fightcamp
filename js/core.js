@@ -2,7 +2,7 @@
 
 // The app's version, shown on the Home screen. Keep it equal to the number in CACHE in sw.js
 // (bump both on every release).
-const APP_VERSION = 22;
+const APP_VERSION = 23;
 
 
 const KEY = 'fightcamp.v1';
@@ -52,6 +52,7 @@ function loadState() {
     camp: s.camp || null,         // {date, opponent, cls, limitKg, start}
     programs: s.programs || [],   // {id, techId, fighter, wiki, started, done:{}}
     timer: Object.assign({ rounds: 3, work: 180, rest: 60 }, s.timer), // seconds
+    southpaw: !!s.southpaw,       // technique animations shown mirrored, for left-handers
   };
 }
 let state = loadState();

@@ -2,7 +2,7 @@
 
 // The app's version, shown on the Home screen. Keep it equal to the number in CACHE in sw.js
 // (bump both on every release).
-const APP_VERSION = 25;
+const APP_VERSION = 26;
 
 
 const KEY = 'fightcamp.v1';
@@ -43,14 +43,19 @@ const typeLabel = id => (SESSION_TYPES.find(t => t.id === id) || SESSION_TYPES.a
 function loadState() {
   let s = {};
   try { s = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* start fresh */ }
+  if (typeof s !== 'object') s = {};
+  // Lists of records that have a date. Anything damaged (say, from an edited backup file) is
+  // skipped, so one bad entry can't stop the whole app from opening.
+  const dated = list => (Array.isArray(list) ? list : []).filter(x => x && typeof x === 'object' && /^\d{4}-\d\d-\d\d$/.test(x.date));
   return {
-    sessions: s.sessions || [],   // {id, date, type, mins, rounds, rpe, notes}
-    meals: s.meals || [],         // {id, date, name, kcal, protein}
-    weights: s.weights || [],     // {date, kg} one per day
+    sessions: dated(s.sessions).map(x => ({ ...x, id: String(x.id || uid()) })),   // {id, date, type, mins, rounds, rpe, notes}
+    meals: dated(s.meals).map(x => ({ ...x, id: String(x.id || uid()), name: String(x.name ?? '') })),   // {id, date, name, kcal, protein}
+    weights: dated(s.weights).filter(w => +w.kg > 0),   // {date, kg} one per day
     targets: Object.assign({ kcal: 2500, protein: 160 }, s.targets),
-    unit: s.unit || 'kg',
-    camp: s.camp || null,         // {date, opponent, cls, limitKg, start}
-    programs: s.programs || [],   // {id, techId, fighter, wiki, started, done:{}}
+    unit: s.unit === 'lb' ? 'lb' : 'kg',
+    camp: s.camp && /^\d{4}-\d\d-\d\d$/.test(s.camp.date) ? s.camp : null,   // {date, opponent, cls, limitKg, start}
+    programs: (Array.isArray(s.programs) ? s.programs : []).filter(p => p && typeof p.techId === 'string')
+      .map(p => ({ ...p, done: p.done || {} })),   // {id, techId, fighter, wiki, started, done:{}}
     timer: Object.assign({ rounds: 3, work: 180, rest: 60 }, s.timer), // seconds
     southpaw: !!s.southpaw,       // technique animations shown mirrored, for left-handers
   };

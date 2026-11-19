@@ -19,6 +19,7 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 ## In review
 
 - [ ] `[animation]` Clinch knee and a new Elbows technique, both in 3D (PR: "Clinch knee and elbow animations"). Watch them on your phone before merging.
+- [ ] `[bug]` Overnight bug hunt: fixes for sideways scrolling, the weight-pace card, the round timer and more (PR: "Bug fixes from an overnight test of the whole app"). Merge after the clinch knee and elbow PR.
 
 ## Needs the owner
 

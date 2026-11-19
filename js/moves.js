@@ -276,7 +276,7 @@ function startDemos() {
 
 function demoTick(now) {
   const els = document.querySelectorAll('.demo');
-  if (!els.length) { demoRaf = 0; return; }
+  if (!els.length) { sweep3d(); demoRaf = 0; return; }   // (frees the 3D view of the page you just left)
   els.forEach(el => drawDemo(el, now));
   sweep3d();
   demoRaf = requestAnimationFrame(demoTick);

@@ -62,8 +62,8 @@ const ART = {
   video: () => `${floorShadow(165)}
     <g style="fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;opacity:.75">
       <path d="M70 40 v-22 h30"/><path d="M230 18 h30 v22"/><path d="M70 205 v22 h30"/><path d="M230 227 h30 v-22"/></g>
-    <circle cx="94" cy="64" r="8" style="fill:var(--accent)"/>
-    <text x="107" y="70" style="fill:#fff;font:800 16px system-ui,sans-serif;opacity:.8">REC</text>
+    <circle cx="82" cy="64" r="8" style="fill:var(--accent)"/>
+    <text x="94" y="70" style="fill:#fff;font:800 16px system-ui,sans-serif;opacity:.8">REC</text>
     ${picto(GUARD)}`,
   // A round kick with the path of the foot
   learn: () => `${floorShadow(150)}

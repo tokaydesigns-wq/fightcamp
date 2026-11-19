@@ -133,8 +133,9 @@ function progStats(p) {
 }
 
 function myPrograms() {
-  if (!state.programs.length) return '';
-  return `<section class="card"><h2>Your programs</h2><ul class="list">${state.programs.map(p => {
+  const progs = state.programs.filter(p => techById(p.techId));   // (skips any for a technique this version doesn't have)
+  if (!progs.length) return '';
+  return `<section class="card"><h2>Your programs</h2><ul class="list">${progs.map(p => {
     const s = progStats(p), t = techById(p.techId);
     return `<li><a class="prog-row" href="#/p/${p.id}"><span><b>${esc(t.name)}</b>
       <span class="muted small">${p.fighter ? 'like ' + esc(p.fighter) + ' · ' : ''}${s.pct}% done</span></span>
@@ -150,7 +151,7 @@ function library() {
 
 function programScreen(id) {
   const p = state.programs.find(p => p.id === id);
-  if (!p) return `<p class="card">That program isn't here any more. <a href="#/learn">Back to Learn</a></p>`;
+  if (!p || !techById(p.techId)) return `<p class="card">That program isn't here any more. <a href="#/learn">Back to Learn</a></p>`;
   const t = techById(p.techId), f = FIGHTERS.find(f => f.name === p.fighter);
   const how = f && f.how[t.id], s = progStats(p);
   const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(`${p.fighter || ''} ${t.name} technique`.trim());

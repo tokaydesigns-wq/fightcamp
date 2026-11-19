@@ -1,7 +1,7 @@
 /* FightCamp screens (Home, Train, Food, Camp), router, clicks and forms.
    The Learn screens live in learn.js. */
 
-let foodDay = ymd();
+let foodDay = ymd(), foodToday = foodDay;
 
 const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen, video: videoScreen };
 
@@ -20,7 +20,7 @@ window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 /* ---------- Home ---------- */
 
 function homeScreen() {
-  const wk = weekTotals(1)[0], day = dayFood(ymd()), p = state.programs[0];
+  const wk = weekTotals(1)[0], day = dayFood(ymd()), p = state.programs.find(p => techById(p.techId));
   const c = state.camp && campStatus(state.camp);
   return `${banner('home', 'FightCamp', greeting(), `<p class="app-ver">Version ${APP_VERSION}</p>`, niceDate(ymd()))}
   ${c ? `<a class="card camp-mini" href="#/camp"><div class="count"><b>${Math.max(c.daysOut, 0)}</b><span>${c.daysOut === 1 ? 'day' : 'days'}</span></div>
@@ -117,14 +117,21 @@ function trainScreen() {
 
 function sessionRow(s) {
   return `<li class="row"><div><b>${esc(typeLabel(s.type))}</b> <span class="muted small">${esc(niceDate(s.date))}</span>
-    <p class="small">${s.mins} min${s.rounds ? ` · ${s.rounds} rounds` : ''} · effort ${s.rpe}/10</p>
+    <p class="small">${esc(s.mins)} min${s.rounds ? ` · ${esc(s.rounds)} rounds` : ''} · effort ${esc(s.rpe)}/10</p>
     ${s.notes ? `<p class="small muted">${esc(s.notes)}</p>` : ''}</div>
-    <button class="x" data-act="session-del" data-id="${s.id}" aria-label="Delete session">×</button></li>`;
+    <button class="x" data-act="session-del" data-id="${esc(s.id)}" aria-label="Delete session">×</button></li>`;
 }
 
 /* ---------- Food ---------- */
 
+// If the app was left open overnight, "today" on the Food screen moves on to the new day
+// (a past day you picked stays picked)
+function rollFoodDay() {
+  if (foodToday !== ymd()) { if (foodDay === foodToday) foodDay = ymd(); foodToday = ymd(); }
+}
+
 function foodScreen() {
+  rollFoodDay();
   const day = dayFood(foodDay), today = foodDay === ymd();
   const recent = recentMeals();
   const weights = [...state.weights].sort((a, b) => a.date.localeCompare(b.date)).slice(-30);
@@ -138,14 +145,14 @@ function foodScreen() {
   <form class="card" data-form="meal"><h2>Add food</h2>
     <label>What did you eat?<input name="name" required placeholder="e.g. Chicken and rice" autocomplete="off"></label>
     <div class="grid2"><label>Calories<input type="number" name="kcal" inputmode="numeric" min="0" max="5000"></label>
-    <label>Protein (g)<input type="number" name="protein" inputmode="numeric" min="0" max="400"></label></div>
+    <label>Protein (g)<input type="number" name="protein" inputmode="decimal" step="0.1" min="0" max="400"></label></div>
     <button class="btn primary wide">Add</button>
     ${recent.length ? `<p class="muted small">Eat it again:</p><div class="chips">${recent.map((m, i) =>
       `<button type="button" class="chip" data-act="meal-again" data-i="${i}">${esc(m.name)}</button>`).join('')}</div>` : ''}</form>
   <section class="card"><h2>${today ? 'Eaten today' : 'Eaten that day'}</h2>
     ${day.meals.length ? `<ul class="list">${day.meals.map(m => `<li class="row"><div><b>${esc(m.name)}</b>
       <p class="small muted">${+m.kcal || 0} kcal · ${+m.protein || 0} g protein</p></div>
-      <button class="x" data-act="meal-del" data-id="${m.id}" aria-label="Delete">×</button></li>`).join('')}</ul>`
+      <button class="x" data-act="meal-del" data-id="${esc(m.id)}" aria-label="Delete">×</button></li>`).join('')}</ul>`
       : emptyState('Nothing logged yet.')}</section>
   <section class="card"><h2>Weight</h2>
     <form class="inline" data-form="weight"><input type="number" name="w" step="0.1" min="20" max="400" inputmode="decimal"
@@ -176,7 +183,7 @@ function campScreen() {
   <section class="card countdown poster"><div class="count big"><b>${Math.max(s.daysOut, 0)}</b><span>${s.daysOut === 1 ? 'day to go' : s.daysOut < 0 ? 'fight done' : 'days to go'}</span></div>
     <div><h2>${c.opponent ? 'vs ' + esc(c.opponent) : 'Fight night'}</h2><p class="muted">${esc(niceDate(c.date))}${c.cls ? ' · ' + esc(c.cls) : ''}</p>
     ${c.limitKg ? `<p class="small">Weight limit: <b>${fmtW(c.limitKg)}</b></p>` : ''}</div></section>
-  ${pace ? weightPace(pace) : c.limitKg ? '<p class="card note">Log your weight on the Food tab to see how you\'re tracking against the limit.</p>' : ''}
+  ${pace ? weightPace(pace) : c.limitKg && s.daysOut > 0 ? '<p class="card note">Log your weight on the Food tab to see how you\'re tracking against the limit.</p>' : ''}
   <section class="card phase now"><p class="eyebrow">Right now · ${esc(ph.when)}</p><h2>${esc(ph.name)}</h2><p>${esc(ph.goal)}</p>${phaseBody(ph)}</section>
   ${phaseList(ph)}
   <details class="card"><summary>Change fight details</summary>${campForm(c, true)}
@@ -185,13 +192,22 @@ function campScreen() {
 
 function weightPace(p) {
   if (p.toGo <= 0) return `<p class="card note good">You're already on weight. Keep it steady and keep eating well.</p>`;
-  // Up to 1% a week is the safe pace in the camp tips; over 1.5% gets a warning
-  const fast = p.pct > 1.5;
+  // In the last week a "per week" pace means nothing, so just say how far off you are
+  if (p.days <= 7) {
+    const big = p.toGo / p.now * 100 > 2;
+    return `<section class="card note ${big ? 'warn' : ''}"><b>${fmtW(p.toGo)} over the limit</b>
+      <p class="small">${p.days === 1 ? '1 day' : p.days + ' days'} to go. ${big
+        ? 'That\'s a lot to lose this close to the fight. Talk to your coach, and never sweat or starve it off without a coach or doctor supervising.'
+        : 'Follow the fight-week food tips below and keep drinking normally unless your coach has a supervised plan.'}</p></section>`;
+  }
+  // Up to 1% a week is the safe pace in the camp tips; over 1.5% gets a warning.
+  // (Judged on the rounded number shown, so "1%" never comes with "quicker than 1%".)
+  const pct = round1(p.pct), fast = pct > 1.5;
   const msg = fast ? 'That\'s faster than the safe pace of about 1% a week. Talk to your coach about the plan, or think about a different weight class.'
-    : p.pct > 1 ? 'That\'s a little quicker than the ideal 1% a week, so start steady now and avoid a big cut at the end.'
+    : pct > 1 ? 'That\'s a little quicker than the ideal 1% a week, so start steady now and avoid a big cut at the end.'
     : 'That\'s a sensible pace.';
   return `<section class="card ${fast ? 'note warn' : 'note'}"><b>${fmtW(p.toGo)} to go</b>
-    <p class="small">That's about ${fmtW(p.perWeek)} a week (${round1(p.pct)}% of your body weight). ${msg}</p></section>`;
+    <p class="small">That's about ${fmtW(p.perWeek)} a week (${pct}% of your body weight). ${msg}</p></section>`;
 }
 
 const phaseBody = ph => `<h3>Training</h3><ul>${ph.train.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
@@ -228,6 +244,7 @@ document.addEventListener('click', e => {
     case 'meal-del': state.meals = state.meals.filter(m => m.id !== el.dataset.id); save(); render(); break;
     case 'meal-again': {
       const m = recentMeals()[+el.dataset.i];
+      rollFoodDay();
       state.meals.push({ id: uid(), date: foodDay, name: m.name, kcal: m.kcal, protein: m.protein }); save(); render();
       break;
     }
@@ -259,6 +276,9 @@ document.addEventListener('submit', e => {
       toast('Session saved. Nice work!');
       break;
     case 'meal':
+      // (a name of only spaces passes the "required" check, but would save a blank meal)
+      if (!f.name.trim()) { toast('Type what you ate first'); return; }
+      rollFoodDay();
       state.meals.push({ id: uid(), date: foodDay, name: f.name.trim(), kcal: num(f.kcal), protein: num(f.protein) });
       break;
     case 'weight': {

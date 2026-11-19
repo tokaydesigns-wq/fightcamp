@@ -46,11 +46,12 @@ function campStatus(camp) {
   return { daysOut, weeksOut: Math.ceil(daysOut / 7), phase: phaseFor(daysOut) };
 }
 
-// How fast you'd need to lose weight to reach the limit by fight week, as % of body weight per week
+// How fast you'd need to lose weight to reach the limit by fight week, as % of body weight per week.
+// Nothing once the weigh-in is over (fight day and after).
 function cutPace(camp) {
-  const w = latestWeight();
-  if (!w || !camp.limitKg) return null;
+  const w = latestWeight(), days = daysBetween(ymd(), camp.date);
+  if (!w || !camp.limitKg || days < 1) return null;
   const toGo = w.kg - camp.limitKg;
-  const weeks = Math.max((daysBetween(ymd(), camp.date) - 1) / 7, 0.15);
-  return { now: w.kg, toGo, perWeek: toGo / weeks, pct: toGo / weeks / w.kg * 100 };
+  const weeks = Math.max((days - 1) / 7, 0.15);
+  return { now: w.kg, toGo, days, perWeek: toGo / weeks, pct: toGo / weeks / w.kg * 100 };
 }

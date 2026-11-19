@@ -18,7 +18,7 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## In review
 
-- [ ] `[animation]` Switch kick (PR: "Switch kick animation, 2D and 3D"). Watch it on your phone before merging.
+- [ ] `[animation]` Clinch knee and a new Elbows technique, both in 3D (PR: "Clinch knee and elbow animations"). Watch them on your phone before merging.
 
 ## Needs the owner
 
@@ -45,6 +45,8 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 - [x] Learn from a fighter: Wikipedia profile and 4-week drill programs (24 techniques)
 - [x] 2D animations: jab, cross, hook, roundhouse, teep, footwork angles, in-and-out distance
 - [x] 3D mannequin with strike-path trails: jab, cross, hook, teep, roundhouse
+- [x] More 3D moves: uppercut, body shot, slip and roll, low kick, switch kick (PR #25)
+- [x] 3D is the only view for moves that have it (2D kept as a silent backup)
 - [x] Smooth animation motion between poses
 - [x] Round timer with drill shortcuts
 - [x] Fight-night look: illustrated banners, stat icons, empty-state pictures

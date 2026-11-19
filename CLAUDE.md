@@ -28,12 +28,12 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | --- | --- |
 | `js/core.js` | Helpers, dates (`ymd` strings), `SESSION_TYPES`, saved state (`loadState`/`save`), training and food maths |
 | `js/charts.js` | SVG `barChart`, `lineChart`, `meter`, `stat` |
-| `js/techniques.js` | `TECHS` library (24 techniques, drills by solo/gear/partner/live) and `buildPlan()` 4-week builder |
+| `js/techniques.js` | `TECHS` library (26 techniques, drills by solo/gear/partner/live) and `buildPlan()` 4-week builder |
 | `js/fighters.js` | `FIGHTERS` (aliases, signature techniques, "how they do it" notes), `styleFromText` |
 | `js/camp.js` | `PHASES` of a fight camp with tips, `campStatus`, `cutPace` |
 | `js/learn.js` | Query matching, Wikipedia lookup, Learn and program screens, `learnAct` clicks |
 | `js/moves.js` | Animated SVG technique demos: `DEMOS` keyframes (side-view stick figure or top-down feet), `moveDemo(id)`, one shared animation loop started by `startDemos()` |
-| `js/moves3d.js` | 3D mannequin view for demos: `POSES3D` (one 3D pose per 2D keyframe, same timing and cues), two-bone IK, three.js scene with a heavy bag, Side/Front/Behind views, drag to turn. three.js loads only when "3D view" is tapped |
+| `js/moves3d.js` | 3D mannequin view for demos: `POSES3D` (one 3D pose per 2D keyframe, same timing and cues), two-bone IK, three.js scene with a heavy bag, Side/Front/Behind views, drag to turn. three.js loads the first time a move with 3D is shown |
 | `js/vendor/` | three.js 0.187.0 (MIT, `LICENSE.three.txt`). `three.core.js` is the minified core, renamed because the module imports that name |
 | `js/art.js` | Artwork in SVG: `picto()` pictogram fighter drawn from the 2D poses in moves.js, `ART` banner scenes, `banner()` screen headers, `ICONS`/`icon()` for stat tiles, `emptyState()` |
 | `js/timer.js` | Round timer (`#/timer/R-WORK-REST`): bell via Web Audio, 10-second warning, vibration, screen wake lock, `drillTimerBtn` for drill doses |
@@ -42,13 +42,23 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release **and set `APP_VERSION` in core.js to the same N** (shown on Home so the owner can see which version they have); add new files to `SHELL`. |
 
 - Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`, `#/video`.
-- Animations exist for jab, cross, hook, uppercut, body shot, slip, roundhouse, switch kick, low kick, teep, angles and distance.
+- Animations exist for jab, cross, hook, uppercut, body shot, slip, roundhouse, switch kick, low kick, teep,
+  clinch knee (`clinch`), rear horizontal elbow (`elbow`), angles and distance.
   The Orthodox/Southpaw chip on each card mirrors them all (`state.southpaw`, cues swap left/right via `mirrorWords`). To add one, add keyframes to
   `DEMOS` in moves.js with the technique's id; it then shows on the Learn result and program page automatically.
-- Moves with 3D open in 3D first (`data-start3d`). `TRAILS` in moves3d.js draws the path of the striking foot/fist;
-  `START_VIEW` sets the opening camera angle per move.
-- 3D exists for jab, cross, hook, uppercut, body shot, slip, teep, roundhouse, switch kick and low kick (footwork stays 2D). The switch kick is the round kick mirrored (`mirrorPose3`, `swapSides` in 2D). To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
-  2D `seq`. Poses are hip/fist/ankle positions in metres, fighter facing +X, orthodox.
+- **3D is the only view for moves that have 3D.** There is no 2D/3D button (the owner decided this; don't add it back).
+  Moves with `POSES3D` are marked `data-start3d` and always open in 3D (`open3d(el)`). The 2D drawing in `DEMOS` is kept
+  only as a silent backup: if 3D can't run on a phone, the card quietly keeps the 2D drawing. Footwork (angles, distance)
+  has no 3D and stays a 2D top-down diagram of the feet.
+- `TRAILS` in moves3d.js draws the path of the striking foot/fist (`TRAIL_JOINT_MOVE` overrides the joint: the knee for
+  `clinch`, the elbow for `elbow`); `START_VIEW` sets the opening camera angle per move. The bag swings when a fist, elbow,
+  knee, shin or foot reaches it (`STRIKERS` in `buildScene`); in the clinch the gloves only hold it.
+- 3D exists for jab, cross, hook, uppercut, body shot, slip, teep, roundhouse, switch kick, low kick, clinch knee and elbow
+  (footwork stays 2D). The switch kick is the round kick mirrored (`mirrorPose3`, `swapSides` in 2D). To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
+  2D `seq`, with the same number of keyframes. Poses are hip/fist/ankle positions in metres, fighter facing +X, orthodox.
+- Quality checks every 3D move should pass: no glove within 0.15 m of the head centre; strikes reach the bag (centre
+  x 1.04, z 0, radius 0.17, spanning bagY ± 0.5, bagY 1.15 or 0.85 for `low-kick`) within 3 cm and go in no more than
+  about 2.5 cm; no foot or toe below about -0.02; no glove passing through a thigh.
 - Clicks use `data-act`, forms use `data-form`.
 - Saved data: one object in `localStorage['fightcamp.v1']`. New fields need a default in `loadState()`.
   Weights are stored in kg and converted for display.

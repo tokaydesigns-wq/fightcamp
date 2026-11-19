@@ -158,7 +158,7 @@ const TECHS = [
     live: ['Light sparring: land the switch kick off a jab'] },
 
   { id: 'clinch', name: 'Clinch and knees', style: 'muaythai',
-    words: ['clinch', 'knee', 'knees', 'plum', 'thai clinch', 'collar tie', 'neck wrestling'],
+    words: ['clinch', 'knee', 'knees', 'knee strike', 'knee strikes', 'plum', 'thai clinch', 'collar tie', 'neck wrestling'],
     what: 'Grabbing the head and neck in close and controlling your opponent so you can throw knees and off-balance them.',
     keys: ['Hands on the back of the head, one on top of the other', 'Squeeze elbows together in front of their collarbones', 'Hips forward and posture tall', 'Turn and off-balance them before throwing knees'],
     mistakes: ['Grabbing the neck with the elbows open wide', 'Leaning back with your hips out', 'Kneeing without first breaking their balance'],
@@ -166,6 +166,16 @@ const TECHS = [
     gear: ['Heavy bag clinch: hold the bag, knee to the body 20 each side', 'Heavy bag: hold, turn, knee'],
     partner: ['Clinch fighting: just hand-fighting for position, no knees', 'Clinch: partner lets you get position, you turn them and knee lightly'],
     live: ['Clinch sparring: full clinch rounds, light knees'] },
+
+  { id: 'elbow', name: 'Elbows (horizontal elbow)', style: 'muaythai',
+    words: ['elbow', 'elbows', 'horizontal elbow', 'horizontal elbows', 'elbow strike', 'elbow strikes', 'rear elbow', 'right elbow', 'left elbow', 'lead elbow', 'sok', 'sok tad', 'sok tat', 'thai elbow'],
+    what: 'A short strike with the point of the elbow at close range. The horizontal elbow swings across, level with the floor, like a very tight hook. It cuts and it is hard to see coming.',
+    keys: ['Step in close first: elbows only work at short range', 'Turn the back heel, hips and shoulders through, more than on a cross', 'Fold the arm tight, keep the forearm level and lead with the point of the elbow', 'Other hand stays up guarding your face, then come straight back to guard'],
+    mistakes: ['Throwing it from too far away and falling in', 'Swinging the arm on its own without turning the body', 'Dropping the other hand as you throw'],
+    solo: ['Shadow elbows slowly: step in, turn, elbow, back to guard', 'Shadowbox: jab, cross, step in with a rear elbow'],
+    gear: ['Heavy bag: step in and elbow, 15 each side, light at first', 'Heavy bag: hook, then the rear elbow from close up'],
+    partner: ['Pads: coach holds a Thai pad flat at head height, you step in and elbow', 'Pads: coach throws a slow jab, you slip inside and elbow the pad'],
+    live: ['Controlled clinch rounds with a coach watching: touch the elbow on the headgear, never land it hard'] },
 
   { id: 'check', name: 'Checking kicks', style: 'muaythai',
     words: ['check', 'checking', 'block kick', 'block kicks', 'kick defence', 'kick defense', 'shin block'],

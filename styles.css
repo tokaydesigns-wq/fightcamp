@@ -197,7 +197,10 @@ details.card[open] > summary::after { content: '–'; }
 @keyframes up { from { opacity: 0; transform: translate(-50%, 8px); } }
 
 /* Technique animations (moves.js) */
-.demo { background: var(--bg); border-radius: 14px; padding: 10px 10px 12px; margin: 12px 0 4px; }
+.demo { position: relative; background: var(--bg); border-radius: 14px; padding: 10px 10px 12px; margin: 12px 0 4px; }
+.stance-chip { position: absolute; top: 14px; left: 14px; z-index: 1; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  border-radius: 99px; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.stance-chip.on { border-color: var(--accent); color: var(--accent); }
 .demo-svg { width: 100%; height: auto; display: block; max-height: 260px; }
 .demo-cue { text-align: center; font-weight: 600; min-height: 2.9em; margin: 4px 6px 8px; }
 .demo-ctl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

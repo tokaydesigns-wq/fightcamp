@@ -16,6 +16,12 @@ const CROSS = pose({ head: [163, 62], neck: [161, 84], hip: [151, 150], lE: [178
 // Hook: the elbow comes up and the fist swings out wide first, then round to the target
 const HOOK_LOAD = pose({ head: [151, 58], neck: [151, 82], lE: [182, 96], lF: [196, 84], rF: [160, 80] });
 const HOOK = pose({ head: [154, 62], neck: [153, 84], hip: [147, 150], lE: [184, 82], lF: [212, 92], rF: [160, 80], lK: [176, 194] });
+// Rear uppercut: dip a little toward the rear side with the knees bent and the hand at chest
+// height (UPPER_DIP), then drive up from the legs, the hip turns and the fist rises under the chin
+const UPPER_DIP = pose({ head: [146, 66], neck: [147, 90], hip: [143, 158], rE: [134, 128], rF: [168, 106],
+  lK: [174, 200], lA: [186, 236], rK: [130, 200], rA: [112, 236] });
+const UPPER_HIT = pose({ head: [156, 58], neck: [155, 82], hip: [150, 150], lE: [172, 118], lF: [170, 88], rE: [178, 114], rF: [186, 76],
+  lK: [176, 194], lA: [188, 236], rK: [136, 196], rA: [124, 232] });
 // Round kick: step out, then the leg swings up and round nearly straight (not a knee lift)
 const KICK_STEP = pose({ head: [154, 58], neck: [153, 82], hip: [152, 150], lK: [180, 194], lA: [200, 236], rK: [132, 196], rA: [116, 234] });
 const KICK_SWING = pose({ head: [142, 62], neck: [144, 86], hip: [156, 152], rE: [138, 124], rF: [146, 163],
@@ -67,6 +73,13 @@ const DEMOS = {
     [HOOK, 160, 'Turn the foot, hip and shoulder together'],
     [HOOK, 240, 'Rear hand stays glued to your cheek'],
     [GUARD, 260, 'Back to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+  uppercut: { type: 'side', hot: 'rear-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [UPPER_DIP, 200, 'Dip to your right and bend the knees, hand stays close'],
+    [UPPER_HIT, 170, 'Drive up from the legs and turn the hip, palm facing you'],
+    [UPPER_HIT, 220, 'Lead hand stays home by your face'],
+    [GUARD, 260, 'Straight back to guard'],
     [GUARD, 400, 'Guard up, chin down'] ] },
   body: { type: 'side', hot: 'lead-arm', seq: [
     [GUARD, 700, 'Guard up, chin down'],
@@ -129,6 +142,7 @@ function moveDemo(id) {
   if (!d) return '';
   // Moves with a 3D version open in 3D, because some (like the round kick) can't be read side-on
   return `<div class="demo" data-move="${id}"${POSES3D[id] ? ' data-start3d' : ''}>
+    <button class="stance-chip${state.southpaw ? ' on' : ''}" data-act="demo-stance" aria-label="Stance: ${state.southpaw ? 'southpaw' : 'orthodox'}. Tap to switch">${state.southpaw ? 'Southpaw' : 'Orthodox'} ⇄</button>
     <svg class="demo-svg" viewBox="0 0 300 250" role="img" aria-label="Animation of the technique"></svg>
     <p class="demo-cue" aria-live="polite">${esc(d.seq[0][2])}</p>
     <div class="demo-ctl ${POSES3D[id] ? 'three' : ''}"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
@@ -168,6 +182,11 @@ function splinePose(P, D, a, b, u) {
 }
 const pt = p => p.map(n => n.toFixed(1)).join(' ');
 
+// Southpaw: every animation is drawn as a mirror image, and "left" and "right" swap in the cues
+const mirrorSide = p => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, [300 - v[0], v[1]]]));
+const mirrorFoot = ([x, y, a]) => [300 - x, y, -a];
+const mirrorWords = s => s.replace(/\b(left|right|Left|Right)\b/g, w => ({ left: 'right', right: 'left', Left: 'Right', Right: 'Left' })[w]);
+
 function drawSide(p, hot) {
   const limb = (a, b, c) => `M${pt(p[a])} L${pt(p[b])} L${pt(p[c])}`;
   const parts = {
@@ -188,10 +207,11 @@ function drawSide(p, hot) {
 const foot = ([x, y, a], cls) => `<g class="foot ${cls}" transform="translate(${x} ${y}) rotate(${a})">
   <rect x="-11" y="-22" width="22" height="44" rx="11"/><circle cx="0" cy="-13" r="4"/></g>`;
 
-function drawTop(d, p, hot) {
+function drawTop(d, p, hot, mirror) {
   const opp = [150, 40];
+  if (mirror) p = { lead: mirrorFoot(p.lead), rear: mirrorFoot(p.rear) };
   const inside = d.reach && Math.hypot(p.lead[0] - opp[0], p.lead[1] - opp[1]) < d.reach;
-  const first = d.seq[0][0];
+  const first = mirror ? { lead: mirrorFoot(d.seq[0][0].lead), rear: mirrorFoot(d.seq[0][0].rear) } : d.seq[0][0];
   return `${d.reach ? `<circle class="reach ${inside ? 'in' : ''}" cx="${opp[0]}" cy="${opp[1]}" r="${d.reach}"/>` : ''}
     ${d.line ? `<line class="oppline" x1="150" y1="60" x2="150" y2="246"/>` : ''}
     <circle class="opp" cx="${opp[0]}" cy="${opp[1]}" r="17"/>
@@ -241,12 +261,12 @@ function drawDemo(el, now) {
     t -= dur; prev = i;
   }
   i = Math.min(i, d.seq.length - 1);
-  const [, , cue, hot] = d.seq[i];
+  const [, , cue0, hot] = d.seq[i], cue = state.southpaw ? mirrorWords(cue0) : cue0;
   if (cue !== st.cue) { el.querySelector('.demo-cue').textContent = st.cue = cue; }
   if (el._3d) { st.drawn = draw3d(el, prev, i, k); return; }
   d._P = d._P || d.seq.map(f => f[0]); d._D = d._D || d.seq.map(f => f[1]);
   const out = splinePose(d._P, d._D, prev, i, k);
-  el.querySelector('svg').innerHTML = d.type === 'side' ? drawSide(out, d.hot) : drawTop(d, out, hot);
+  el.querySelector('svg').innerHTML = d.type === 'side' ? drawSide(state.southpaw ? mirrorSide(out) : out, d.hot) : drawTop(d, out, hot, state.southpaw);
   st.drawn = true;
 }
 
@@ -255,6 +275,18 @@ document.addEventListener('click', e => {
   if (!btn) return;
   const el = btn.closest('.demo'), now = performance.now(), st = demoState(el, now);
   if (btn.dataset.act === 'demo-3d') { toggle3d(el, btn); return; }
+  if (btn.dataset.act === 'demo-stance') {
+    // One setting for every animation (and remembered): redraw them all mirrored or not
+    state.southpaw = !state.southpaw; save();
+    document.querySelectorAll('.demo').forEach(d => {
+      const c = d.querySelector('.stance-chip');
+      c.textContent = (state.southpaw ? 'Southpaw' : 'Orthodox') + ' ⇄'; c.classList.toggle('on', state.southpaw);
+      c.setAttribute('aria-label', `Stance: ${state.southpaw ? 'southpaw' : 'orthodox'}. Tap to switch`);
+      if (d._3d && d._3d.ready) d._3d.setMirror(state.southpaw);
+      if (d._st) { d._st.drawn = false; d._st.cue = ''; }
+    });
+    return;
+  }
   if (btn.dataset.act === 'demo-view') {
     if (!el._3d || !el._3d.ready) return;
     [el._3d.view.az, el._3d.view.el] = VIEWS[btn.dataset.view]; st.drawn = false; return;

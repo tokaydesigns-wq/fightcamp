@@ -34,6 +34,14 @@ const HL3 = pose3({ hip: [.18, .92, .02], yaw: 40, chestYaw: 40, lean: 8,
 const H3 = pose3({ hip: [.25, .92, 0], yaw: 60, chestYaw: 70, lean: 8,
   lF: [.82, 1.45, -.05], rF: [.33, 1.54, .27], lA: [.51, .13, -.21], lElb: [0, .4, -1], lKn: [.5, 0, 1], lPoint: .3 });
 
+// Rear uppercut: dip toward the right side with the knees bent and the hand at chest height (UD3),
+// then step in close, drive up from the legs as the back foot follows and turns, and the fist rises into the bag
+// with the elbow bent about 90 degrees, lead hand by the face (UH3).
+const UD3 = pose3({ hip: [.04, .86, .08], yaw: 30, chestYaw: 20, lean: 10, tilt: 10,
+  lF: [.3, 1.48, .1], rF: [.3, 1.14, .16], rElb: [0, -1, 0], rPoint: .2 });
+const UH3 = pose3({ hip: [.36, .93, .03], yaw: 0, chestYaw: -10, lean: 12,
+  lF: [.6, 1.52, -.14], rF: [.78, 1.5, .04], lA: [.52, .08, -.12], rA: [-.12, .15, .27], rKn: [1, 0, -.4], rElb: [1, -1, 0], rPoint: .2 });
+
 // Body shot (lead hook to the liver): step the lead foot off to the left of the bag as the knees
 // bend to drop the level, head off the centre line (BD3), then pivot the back foot round to cut the
 // angle, turn the hip and hook the fist into the side of the bag at belt height (BH3).
@@ -86,6 +94,7 @@ const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
   cross: [G3, C3, C3, G3, G3],
   hook: [G3, HL3, H3, H3, G3, G3],
+  uppercut: [G3, UD3, UH3, UH3, G3, G3],
   body: [G3, BD3, BH3, BH3, G3, G3],
   teep: [G3, TC3, T3, T3, TC3, G3, G3],
   slip: [G3, SL3, RL3, RU3, G3, G3],
@@ -96,7 +105,7 @@ const POSES3D = {
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
-const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3], 'low-kick': [1, 3], slip: [0, 3] };
+const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], uppercut: [1, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3], 'low-kick': [1, 3], slip: [0, 3] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL', head: 'head' };
 
 function trailPoints(T, move, hot) {
@@ -110,7 +119,7 @@ function trailPoints(T, move, hot) {
 // where you see the leg come round (from behind it looks like a push kick)
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
-const START_VIEW = { roundhouse: [110, 26], 'low-kick': [95, 8], hook: [35, 40], body: [40, 35], teep: [-75, 12], slip: [205, 14] };
+const START_VIEW = { roundhouse: [110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14] };
 
 /* ---------- Pose maths ---------- */
 
@@ -298,6 +307,11 @@ function buildScene(T, canvas, hot, move) {
   };
 
   const [az, el] = START_VIEW[move] || VIEWS.angle, view = { az, el };
+  // Southpaw: the whole scene is mirrored (left and right swap), and so is the camera angle, so
+  // each view shows the mirror image of the orthodox one
+  let mirror = false;
+  const setMirror = m => { mirror = m; scene.scale.z = m ? -1 : 1; };
+  setMirror(!!(typeof state !== 'undefined' && state.southpaw));
   const target = new T.Vector3(.3, 1, 0);
   // Only resize when the card's size changes. (Comparing pixel sizes instead resized on every
   // frame on phones with a fractional pixel ratio, which made the animation stutter.)
@@ -305,7 +319,7 @@ function buildScene(T, canvas, hot, move) {
   const render = () => {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (w + 'x' + h !== size) { size = w + 'x' + h; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-    const r = 4.1, a = rad(view.az), e = rad(view.el);
+    const r = 4.1, a = rad(mirror ? -view.az : view.az), e = rad(view.el);
     camera.position.set(target.x + r * Math.cos(e) * Math.cos(a), target.y + r * Math.sin(e), target.z + r * Math.cos(e) * Math.sin(a));
     camera.lookAt(target);
     renderer.render(scene, camera);
@@ -314,7 +328,7 @@ function buildScene(T, canvas, hot, move) {
     scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
     renderer.dispose(); renderer.forceContextLoss();
   };
-  return { pose, render, view, dispose, bob };   // (bob: the bag swing, read by tests)
+  return { pose, render, view, dispose, bob, setMirror };   // (bob: the bag swing, read by tests)
 }
 
 /* ---------- Opening and closing the 3D view ---------- */
@@ -361,7 +375,7 @@ function dragToTurn(canvas, el) {
   canvas.addEventListener('pointerdown', e => { x0 = e.clientX; });
   canvas.addEventListener('pointermove', e => {
     if (x0 === null || !el._3d) return;
-    el._3d.view.az += (e.clientX - x0) * .5; x0 = e.clientX; el._st.drawn = false;
+    el._3d.view.az += (e.clientX - x0) * .5 * (state.southpaw ? -1 : 1); x0 = e.clientX; el._st.drawn = false;
   });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => canvas.addEventListener(n, () => { x0 = null; }));
 }

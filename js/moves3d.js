@@ -20,8 +20,8 @@ const G3 = { hip: [0, .93, .03], yaw: 35, chestYaw: 30, lean: 6, tilt: 0,
   lElb: [0, -1, -.4], rElb: [0, -1, .5], lKn: [1, 0, -.3], rKn: [1, 0, .5], lPoint: 0, rPoint: .3 };
 const pose3 = changes => Object.assign({}, G3, changes);
 
-const J3 = pose3({ hip: [.07, .92, .02], yaw: 40, chestYaw: 45, lean: 8,
-  lF: [.82, 1.5, -.08], rF: [.24, 1.48, .12], lA: [.42, .08, -.1], rA: [-.17, .14, .2], lElb: [0, -1, -.6] });
+const J3 = pose3({ hip: [.2, .92, .02], yaw: 40, chestYaw: 45, lean: 6,
+  lF: [.82, 1.55, -.08], rF: [.36, 1.5, .12], lA: [.55, .08, -.1], rA: [-.12, .14, .2], lElb: [0, -1, -.6] });
 // Cross: hips and shoulders turn so the right shoulder drives forward, the back heel turns out
 // (up on the ball of the foot), and the lead hand stays home by the face.
 const C3 = pose3({ hip: [.11, .92, .03], yaw: 0, chestYaw: -10, lean: 10,
@@ -54,8 +54,8 @@ const BH3 = pose3({ hip: [.26, .72, -.26], yaw: 75, chestYaw: 85, lean: 4, tilt:
 // through and drive the ball of the foot straight into the bag (T3), leaning back slightly.
 const TC3 = pose3({ hip: [-.06, .95, .08], yaw: 20, chestYaw: 25, lean: 0,
   lF: [.18, 1.57, -.04], rF: [.14, 1.5, .14], lA: [.35, .55, -.1], lKn: [1, .3, 0] });
-const T3 = pose3({ hip: [.02, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
-  lF: [.08, 1.58, -.13], rF: [.12, 1.5, .12], lA: [.76, 1, -.05], lKn: [0, 1, 0] });
+const T3 = pose3({ hip: [.1, .98, .02], yaw: 10, chestYaw: 20, lean: -25,
+  lF: [.08, 1.58, -.13], rF: [.12, 1.5, .12], lA: [.77, 1.22, -.05], lKn: [0, 1, 0] });
 
 // Muay Thai round kick with the rear (right) leg: step out at an angle with the lead foot,
 // pivot on its ball so the heel turns toward the bag, turn the hips right over, and swing the
@@ -65,7 +65,7 @@ const RSTEP3 = pose3({ hip: [.14, .94, -.08], yaw: 15, chestYaw: 15, lean: 4,
 const RSWING3 = pose3({ hip: [.22, .97, -.14], yaw: -40, chestYaw: -20, lean: -4, tilt: -12,
   lF: [.3, 1.55, -.26], rF: [.3, 1.12, .38], lA: [.4, .12, -.32], rA: [.42, .7, .79],
   lKn: [-.2, 0, -1], rKn: [.5, .7, -.2], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
-const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -5, tilt: -25,
+const RKICK3 = pose3({ hip: [.3, 1, -.2], yaw: -105, chestYaw: -60, lean: -12, tilt: -25,
   lF: [.25, 1.6, -.35], rF: [.26, .98, .08], lA: [.4, .12, -.32], rA: [1.06, 1.09, .38],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .85 });
 
@@ -85,8 +85,8 @@ const RU3 = pose3({ hip: [.05, .88, -.04], yaw: 35, chestYaw: 25, lean: 8, tilt:
 const LSWING3 = pose3({ hip: [.22, .95, -.14], yaw: -40, chestYaw: -20, lean: 2, tilt: -8,
   lF: [.36, 1.55, -.38], rF: [.42, .96, .3], lA: [.4, .145, -.32], rA: [.6, .75, .5],
   lKn: [-.2, 0, -1], rKn: [.5, .1, -.3], rElb: [0, -.3, 1], lPoint: .35, rPoint: .7 });
-const LKICK3 = pose3({ hip: [.3, .95, -.2], yaw: -100, chestYaw: -55, lean: 12, tilt: -12,
-  lF: [.36, 1.56, -.52], rF: [.26, .93, .08], lA: [.4, .145, -.32], rA: [1.0, .55, .3],
+const LKICK3 = pose3({ hip: [.28, .95, -.2], yaw: -100, chestYaw: -55, lean: -6, tilt: -12,
+  lF: [.36, 1.56, -.52], rF: [.26, .93, .08], lA: [.4, .145, -.32], rA: [1.0, .72, .36],
   lElb: [0, -1, -.5], rElb: [0, 0, 1], lKn: [-1, 0, -.3], rKn: [0, .5, -1], lPoint: .35, rPoint: .6 });
 
 // Switch kick: the switch puts the feet in a southpaw stance, so the kick is the mirror image of
@@ -104,8 +104,8 @@ const SW3 = mirrorPose3(RSTEP3), SWS3 = mirrorPose3(RSWING3), SWK3 = mirrorPose3
 // about hip height with the toes pointed down (KK3). The lead foot stays put, up on its ball.
 const KC3 = pose3({ hip: [.42, .93, .02], yaw: 15, chestYaw: 5, lean: 8,
   lF: [.98, 1.5, -.25], rF: [.98, 1.5, .25], lA: [.62, .1, -.14], rA: [.2, .14, .18], lElb: [0, -1, -.3], rElb: [0, -1, .3], lPoint: .2 });
-const KK3 = pose3({ hip: [.38, .98, .02], yaw: 15, chestYaw: 5, lean: -6,
-  lF: [.95, 1.42, -.25], rF: [.95, 1.42, .25], lA: [.62, .1, -.14], rA: [.6, .64, .13], rKn: [1, .6, 0],
+const KK3 = pose3({ hip: [.5, .98, .02], yaw: 15, chestYaw: 5, lean: -10,
+  lF: [.95, 1.42, -.25], rF: [.95, 1.42, .25], lA: [.62, .1, -.14], rA: [.68, .86, .13], rKn: [1, .9, 0],
   lElb: [0, -1, -.3], rElb: [0, -1, .3], lPoint: .35, rPoint: .85 });
 
 // Rear horizontal elbow: step in close (ES3), then turn the back heel, hips and shoulders through,
@@ -170,6 +170,28 @@ const WRONG3D = {
   elbow: { text: 'Dropping the other hand as you throw', why: 'At this range, their elbow lands on your open face.',
     keys: { 2: { lF: [.5, 1.12, -.26] }, 3: { lF: [.5, 1.12, -.26] } } },
 };
+// The animations as they were before they were matched to the owner's own footage (Nov 2026),
+// kept so either version can be picked per move. They play as `move + '~old'`, with their own timing.
+const ORIGINAL3D = (() => {
+  const J = pose3({ hip: [.07, .92, .02], yaw: 40, chestYaw: 45, lean: 8,
+    lF: [.82, 1.5, -.08], rF: [.24, 1.48, .12], lA: [.42, .08, -.1], rA: [-.17, .14, .2], lElb: [0, -1, -.6] });
+  const T = pose3({ hip: [.02, .98, .02], yaw: 10, chestYaw: 20, lean: -15,
+    lF: [.08, 1.58, -.13], rF: [.12, 1.5, .12], lA: [.76, 1, -.05], lKn: [0, 1, 0] });
+  const RK = { ...RKICK3, lean: -5 };
+  const LK = { ...LKICK3, hip: [.3, .95, -.2], lean: 12, rA: [1.0, .55, .3] };
+  const KK = { ...KK3, hip: [.38, .98, .02], lean: -6, rA: [.6, .64, .13], rKn: [1, .6, 0] };
+  return {
+    jab: { poses: [G3, J, J, G3, G3], ms: [700, 160, 200, 240, 400] },
+    cross: { poses: POSES3D.cross, ms: [700, 200, 220, 260, 400] },
+    teep: { poses: [G3, TC3, T, T, TC3, G3, G3], ms: [650, 200, 180, 160, 160, 240, 400] },
+    roundhouse: { poses: [G3, RSTEP3, RSWING3, RK, RK, G3, G3], ms: [700, 240, 220, 200, 300, 340, 400] },
+    'low-kick': { poses: [G3, RSTEP3, LSWING3, LK, LK, G3, G3], ms: [700, 240, 220, 180, 300, 340, 400] },
+    'switch-kick': { poses: [G3, SW3, SWS3, mirrorPose3(RK), mirrorPose3(RK), G3, G3], ms: [700, 200, 200, 200, 300, 340, 400] },
+    clinch: { poses: [G3, KC3, KK, KK, KC3, G3], ms: [700, 300, 240, 260, 240, 340] },
+  };
+})();
+for (const [m, o] of Object.entries(ORIGINAL3D)) POSES3D[m + '~old'] = o.poses;
+
 // Combinations use the 3D poses of the moves they're made of, frame for frame (see COMBOS in moves.js)
 for (const c of COMBOS) POSES3D[c.id] = DEMOS[c.id].frames.map(([m, i]) => m ? POSES3D[m][i] : G3);
 for (const [move, w] of Object.entries(WRONG3D)) POSES3D[move + '~wrong'] = POSES3D[move].map((p, i) => w.keys[i] ? Object.assign({}, p, w.keys[i]) : p);
@@ -219,7 +241,8 @@ const toeCache = new WeakMap();
 const toesOf = p => toeCache.get(p) || toeCache.set(p, (s => ({ lA: s.toeL, rA: s.toeR }))(skeleton(THREE3, p))).get(p);
 const lerp3 = (a, b, e) => a.map((v, i) => v + (b[i] - v) * e);
 function splinePose3(move, a, b, u) {
-  const D = durCache[move] || (durCache[move] = DEMOS[move.split('~')[0]].seq.map(f => f[1]));
+  const base = move.split('~')[0];
+  const D = durCache[move] || (durCache[move] = move.endsWith('~old') ? ORIGINAL3D[base].ms : DEMOS[base].seq.map(f => f[1]));
   const p = splinePose(relPoses(move), D, a, b, u), out = Object.assign({}, p);
   const pa = POSES3D[move][a], pb = POSES3D[move][b], e = u * u * (3 - 2 * u);
   for (const k of ['lA', 'rA']) {

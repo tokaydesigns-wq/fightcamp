@@ -213,6 +213,7 @@ details.card[open] > summary::after { content: '–'; }
 .stance-chip { position: absolute; top: 14px; left: 14px; z-index: 1; border: 1px solid var(--line); background: var(--card); color: var(--ink);
   border-radius: 99px; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .stance-chip.on { border-color: var(--accent); color: var(--accent); }
+.rw[hidden] { display: none; }
 .rw { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0 0 8px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
 .rw button { border: 0; background: var(--card); color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; min-height: 40px; cursor: pointer; }
 .rw button.on[data-act="demo-right"] { background: #1f8f4e; color: #fff; }

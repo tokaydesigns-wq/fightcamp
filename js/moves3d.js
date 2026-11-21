@@ -122,6 +122,37 @@ const E3 = pose3({ hip: [.35, .93, .04], yaw: -5, chestYaw: -40, lean: 10,
 const CK3 = pose3({ hip: [-.02, .97, .05], yaw: 35, chestYaw: 30, lean: 10,
   lF: [.37, 1.49, -.19], rF: [.2, 1.5, .08], lA: [.38, .62, -.34], lElb: [1, -.8, -.6], lKn: [.5, 1, .1], lPoint: .2 });
 
+// ---- Batch 1 of the moves from the owner's clips: rear hooks, lead uppercut, lead and rising elbows ----
+// Rear hook: the elbow comes up and out (RHL3), then the hips and shoulders turn through and the
+// rear fist swings round into the right side of the bag, forearm level, back heel turned (RH3).
+const RHL3 = pose3({ hip: [.14, .92, .04], yaw: 25, chestYaw: 15, lean: 8,
+  lF: [.36, 1.52, -.12], rF: [.34, 1.5, .3], rElb: [0, .4, 1] });
+const RH3 = pose3({ hip: [.28, .92, .02], yaw: -15, chestYaw: -35, lean: 8,
+  lF: [.46, 1.5, -.16], rF: [.87, 1.5, .17], lA: [.32, .08, -.12], rA: [-.25, .15, .29], rKn: [1, 0, -.4], rElb: [0, .5, 1], rPoint: .2 });
+// Rear hook to the body: bend the knees to drop the level about 10 cm (RBD3), then turn through and
+// hook the rear fist into the side of the bag at belt height, lead hand at the chin (RBH3).
+const RBD3 = pose3({ hip: [.14, .84, .06], yaw: 25, chestYaw: 15, lean: 12, tilt: 6,
+  lF: [.36, 1.42, -.1], rF: [.36, 1.2, .26], rElb: [0, -1, .6] });
+const RBH3 = pose3({ hip: [.36, .84, .02], yaw: -20, chestYaw: -40, lean: 10,
+  lF: [.54, 1.38, -.12], rF: [.87, 1, .17], lA: [.32, .08, -.14], rA: [-.25, .15, .29], rKn: [1, 0, -.4], rElb: [0, -.5, 1], rPoint: .2 });
+// Lead uppercut: dip a little toward the lead side with the hand low (LUD3), then drive up, turning
+// the lead hip and foot, and the lead fist rises into the bag, rear hand at the chin (LUH3).
+const LUD3 = pose3({ hip: [.06, .86, -.02], yaw: 45, chestYaw: 45, lean: 10, tilt: -10,
+  lF: [.36, 1.16, -.18], rF: [.24, 1.46, .12], lElb: [0, -1, 0] });
+const LUH3 = pose3({ hip: [.24, .93, 0], yaw: 55, chestYaw: 60, lean: 10,
+  lF: [.795, 1.5, -.02], rF: [.44, 1.5, .16], lA: [.44, .1, -.12], lKn: [.5, 0, 1], lElb: [1, -1, 0], lPoint: .2 });
+// Lead horizontal elbow: step in (ELS3), then turn the hips and shoulders right through and the
+// point of the lead elbow lands on the bag at head height, fist by the opposite ear (EL3).
+const ELS3 = pose3({ hip: [.3, .92, .03], lF: [.62, 1.52, -.08], rF: [.48, 1.5, .12], lA: [.5, .1, -.12], rA: [-.1, .14, .2] });
+const EL3 = pose3({ hip: [.38, .93, .02], yaw: 60, chestYaw: 80, lean: 8,
+  lF: [.64, 1.5, .14], rF: [.48, 1.52, .2], lA: [.5, .1, -.12], rA: [-.1, .14, .2], lKn: [.5, 0, 1], lElb: [1, .2, -.6], lPoint: .2 });
+// Rising elbows: from close range, the elbow comes straight up the centre line and its point lands
+// under the chin (on the bag, at chin height), fist up by the forehead, other hand guarding.
+const ERL3 = pose3({ hip: [.42, .93, .02], yaw: 45, chestYaw: 50, lean: 4,
+  lF: [.56, 1.8, -.06], rF: [.54, 1.52, .16], lA: [.5, .1, -.12], rA: [-.12, .14, .2], lElb: [1, .3, 0], lPoint: .2 });
+const ERR3 = pose3({ hip: [.46, .93, .02], yaw: -10, chestYaw: -50, lean: 4,
+  lF: [.6, 1.52, -.16], rF: [.66, 1.85, .06], lA: [.44, .08, -.12], rA: [-.12, .15, .26], rKn: [1, 0, -.4], rElb: [1, .3, 0], rPoint: .2 });
+
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
@@ -135,6 +166,12 @@ const POSES3D = {
   roundhouse: [G3, RSTEP3, RSWING3, RKICK3, RKICK3, G3, G3],
   'switch-kick': [G3, SW3, SWS3, SWK3, SWK3, G3, G3],
   clinch: [G3, KC3, KK3, KK3, KC3, G3],
+  'hook-rear': [G3, RHL3, RH3, RH3, G3, G3],
+  'body-rear': [G3, RBD3, RBH3, RBH3, G3, G3],
+  'uppercut-lead': [G3, LUD3, LUH3, LUH3, G3, G3],
+  'elbow-lead': [G3, ELS3, EL3, EL3, G3, G3],
+  'elbow-rise-lead': [G3, ELS3, ERL3, ERL3, G3, G3],
+  'elbow-rise-rear': [G3, ES3, ERR3, ERR3, G3, G3],
   check: [G3, CK3, CK3, G3, C3, C3, G3, G3],
   elbow: [G3, ES3, E3, E3, G3, G3],
 };
@@ -199,11 +236,12 @@ for (const [move, w] of Object.entries(WRONG3D)) POSES3D[move + '~wrong'] = POSE
 const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 14] }; // [azimuth, elevation] degrees
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
-const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], uppercut: [1, 2], body: [1, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3],
+const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], 'hook-rear': [0, 2], uppercut: [1, 2], 'uppercut-lead': [1, 2], body: [1, 2], 'body-rear': [1, 2],
+  'elbow-lead': [1, 2], 'elbow-rise-lead': [1, 2], 'elbow-rise-rear': [1, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3],
   clinch: [1, 2], elbow: [1, 2] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL', head: 'head' };
 // ...except moves that strike with the knee or elbow, where the trail follows that joint
-const TRAIL_JOINT_MOVE = { clinch: 'knR', elbow: 'elR' };
+const TRAIL_JOINT_MOVE = { clinch: 'knR', elbow: 'elR', 'elbow-lead': 'elL', 'elbow-rise-lead': 'elL', 'elbow-rise-rear': 'elR' };
 
 function trailPoints(T, move, hot) {
   const [a, b] = TRAILS[move], joint = TRAIL_JOINT_MOVE[move] || TRAIL_JOINT[hot], pts = [];
@@ -216,7 +254,8 @@ function trailPoints(T, move, hot) {
 // where you see the leg come round (from behind it looks like a push kick)
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
-const START_VIEW = { check: [-70, 12], roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
+const START_VIEW = { 'hook-rear': [145, 40], 'body-rear': [130, 25], 'uppercut-lead': [-70, 12], 'elbow-lead': [-50, 15],
+  'elbow-rise-lead': [-80, 8], 'elbow-rise-rear': [80, 8], check: [-70, 12], roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
   clinch: [75, 12], elbow: [75, 40] };
 
 /* ---------- Pose maths ---------- */

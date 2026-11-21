@@ -2,7 +2,7 @@
 
 // The app's version, shown on the Home screen. Keep it equal to the number in CACHE in sw.js
 // (bump both on every release).
-const APP_VERSION = 31;
+const APP_VERSION = 35;
 
 
 const KEY = 'fightcamp.v1';

@@ -210,10 +210,179 @@ for (const c of COMBOS) {
 
 /* ---------- Markup ---------- */
 
-// The demo card for a technique, or '' if it has no animation yet. Combinations get a row of
-// buttons to pick which combination plays.
-function moveDemo(id) {
-  if (id === 'combos') return moveDemo(COMBOS[0].id);
+// Batch 1 of the moves from the owner's clips. The 2D drawings are only a backup for phones that
+// can't run 3D, so they reuse the nearest existing drawing with the arms swapped.
+const swapArms = p => ({ ...p, lE: p.rE, lF: p.rF, rE: p.lE, rF: p.lF });
+Object.assign(DEMOS, {
+  'hook-rear': { type: 'side', hot: 'rear-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [swapArms(HOOK_LOAD), 140, 'Elbow comes up and out, arm bent'],
+    [swapArms(HOOK), 160, 'Turn the back heel, hip and shoulder through'],
+    [swapArms(HOOK), 240, 'Forearm level, lead hand glued to your face'],
+    [GUARD, 260, 'Back to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+  'body-rear': { type: 'side', hot: 'rear-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [swapArms(BODY_DIP), 240, 'Bend the knees to drop your level'],
+    [swapArms(BODY_HIT), 180, 'Turn through and hook the rear fist into the ribs'],
+    [swapArms(BODY_HIT), 240, 'Lead hand stays up by your chin'],
+    [GUARD, 300, 'Stand back up to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+  'uppercut-lead': { type: 'side', hot: 'lead-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [swapArms(UPPER_DIP), 200, 'Dip a little to your left, hand stays close'],
+    [swapArms(UPPER_HIT), 170, 'Drive up and turn the lead hip, fist rises under the chin'],
+    [swapArms(UPPER_HIT), 220, 'Rear hand stays home by your face'],
+    [GUARD, 260, 'Straight back to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+  'elbow-lead': { type: 'side', hot: 'lead-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [swapArms(DEMOS.elbow.seq[1][0]), 240, 'Step in close: elbows are for short range'],
+    [swapArms(DEMOS.elbow.seq[2][0]), 180, 'Turn the hips and shoulders right through, elbow leads'],
+    [swapArms(DEMOS.elbow.seq[2][0]), 260, 'Forearm level, fist by your right ear, rear hand guards'],
+    [GUARD, 300, 'Back to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+  'elbow-rise-lead': { type: 'side', hot: 'lead-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [swapArms(DEMOS.elbow.seq[1][0]), 240, 'Step in close'],
+    [swapArms(DEMOS.elbow.seq[2][0]), 170, 'Drive the lead elbow straight up the middle'],
+    [swapArms(DEMOS.elbow.seq[2][0]), 240, 'Point lands under the chin, fist by your forehead'],
+    [GUARD, 300, 'Back to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+  'elbow-rise-rear': { type: 'side', hot: 'rear-arm', seq: [
+    [GUARD, 700, 'Guard up, chin down'],
+    [DEMOS.elbow.seq[1][0], 240, 'Step in close'],
+    [DEMOS.elbow.seq[2][0], 170, 'Turn the back heel and drive the rear elbow straight up'],
+    [DEMOS.elbow.seq[2][0], 240, 'Point lands under the chin, lead hand guards your face'],
+    [GUARD, 300, 'Back to guard'],
+    [GUARD, 400, 'Guard up, chin down'] ] },
+});
+
+// Batch 2: driving knees, switch knee and rear teep (2D backups reuse the clinch and teep drawings)
+const KNEE2D = DEMOS.clinch.seq[2][0], STEP2D = DEMOS.clinch.seq[1][0];
+Object.assign(DEMOS, {
+  'knee-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [STEP2D, 220, 'Step in and reach for the head'],
+    [KNEE2D, 180, 'Pull down and drive the hips forward, rear knee up'],
+    [KNEE2D, 220, 'Lean back a little, toes pointed down'],
+    [GUARD, 300, 'Foot back down to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'knee-lead': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [swapSides(STEP2D), 180, 'Small skip to shift your weight back'],
+    [swapSides(KNEE2D), 150, 'Lead knee drives up and through, hips forward'],
+    [swapSides(KNEE2D), 220, 'Pull down, lean back, toes pointed'],
+    [GUARD, 300, 'Foot back down to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'knee-switch': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [SWITCH, 160, 'Quick switch of the feet'],
+    [swapSides(KNEE2D), 160, 'Knee straight off the switch, hips forward'],
+    [swapSides(KNEE2D), 220, 'Pull down, lean back a little'],
+    [GUARD, 300, 'Land back in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'teep-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [swapSides(TEEP_CHAMBER), 240, 'Rear knee comes up in front, weight on the lead foot'],
+    [swapSides(TEEP), 200, 'Push the hips through, ball of the foot into the target'],
+    [swapSides(TEEP), 160, 'Lean back a little, hands by your face'],
+    [swapSides(TEEP_CHAMBER), 180, 'Pull the leg straight back'],
+    [GUARD, 240, 'Back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+});
+
+// Batch 3: side kicks and oblique kicks (2D backups reuse the teep drawings)
+Object.assign(DEMOS, {
+  'side-kick': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [TEEP_CHAMBER, 220, 'Chamber the lead knee up across your body'],
+    [TEEP, 180, 'Turn the hips over and drive the heel straight out'],
+    [TEEP, 200, 'Lean your head away, hands stay up'],
+    [TEEP_CHAMBER, 180, 'Pull the leg straight back'],
+    [GUARD, 240, 'Back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'side-kick-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [swapSides(TEEP_CHAMBER), 240, 'Pivot on the lead foot and chamber the rear knee'],
+    [swapSides(TEEP), 200, 'Hips turn right over, heel drives straight out'],
+    [swapSides(TEEP), 200, 'Lean away, hands up'],
+    [swapSides(TEEP_CHAMBER), 200, 'Pull the leg back'],
+    [GUARD, 260, 'Turn back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  oblique: { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [TEEP_CHAMBER, 200, 'Lift the lead knee, toes turned out'],
+    [TEEP, 150, 'Stomp down and forward with the sole, just above their knee'],
+    [TEEP, 220, 'Weight stays over your standing leg'],
+    [GUARD, 300, 'Straight back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'oblique-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [swapSides(TEEP_CHAMBER), 200, 'Lift the rear knee, toes turned out'],
+    [swapSides(TEEP), 150, 'Stomp down and forward into their lead thigh'],
+    [swapSides(TEEP), 220, 'Hands up, weight over the lead leg'],
+    [GUARD, 300, 'Back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+});
+
+// Batch 4: spinning and flying kicks (2D backups reuse the side-kick and round-kick drawings)
+Object.assign(DEMOS, {
+  'spin-side': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [GUARD, 120, 'Turn your head first, look over your right shoulder'],
+    [swapSides(TEEP_CHAMBER), 120, 'Pivot on the lead foot, back to the target, knee up'],
+    [swapSides(TEEP), 140, 'Drive the heel straight back into the target'],
+    [swapSides(TEEP), 200, 'Lean away, hands up'],
+    [swapSides(TEEP_CHAMBER), 220, 'Pull the leg back and finish the turn'],
+    [GUARD, 260, 'Face them in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'spin-hook': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [GUARD, 120, 'Turn your head first, look over your right shoulder'],
+    [swapSides(TEEP_CHAMBER), 120, 'Pivot on the lead foot, back to the target'],
+    [KICK, 140, 'Swing the heel across at head height'],
+    [swapSides(TEEP_CHAMBER), 160, 'Bend the knee and pull the heel through'],
+    [GUARD, 220, 'Finish the turn to face them'],
+    [GUARD, 260, 'Hands up, in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'fly-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [KICK_STEP, 200, 'Step in and sink a little'],
+    [SWITCH, 140, 'Jump up, knees tucked'],
+    [KICK, 120, 'Turn over in the air, shin into the target'],
+    [KICK, 160, 'Hands up, eyes on the target'],
+    [GUARD, 220, 'Land soft on the balls of your feet, knees bent'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'fly-lead': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [SWITCH, 200, 'Switch your feet as you step in and sink'],
+    [SWITCH, 140, 'Jump up, knees tucked'],
+    [SWITCH_KICK, 120, 'Turn over in the air, lead shin into the target'],
+    [SWITCH_KICK, 160, 'Hands up, eyes on the target'],
+    [GUARD, 220, 'Land soft, knees bent, back in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+});
+
+// Techniques with more than one animation (lead and rear versions, the combinations): the card
+// shows a row of buttons to pick which one plays. [animation id, button label], first one shown first.
+const PICKS = {
+  combos: COMBOS.map(c => [c.id, c.name]),
+  hook: [['hook', 'Lead hook'], ['hook-rear', 'Rear hook']],
+  body: [['body', 'Lead hook (liver)'], ['body-rear', 'Rear hook']],
+  uppercut: [['uppercut', 'Rear uppercut'], ['uppercut-lead', 'Lead uppercut']],
+  elbow: [['elbow', 'Rear horizontal'], ['elbow-lead', 'Lead horizontal'], ['elbow-rise-lead', 'Lead rising'], ['elbow-rise-rear', 'Rear rising']],
+  clinch: [['clinch', 'Clinch knee'], ['knee-rear', 'Rear driving knee'], ['knee-lead', 'Lead driving knee'], ['knee-switch', 'Switch knee']],
+  teep: [['teep', 'Lead teep'], ['teep-rear', 'Rear teep']],
+  'side-kick': [['side-kick', 'Lead side kick'], ['side-kick-rear', 'Rear side kick']],
+  oblique: [['oblique', 'Lead oblique kick'], ['oblique-rear', 'Rear oblique kick']],
+  spinning: [['spin-side', 'Turning side kick'], ['spin-hook', 'Spinning hook kick']],
+  flying: [['fly-rear', 'Rear flying round kick'], ['fly-lead', 'Lead flying round kick']],
+};
+
+// The demo card for a technique, or '' if it has no animation yet
+function moveDemo(techId) {
+  const pick = PICKS[techId], id = pick ? pick[0][0] : techId;
   const d = DEMOS[id];
   if (!d) return '';
   // Moves with a 3D version are shown in 3D only (the 2D drawing is kept as a backup for phones
@@ -222,8 +391,8 @@ function moveDemo(id) {
     <button class="stance-chip${state.southpaw ? ' on' : ''}" data-act="demo-stance" aria-label="Stance: ${state.southpaw ? 'southpaw' : 'orthodox'}. Tap to switch">${state.southpaw ? 'Southpaw' : 'Orthodox'} ⇄</button>
     <svg class="demo-svg" viewBox="0 0 300 250" role="img" aria-label="Animation of the technique"></svg>
     <p class="demo-cue" aria-live="polite">${esc(d.seq[0][2])}</p>
-    ${d.combo ? `<div class="combo-pick" role="group" aria-label="Pick a combination">${COMBOS.map(c => `<button class="${c.id === id ? 'on' : ''}" data-act="demo-combo" data-id="${c.id}" aria-pressed="${c.id === id}">${esc(c.name)}</button>`).join('')}</div>` : ''}
-    ${WRONG3D[id] ? `<div class="rw" role="group" aria-label="Right way or common mistake"><button class="on" data-act="demo-right" aria-pressed="true">✓ Right</button><button data-act="demo-wrong" aria-pressed="false">✗ Common mistake</button></div>` : ''}
+    ${pick ? `<div class="combo-pick" role="group" aria-label="Pick a version">${pick.map(([pid, label]) => `<button class="${pid === id ? 'on' : ''}" data-act="demo-combo" data-id="${pid}" aria-pressed="${pid === id}">${esc(label)}</button>`).join('')}</div>` : ''}
+    ${WRONG3D[id] || pick ? `<div class="rw" role="group" aria-label="Right way or common mistake"${WRONG3D[id] ? '' : ' hidden'}><button class="on" data-act="demo-right" aria-pressed="true">✓ Right</button><button data-act="demo-wrong" aria-pressed="false">✗ Common mistake</button></div>` : ''}
     <div class="demo-ctl"><button class="btn" data-act="demo-play">${reducedMotion() ? '▶ Play' : 'Pause'}</button>
     <button class="btn" data-act="demo-slow">Slow-mo</button></div></div>`;
 }
@@ -355,9 +524,13 @@ document.addEventListener('click', e => {
   if (!btn) return;
   const el = btn.closest('.demo'), now = performance.now(), st = demoState(el, now);
   if (btn.dataset.act === 'demo-combo') {
-    // Swap which combination this card plays, and start it from the top
+    // Swap which version (or combination) this card plays, and start it from the top
     el.dataset.move = btn.dataset.id;
     el.querySelectorAll('.combo-pick button').forEach(b => { const on = b === btn; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    // (back to the right way; the mistake switch only shows for versions that have one)
+    el._wrong = false; el.classList.remove('wrong');
+    const rw = el.querySelector('.rw');
+    if (rw) { rw.hidden = !WRONG3D[btn.dataset.id]; rw.querySelectorAll('button').forEach(b => { const on = b.dataset.act === 'demo-right'; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); }
     const playing = st.playing; delete el._st; Object.assign(demoState(el, now), { playing });
     el.querySelector('.demo-cue').textContent = DEMOS[btn.dataset.id].seq[0][2];
     if (el._3d) { close3d(el); open3d(el); }

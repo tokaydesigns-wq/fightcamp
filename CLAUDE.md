@@ -28,7 +28,7 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | --- | --- |
 | `js/core.js` | Helpers, dates (`ymd` strings), `SESSION_TYPES`, saved state (`loadState`/`save`), training and food maths |
 | `js/charts.js` | SVG `barChart`, `lineChart`, `meter`, `stat` |
-| `js/techniques.js` | `TECHS` library (26 techniques, drills by solo/gear/partner/live) and `buildPlan()` 4-week builder |
+| `js/techniques.js` | `TECHS` library (29 techniques, drills by solo/gear/partner/live) and `buildPlan()` 4-week builder |
 | `js/fighters.js` | `FIGHTERS` (aliases, signature techniques, "how they do it" notes), `styleFromText` |
 | `js/camp.js` | `PHASES` of a fight camp with tips, `campStatus`, `cutPace` |
 | `js/learn.js` | Query matching, Wikipedia lookup, Learn and program screens, `learnAct` clicks |
@@ -57,7 +57,7 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 - 3D exists for jab, cross, hook, uppercut, body shot, slip, teep, roundhouse, switch kick, low kick, clinch knee and elbow
 - Right vs wrong: `WRONG3D` in moves3d.js gives each 3D move one common mistake (text, why, and the keyframes that change). It's registered as `POSES3D[move + '~wrong']`; the ✓ Right / ✗ Common mistake switch on the card plays it (`el._wrong`).
 - Combinations: `COMBOS` in moves.js lists moves played back to back (each move's opening and closing holds dropped, the return to guard shortened). The 'combos' technique shows a picker; `setHot` lights the striking limb per step; a combo with a low kick gets a longer bag.
-- Versions of a technique: `PICKS` in moves.js maps a technique id to `[animation id, label]` pairs; its card shows a button row to switch (the first one plays first). Used for the combinations and for lead/rear versions (`hook-rear`, `body-rear`, `uppercut-lead`, `elbow-lead`, `elbow-rise-lead`, `elbow-rise-rear`, `knee-rear`, `knee-lead`, `knee-switch`, `teep-rear`, built from the owner's clips). The ✓ Right / ✗ Common mistake switch hides for versions with no `WRONG3D` entry.
+- Versions of a technique: `PICKS` in moves.js maps a technique id to `[animation id, label]` pairs; its card shows a button row to switch (the first one plays first). Used for the combinations and for lead/rear versions (`hook-rear`, `body-rear`, `uppercut-lead`, `elbow-lead`, `elbow-rise-lead`, `elbow-rise-rear`, `knee-rear`, `knee-lead`, `knee-switch`, `teep-rear`, `side-kick-rear`, `oblique-rear`, built from the owner's clips; plus the new `side-kick` and `oblique` techniques). The ✓ Right / ✗ Common mistake switch hides for versions with no `WRONG3D` entry.
 - Matched to the owner's footage (Nov 2026, side-on clips in `Test videos`, never committed): jab step, cross return, teep height/lean, kick speed and lean, low-kick contact height, clinch-knee height. The versions from before are kept in `ORIGINAL3D` (moves3d.js) and play as `move + '~old'` with their own timing; git tag `animations-before-footage` also has them. To put a move back, use its `ORIGINAL3D` poses and `ms` timing.
   (footwork stays 2D). The switch kick is the round kick mirrored (`mirrorPose3`, `swapSides` in 2D). To add one, give `POSES3D` in moves3d.js one pose per keyframe of that move's
   2D `seq`, with the same number of keyframes. Poses are hip/fist/ankle positions in metres, fighter facing +X, orthodox.

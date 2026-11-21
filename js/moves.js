@@ -292,6 +292,40 @@ Object.assign(DEMOS, {
     [GUARD, 400, 'Stance, hands up'] ] },
 });
 
+// Batch 3: side kicks and oblique kicks (2D backups reuse the teep drawings)
+Object.assign(DEMOS, {
+  'side-kick': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [TEEP_CHAMBER, 220, 'Chamber the lead knee up across your body'],
+    [TEEP, 180, 'Turn the hips over and drive the heel straight out'],
+    [TEEP, 200, 'Lean your head away, hands stay up'],
+    [TEEP_CHAMBER, 180, 'Pull the leg straight back'],
+    [GUARD, 240, 'Back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'side-kick-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [swapSides(TEEP_CHAMBER), 240, 'Pivot on the lead foot and chamber the rear knee'],
+    [swapSides(TEEP), 200, 'Hips turn right over, heel drives straight out'],
+    [swapSides(TEEP), 200, 'Lean away, hands up'],
+    [swapSides(TEEP_CHAMBER), 200, 'Pull the leg back'],
+    [GUARD, 260, 'Turn back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  oblique: { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [TEEP_CHAMBER, 200, 'Lift the lead knee, toes turned out'],
+    [TEEP, 150, 'Stomp down and forward with the sole, just above their knee'],
+    [TEEP, 220, 'Weight stays over your standing leg'],
+    [GUARD, 300, 'Straight back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'oblique-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [swapSides(TEEP_CHAMBER), 200, 'Lift the rear knee, toes turned out'],
+    [swapSides(TEEP), 150, 'Stomp down and forward into their lead thigh'],
+    [swapSides(TEEP), 220, 'Hands up, weight over the lead leg'],
+    [GUARD, 300, 'Back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+});
+
 // Techniques with more than one animation (lead and rear versions, the combinations): the card
 // shows a row of buttons to pick which one plays. [animation id, button label], first one shown first.
 const PICKS = {
@@ -302,6 +336,8 @@ const PICKS = {
   elbow: [['elbow', 'Rear horizontal'], ['elbow-lead', 'Lead horizontal'], ['elbow-rise-lead', 'Lead rising'], ['elbow-rise-rear', 'Rear rising']],
   clinch: [['clinch', 'Clinch knee'], ['knee-rear', 'Rear driving knee'], ['knee-lead', 'Lead driving knee'], ['knee-switch', 'Switch knee']],
   teep: [['teep', 'Lead teep'], ['teep-rear', 'Rear teep']],
+  'side-kick': [['side-kick', 'Lead side kick'], ['side-kick-rear', 'Rear side kick']],
+  oblique: [['oblique', 'Lead oblique kick'], ['oblique-rear', 'Rear oblique kick']],
 };
 
 // The demo card for a technique, or '' if it has no animation yet

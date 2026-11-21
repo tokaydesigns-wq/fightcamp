@@ -258,6 +258,40 @@ Object.assign(DEMOS, {
     [GUARD, 400, 'Guard up, chin down'] ] },
 });
 
+// Batch 2: driving knees, switch knee and rear teep (2D backups reuse the clinch and teep drawings)
+const KNEE2D = DEMOS.clinch.seq[2][0], STEP2D = DEMOS.clinch.seq[1][0];
+Object.assign(DEMOS, {
+  'knee-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [STEP2D, 220, 'Step in and reach for the head'],
+    [KNEE2D, 180, 'Pull down and drive the hips forward, rear knee up'],
+    [KNEE2D, 220, 'Lean back a little, toes pointed down'],
+    [GUARD, 300, 'Foot back down to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'knee-lead': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [swapSides(STEP2D), 180, 'Small skip to shift your weight back'],
+    [swapSides(KNEE2D), 150, 'Lead knee drives up and through, hips forward'],
+    [swapSides(KNEE2D), 220, 'Pull down, lean back, toes pointed'],
+    [GUARD, 300, 'Foot back down to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'knee-switch': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 700, 'Stance, hands up'],
+    [SWITCH, 160, 'Quick switch of the feet'],
+    [swapSides(KNEE2D), 160, 'Knee straight off the switch, hips forward'],
+    [swapSides(KNEE2D), 220, 'Pull down, lean back a little'],
+    [GUARD, 300, 'Land back in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'teep-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [swapSides(TEEP_CHAMBER), 240, 'Rear knee comes up in front, weight on the lead foot'],
+    [swapSides(TEEP), 200, 'Push the hips through, ball of the foot into the target'],
+    [swapSides(TEEP), 160, 'Lean back a little, hands by your face'],
+    [swapSides(TEEP_CHAMBER), 180, 'Pull the leg straight back'],
+    [GUARD, 240, 'Back to stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+});
+
 // Techniques with more than one animation (lead and rear versions, the combinations): the card
 // shows a row of buttons to pick which one plays. [animation id, button label], first one shown first.
 const PICKS = {
@@ -266,6 +300,8 @@ const PICKS = {
   body: [['body', 'Lead hook (liver)'], ['body-rear', 'Rear hook']],
   uppercut: [['uppercut', 'Rear uppercut'], ['uppercut-lead', 'Lead uppercut']],
   elbow: [['elbow', 'Rear horizontal'], ['elbow-lead', 'Lead horizontal'], ['elbow-rise-lead', 'Lead rising'], ['elbow-rise-rear', 'Rear rising']],
+  clinch: [['clinch', 'Clinch knee'], ['knee-rear', 'Rear driving knee'], ['knee-lead', 'Lead driving knee'], ['knee-switch', 'Switch knee']],
+  teep: [['teep', 'Lead teep'], ['teep-rear', 'Rear teep']],
 };
 
 // The demo card for a technique, or '' if it has no animation yet

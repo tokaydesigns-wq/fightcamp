@@ -148,7 +148,7 @@ const TECHS = [
     live: ['Light sparring: goal is 3 clean low kicks each round'] },
 
   { id: 'teep', name: 'Teep (push kick)', style: 'muaythai',
-    words: ['teep', 'push kick', 'front kick', 'front kicks', 'push kicks'],
+    words: ['teep', 'push kick', 'front kick', 'front kicks', 'push kicks', 'rear teep', 'back teep', 'lead teep'],
     what: 'A straight push kick with the ball of the foot. It controls distance, stops attacks and knocks people off balance.',
     keys: ['Lift the knee first, then push the foot straight out', 'Push the hips forward and through', 'Hit with the ball of the foot', 'Snap back to stance straight away'],
     mistakes: ['Kicking up in an arc instead of straight out', 'Leaning back and falling off balance', 'Leaving the leg out to be caught'],
@@ -168,7 +168,7 @@ const TECHS = [
     live: ['Light sparring: land the switch kick off a jab'] },
 
   { id: 'clinch', name: 'Clinch and knees', style: 'muaythai',
-    words: ['clinch', 'knee', 'knees', 'knee strike', 'knee strikes', 'plum', 'thai clinch', 'collar tie', 'neck wrestling'],
+    words: ['clinch', 'knee', 'knees', 'knee strike', 'knee strikes', 'plum', 'thai clinch', 'collar tie', 'neck wrestling', 'driving knee', 'straight knee', 'switch knee', 'rear knee', 'lead knee'],
     what: 'Grabbing the head and neck in close and controlling your opponent so you can throw knees and off-balance them.',
     keys: ['Hands on the back of the head, one on top of the other', 'Squeeze elbows together in front of their collarbones', 'Hips forward and posture tall', 'Turn and off-balance them before throwing knees'],
     mistakes: ['Grabbing the neck with the elbows open wide', 'Leaning back with your hips out', 'Kneeing without first breaking their balance'],

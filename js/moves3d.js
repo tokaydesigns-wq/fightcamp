@@ -153,6 +153,30 @@ const ERL3 = pose3({ hip: [.42, .93, .02], yaw: 45, chestYaw: 50, lean: 4,
 const ERR3 = pose3({ hip: [.46, .93, .02], yaw: -10, chestYaw: -50, lean: 4,
   lF: [.6, 1.52, -.16], rF: [.66, 1.85, .06], lA: [.44, .08, -.12], rA: [-.12, .15, .26], rKn: [1, 0, -.4], rElb: [1, .3, 0], rPoint: .2 });
 
+// ---- Batch 2 of the moves from the owner's clips: driving knees, switch knee, rear teep ----
+// In the clips the knees come with a big lean back (about 30 degrees), the hips driving well forward,
+// and the hands reaching out as if pulling a head down onto the knee.
+// Rear driving knee: step in and reach (KRS3), then pull down and drive the rear knee into the bag (KR3).
+const KRS3 = pose3({ hip: [.32, .95, .03], yaw: 20, chestYaw: 15, lean: -6,
+  lF: [.66, 1.55, -.15], rF: [.64, 1.52, .15], lA: [.5, .1, -.12], rA: [-.1, .14, .2], lPoint: .2 });
+const KR3 = pose3({ hip: [.44, 1, .02], yaw: 10, chestYaw: 5, lean: -26,
+  lF: [.74, 1.5, -.15], rF: [.72, 1.48, .15], lA: [.5, .1, -.12], rA: [.56, .86, .12], rKn: [1, 1, 0],
+  lElb: [0, -1, -.4], rElb: [0, -1, .4], lPoint: .35, rPoint: .85 });
+// Lead driving knee: a small skip to get the weight back (KLS3), then the lead knee drives up (KL3).
+const KLS3 = pose3({ hip: [.2, .96, .02], yaw: 35, chestYaw: 30, lean: -6,
+  lF: [.52, 1.55, -.15], rF: [.5, 1.52, .15], lA: [.36, .1, -.12], rA: [.02, .14, .18] });
+const KL3 = pose3({ hip: [.35, 1, 0], yaw: 35, chestYaw: 25, lean: -30,
+  lF: [.65, 1.5, -.15], rF: [.63, 1.48, .15], lA: [.49, .9, -.1], rA: [.02, .14, .18], lKn: [1, 1, 0],
+  lElb: [0, -1, -.4], rElb: [0, -1, .4], lPoint: .85, rPoint: .35 });
+// Switch knee: the switch-kick hop, then the rear driving knee mirrored (the stance is switched).
+const KSW3 = mirrorPose3(KR3);
+// Rear teep: the back knee comes up in front (RTC3), then the hips push through and the ball of the
+// rear foot drives into the bag at chest height, leaning back, hands by the face (RT3).
+const RTC3 = pose3({ hip: [.06, .96, 0], yaw: -5, chestYaw: -10, lean: -8,
+  lF: [.2, 1.55, -.12], rF: [.16, 1.5, .12], lA: [.3, .08, -.12], rA: [.32, .62, .08], rKn: [1, .4, 0], lPoint: .2, rPoint: .3 });
+const RT3 = pose3({ hip: [.18, .98, 0], yaw: -10, chestYaw: -15, lean: -24,
+  lF: [.04, 1.56, -.12], rF: [0, 1.5, .12], lA: [.3, .08, -.12], rA: [.8, 1.3, .05], rKn: [0, 1, 0], lPoint: .2, rPoint: 0 });
+
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
@@ -172,6 +196,10 @@ const POSES3D = {
   'elbow-lead': [G3, ELS3, EL3, EL3, G3, G3],
   'elbow-rise-lead': [G3, ELS3, ERL3, ERL3, G3, G3],
   'elbow-rise-rear': [G3, ES3, ERR3, ERR3, G3, G3],
+  'knee-rear': [G3, KRS3, KR3, KR3, G3, G3],
+  'knee-lead': [G3, KLS3, KL3, KL3, G3, G3],
+  'knee-switch': [G3, SW3, KSW3, KSW3, G3, G3],
+  'teep-rear': [G3, RTC3, RT3, RT3, RTC3, G3, G3],
   check: [G3, CK3, CK3, G3, C3, C3, G3, G3],
   elbow: [G3, ES3, E3, E3, G3, G3],
 };
@@ -237,11 +265,11 @@ const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 1
 // Moves that show a faint trail of the striking foot or fist's path, from keyframe a to b.
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
 const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], 'hook-rear': [0, 2], uppercut: [1, 2], 'uppercut-lead': [1, 2], body: [1, 2], 'body-rear': [1, 2],
-  'elbow-lead': [1, 2], 'elbow-rise-lead': [1, 2], 'elbow-rise-rear': [1, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3],
+  'elbow-lead': [1, 2], 'elbow-rise-lead': [1, 2], 'elbow-rise-rear': [1, 2], 'knee-rear': [1, 2], 'knee-lead': [1, 2], 'knee-switch': [1, 2], 'teep-rear': [0, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3],
   clinch: [1, 2], elbow: [1, 2] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL', head: 'head' };
 // ...except moves that strike with the knee or elbow, where the trail follows that joint
-const TRAIL_JOINT_MOVE = { clinch: 'knR', elbow: 'elR', 'elbow-lead': 'elL', 'elbow-rise-lead': 'elL', 'elbow-rise-rear': 'elR' };
+const TRAIL_JOINT_MOVE = { clinch: 'knR', elbow: 'elR', 'elbow-lead': 'elL', 'elbow-rise-lead': 'elL', 'elbow-rise-rear': 'elR', 'knee-rear': 'knR', 'knee-lead': 'knL', 'knee-switch': 'knL' };
 
 function trailPoints(T, move, hot) {
   const [a, b] = TRAILS[move], joint = TRAIL_JOINT_MOVE[move] || TRAIL_JOINT[hot], pts = [];
@@ -255,7 +283,7 @@ function trailPoints(T, move, hot) {
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
 const START_VIEW = { 'hook-rear': [145, 40], 'body-rear': [130, 25], 'uppercut-lead': [-70, 12], 'elbow-lead': [-50, 15],
-  'elbow-rise-lead': [-80, 8], 'elbow-rise-rear': [80, 8], check: [-70, 12], roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
+  'elbow-rise-lead': [-80, 8], 'elbow-rise-rear': [80, 8], 'knee-rear': [100, 10], 'knee-lead': [-100, 10], 'knee-switch': [-100, 10], 'teep-rear': [75, 12], check: [-70, 12], roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
   clinch: [75, 12], elbow: [75, 40] };
 
 /* ---------- Pose maths ---------- */

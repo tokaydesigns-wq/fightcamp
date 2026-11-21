@@ -190,7 +190,15 @@ details.card[open] > summary::after { content: '–'; }
   z-index: 9; animation: up .2s ease-out; white-space: nowrap;
 }
 /* Home screen version label and the "new version is ready" bar */
-.banner .app-ver { margin-top: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); }
+.banner .foot-links { text-align: center; font-size: 13px; margin: 18px 0 6px; }
+.foot-links a { color: var(--muted); }
+.page-head { margin: 8px 0 12px; }
+.page-head .back { color: var(--muted); font-size: 14px; text-decoration: none; }
+.page-head h1 { margin: 6px 0 2px; }
+.credits { padding-left: 18px; margin: 6px 0 0; }
+.credits li { margin: 0 0 10px; line-height: 1.5; overflow-wrap: anywhere; }
+.credits a, .card p a { color: var(--accent); }
+.app-ver { margin-top: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); }
 .update-bar {
   position: fixed; left: 12px; right: 12px; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 10;
   display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 16px; border-radius: 14px;

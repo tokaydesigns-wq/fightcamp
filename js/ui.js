@@ -3,13 +3,13 @@
 
 let foodDay = ymd(), foodToday = foodDay;
 
-const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen, video: videoScreen };
+const ROUTES = { home: homeScreen, train: trainScreen, food: foodScreen, camp: campScreen, learn: learnScreen, p: programScreen, timer: timerScreen, video: videoScreen, about: aboutScreen };
 
 function render() {
   const [name = 'home', arg] = location.hash.replace(/^#\/?/, '').split('/');
   const fn = ROUTES[name] || homeScreen;
   $('#app').innerHTML = fn(arg && decodeURIComponent(arg));
-  const tab = { p: 'learn', timer: 'train', video: 'train' }[name] || (ROUTES[name] ? name : 'home');
+  const tab = { p: 'learn', timer: 'train', video: 'train', about: 'home' }[name] || (ROUTES[name] ? name : 'home');
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   startDemos();
   paintTimer();
@@ -32,7 +32,29 @@ function homeScreen() {
     ${meter('Calories', day.kcal, state.targets.kcal)}${meter('Protein', day.protein, state.targets.protein, 'g')}</a>
   ${p ? programMini(p) : `<a class="card cta" href="#/learn"><span>Want to move like a pro?</span><b>Learn from a famous fighter ›</b></a>`}
   <div class="quick"><a class="btn primary" href="#/train">+ Log training</a><a class="btn" href="#/food">+ Log food</a></div>
-  ${backupCard()}`;
+  ${backupCard()}
+  <p class="foot-links"><a href="#/about">About, privacy and credits</a></p>`;
+}
+
+/* ---------- About: privacy, health note and credits ---------- */
+
+function aboutScreen() {
+  return `<header class="page-head"><a class="back" href="#/home">‹ Home</a><h1>About FightCamp</h1>
+    <p class="muted">Version ${APP_VERSION}</p></header>
+  <section class="card"><h2>Your privacy</h2>
+    <p>Everything you log stays on this phone. FightCamp has no accounts, no ads and no tracking. Video check looks at your videos on the phone and never uploads them.</p>
+    <a class="btn wide" href="privacy.html">Read the privacy policy</a></section>
+  <section class="card"><h2>Not medical advice</h2>
+    <p>FightCamp gives general training and nutrition information. Talk to a doctor before starting a new training plan or cutting weight, especially for a weigh-in. Train with a qualified coach, and only spar with protective gear and supervision.</p></section>
+  <section class="card"><h2>Fighters</h2>
+    <p>Famous fighters are named to describe their style and how they use a technique. FightCamp isn't connected to, or endorsed by, any of them.</p></section>
+  <section class="card"><h2>Credits</h2>
+    <ul class="credits">
+      <li><b>3D animations</b> are drawn with <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a>, MIT licence. <a href="js/vendor/LICENSE.three.txt" target="_blank" rel="noopener">Licence</a></li>
+      <li><b>Video check</b> uses Google <a href="https://ai.google.dev/edge/mediapipe" target="_blank" rel="noopener">MediaPipe</a> Tasks Vision and its Pose Landmarker model, Apache License 2.0. <a href="js/vendor/mediapipe/LICENSE.txt" target="_blank" rel="noopener">Licence</a> · <a href="js/vendor/mediapipe/NOTICE.txt" target="_blank" rel="noopener">Notice</a></li>
+      <li><b>Fighter summaries and photos</b> come from <a href="https://en.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a>. Text is available under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> licence; each photo's author and licence are on its Wikipedia page ("Read more on Wikipedia").</li>
+      <li><b>Drills, programs, animations and artwork</b> are FightCamp's own.</li>
+    </ul></section>`;
 }
 
 /* ---------- Updates ---------- */

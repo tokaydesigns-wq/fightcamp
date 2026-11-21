@@ -41,7 +41,8 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | `js/ui.js` | Router, Home/Train/Food/Camp screens, click/input/submit handlers. Must load last. |
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release **and set `APP_VERSION` in core.js to the same N** (shown on Home so the owner can see which version they have); add new files to `SHELL`. |
 
-- Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`, `#/video`.
+- Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`, `#/video`, `#/about` (privacy summary, health note, credits; linked at the bottom of Home).
+- `privacy.html` is the public privacy policy (the stores link to it). **Update it, with a new date, before shipping anything that changes what data the app handles or sends** (purchases, accounts, syncing, analytics, new outside services).
 - Animations exist for jab, cross, hook, uppercut, body shot, slip, roundhouse, switch kick, low kick, teep,
   clinch knee (`clinch`), rear horizontal elbow (`elbow`), angles and distance.
   The Orthodox/Southpaw chip on each card mirrors them all (`state.southpaw`, cues swap left/right via `mirrorWords`). To add one, add keyframes to

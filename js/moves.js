@@ -326,6 +326,44 @@ Object.assign(DEMOS, {
     [GUARD, 400, 'Stance, hands up'] ] },
 });
 
+// Batch 4: spinning and flying kicks (2D backups reuse the side-kick and round-kick drawings)
+Object.assign(DEMOS, {
+  'spin-side': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [GUARD, 120, 'Turn your head first, look over your right shoulder'],
+    [swapSides(TEEP_CHAMBER), 120, 'Pivot on the lead foot, back to the target, knee up'],
+    [swapSides(TEEP), 140, 'Drive the heel straight back into the target'],
+    [swapSides(TEEP), 200, 'Lean away, hands up'],
+    [swapSides(TEEP_CHAMBER), 220, 'Pull the leg back and finish the turn'],
+    [GUARD, 260, 'Face them in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'spin-hook': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [GUARD, 120, 'Turn your head first, look over your right shoulder'],
+    [swapSides(TEEP_CHAMBER), 120, 'Pivot on the lead foot, back to the target'],
+    [KICK, 140, 'Swing the heel across at head height'],
+    [swapSides(TEEP_CHAMBER), 160, 'Bend the knee and pull the heel through'],
+    [GUARD, 220, 'Finish the turn to face them'],
+    [GUARD, 260, 'Hands up, in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'fly-rear': { type: 'side', hot: 'rear-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [KICK_STEP, 200, 'Step in and sink a little'],
+    [SWITCH, 140, 'Jump up, knees tucked'],
+    [KICK, 120, 'Turn over in the air, shin into the target'],
+    [KICK, 160, 'Hands up, eyes on the target'],
+    [GUARD, 220, 'Land soft on the balls of your feet, knees bent'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+  'fly-lead': { type: 'side', hot: 'lead-leg', seq: [
+    [GUARD, 650, 'Stance, hands up'],
+    [SWITCH, 200, 'Switch your feet as you step in and sink'],
+    [SWITCH, 140, 'Jump up, knees tucked'],
+    [SWITCH_KICK, 120, 'Turn over in the air, lead shin into the target'],
+    [SWITCH_KICK, 160, 'Hands up, eyes on the target'],
+    [GUARD, 220, 'Land soft, knees bent, back in your stance'],
+    [GUARD, 400, 'Stance, hands up'] ] },
+});
+
 // Techniques with more than one animation (lead and rear versions, the combinations): the card
 // shows a row of buttons to pick which one plays. [animation id, button label], first one shown first.
 const PICKS = {
@@ -338,6 +376,8 @@ const PICKS = {
   teep: [['teep', 'Lead teep'], ['teep-rear', 'Rear teep']],
   'side-kick': [['side-kick', 'Lead side kick'], ['side-kick-rear', 'Rear side kick']],
   oblique: [['oblique', 'Lead oblique kick'], ['oblique-rear', 'Rear oblique kick']],
+  spinning: [['spin-side', 'Turning side kick'], ['spin-hook', 'Spinning hook kick']],
+  flying: [['fly-rear', 'Rear flying round kick'], ['fly-lead', 'Lead flying round kick']],
 };
 
 // The demo card for a technique, or '' if it has no animation yet

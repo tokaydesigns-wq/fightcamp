@@ -199,6 +199,39 @@ const ROBC3 = pose3({ hip: [.14, .96, .02], yaw: -10, chestYaw: -10, lean: -6,
 const ROB3 = pose3({ hip: [.28, .98, 0], yaw: -10, chestYaw: -10, lean: -8,
   lF: [.42, 1.52, -.14], rF: [.34, 1.48, .12], lA: [.36, .1, -.12], rA: [.76, .97, .08], rKn: [.3, .2, 1], lPoint: .2, rPoint: 0 });
 
+// ---- Batch 4 of the moves from the owner's clips: spinning and flying kicks ----
+// Spinning kicks turn the body right round (see SPINS): look over the right shoulder and pivot on
+// the lead foot (TS1), back to the target with the rear knee chambered (TS2), then either drive the
+// heel straight back (turning side kick, TSK) or sweep it into the side of the bag at head height
+// (spinning hook kick, SHK) and pull it back (SHF), then fold the knee in and finish the turn to
+// face forward (TSR) so the foot doesn't swing through the bag.
+const TS1 = pose3({ hip: [.12, .95, 0], yaw: 120, chestYaw: 150, lean: 0,
+  lF: [.06, 1.5, -.18], rF: [.02, 1.48, .12], lA: [.32, .12, -.14], rA: [-.04, .14, .16], lKn: [-.5, 0, .87], rKn: [-.5, 0, .87], lPoint: .3, rPoint: .3 });
+const TS2 = pose3({ hip: [.1, .97, -.04], yaw: 210, chestYaw: 240, lean: 0, tilt: -15,
+  lF: [0, 1.46, -.2], rF: [.04, 1.5, .06], lA: [.32, .14, -.14], rA: [.24, .66, .04], lKn: [-.87, 0, -.5], rKn: [1, .5, 0], lPoint: .3, rPoint: .2 });
+const TSK = { ...RSK3, yaw: 270, chestYaw: 280, rA: [.8, 1.38, .02] };
+const SHK = pose3({ hip: [.22, 1, -.05], yaw: 250, chestYaw: 260, lean: 0, tilt: -48,
+  lF: [-.14, 1.42, -.12], rF: [-.16, 1.38, .2], lA: [.32, .14, -.14], rA: [.9, 1.52, -.16], lKn: [-.34, 0, -.94], rKn: [0, 1, -.3], lPoint: .3, rPoint: .2 });
+const SHF = pose3({ hip: [.2, 1, -.02], yaw: 290, chestYaw: 300, lean: 0, tilt: -40,
+  lF: [-.06, 1.44, -.14], rF: [-.08, 1.4, .18], lA: [.32, .14, -.14], rA: [.45, 1.2, .25], lKn: [.34, 0, -.94], rKn: [0, 1, .3], lPoint: .3, rPoint: .3 });
+const TSR = pose3({ hip: [.1, .95, 0], yaw: 330, chestYaw: 335, lean: 0,
+  lF: [.24, 1.5, -.12], rF: [.12, 1.48, .1], lA: [.32, .1, -.12], rA: [.25, .7, .05], lKn: [.87, 0, -.5], rKn: [1, .5, 0], lPoint: .3 });
+// Flying round kick: step in and sink (FS), jump with both knees tucked (FJ), turn over and land the
+// rear shin on the bag at about 1.4 m while in the air (FK), land soft with the knees bent (FL).
+// The lead-leg version is the same mirrored, like the switch kick.
+const FS = pose3({ hip: [.12, .86, .04], yaw: 30, chestYaw: 25, lean: 12,
+  lF: [.42, 1.42, -.12], rF: [.3, 1.38, .1], lA: [.36, .08, -.12], rA: [-.12, .14, .2], lPoint: .2, rPoint: .4 });
+const FJ = pose3({ hip: [.26, 1.2, -.06], yaw: 0, chestYaw: 0, lean: 0,
+  lF: [.4, 1.75, -.15], rF: [.32, 1.72, .12], lA: [.4, .6, -.12], rA: [0, .55, .2], lKn: [1, .6, 0], rKn: [1, .4, .2], lPoint: .4, rPoint: .5 });
+const FK = pose3({ hip: [.3, 1.24, -.18], yaw: -100, chestYaw: -55, lean: -12, tilt: -22,
+  lF: [.2, 1.84, -.32], rF: [.3, 1.22, .12], lA: [.35, .64, -.3], rA: [.98, 1.4, .36],
+  lElb: [0, -1, -.5], rElb: [0, -.3, 1], lKn: [-.5, .6, -1], rKn: [0, .5, -1], lPoint: .4, rPoint: .85 });
+const FL = pose3({ hip: [.3, .86, 0], yaw: 20, chestYaw: 20, lean: 8,
+  lF: [.56, 1.4, -.12], rF: [.44, 1.38, .12], lA: [.44, .08, -.12], rA: [0, .14, .2], lPoint: .2, rPoint: .3 });
+// Moves whose body turns all the way round: each step turns the shorter way between its two poses
+// (the keyframes are less than 180 degrees apart), so the spin keeps going instead of unwinding.
+const SPINS = new Set(['spin-side', 'spin-hook']);
+
 // One 3D pose for each keyframe of the matching 2D demo in moves.js (same timing and cues)
 const POSES3D = {
   jab: [G3, J3, J3, G3, G3],
@@ -226,6 +259,10 @@ const POSES3D = {
   'side-kick-rear': [G3, RSKP3, RSK3, RSK3, RSKP3, G3, G3],
   oblique: [G3, OBC3, OB3, OB3, G3, G3],
   'oblique-rear': [G3, ROBC3, ROB3, ROB3, G3, G3],
+  'spin-side': [G3, TS1, TS2, TSK, TSK, TSR, G3, G3],
+  'spin-hook': [G3, TS1, TS2, SHK, SHF, TSR, G3, G3],
+  'fly-rear': [G3, FS, FJ, FK, FK, FL, G3],
+  'fly-lead': [G3, mirrorPose3(FS), mirrorPose3(FJ), mirrorPose3(FK), mirrorPose3(FK), mirrorPose3(FL), G3],
   check: [G3, CK3, CK3, G3, C3, C3, G3, G3],
   elbow: [G3, ES3, E3, E3, G3, G3],
 };
@@ -292,7 +329,8 @@ const VIEWS = { side: [90, 10], front: [22, 8], behind: [205, 12], angle: [58, 1
 // It makes the shape of the strike obvious: a round kick's foot travels in an arc, a teep's in a line.
 const TRAILS = { jab: [0, 1], cross: [0, 1], hook: [0, 2], 'hook-rear': [0, 2], uppercut: [1, 2], 'uppercut-lead': [1, 2], body: [1, 2], 'body-rear': [1, 2],
   'elbow-lead': [1, 2], 'elbow-rise-lead': [1, 2], 'elbow-rise-rear': [1, 2], 'knee-rear': [1, 2], 'knee-lead': [1, 2], 'knee-switch': [1, 2], 'teep-rear': [0, 2],
-  'side-kick': [1, 2], 'side-kick-rear': [1, 2], oblique: [1, 2], 'oblique-rear': [1, 2], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3],
+  'side-kick': [1, 2], 'side-kick-rear': [1, 2], oblique: [1, 2], 'oblique-rear': [1, 2],
+  'spin-side': [2, 3], 'spin-hook': [2, 3], 'fly-rear': [2, 3], 'fly-lead': [2, 3], teep: [0, 2], roundhouse: [1, 3], 'switch-kick': [1, 3], 'low-kick': [1, 3], slip: [0, 3],
   clinch: [1, 2], elbow: [1, 2] };
 const TRAIL_JOINT = { 'rear-leg': 'anR', 'lead-leg': 'anL', 'rear-arm': 'fiR', 'lead-arm': 'fiL', head: 'head' };
 // ...except moves that strike with the knee or elbow, where the trail follows that joint
@@ -310,7 +348,7 @@ function trailPoints(T, move, hot) {
 // the hook from above and in front, to see the fist curve round; the teep from the lead-leg side,
 // to see the knee lift then the straight push
 const START_VIEW = { 'hook-rear': [145, 40], 'body-rear': [130, 25], 'uppercut-lead': [-70, 12], 'elbow-lead': [-50, 15],
-  'elbow-rise-lead': [-80, 8], 'elbow-rise-rear': [80, 8], 'knee-rear': [100, 10], 'knee-lead': [-100, 10], 'knee-switch': [-100, 10], 'teep-rear': [75, 12], 'side-kick': [90, 10], 'side-kick-rear': [-90, 10], oblique: [-60, 15], 'oblique-rear': [60, 15], check: [-70, 12], roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
+  'elbow-rise-lead': [-80, 8], 'elbow-rise-rear': [80, 8], 'knee-rear': [100, 10], 'knee-lead': [-100, 10], 'knee-switch': [-100, 10], 'teep-rear': [75, 12], 'side-kick': [90, 10], 'side-kick-rear': [-90, 10], oblique: [-60, 15], 'oblique-rear': [60, 15], 'spin-side': [100, 15], 'spin-hook': [60, 30], 'fly-rear': [110, 15], 'fly-lead': [-110, 15], check: [-70, 12], roundhouse: [110, 26], 'switch-kick': [-110, 26], 'low-kick': [95, 8], hook: [35, 40], uppercut: [70, 12], body: [-40, 30], teep: [-75, 12], slip: [205, 14],
   clinch: [75, 12], elbow: [75, 40] };
 
 /* ---------- Pose maths ---------- */
@@ -358,6 +396,7 @@ function splinePose3(move, a, b, u) {
     const len = Math.hypot(...p[k]);
     out[k] = p.hip.map((h, i) => h + p[k][i] / len * p[k + 'Len']);
   }
+  if (SPINS.has(base)) for (const k of ['yaw', 'chestYaw']) out[k] = pa[k] + ((((pb[k] - pa[k]) % 360) + 540) % 360 - 180) * e;
   return out;
 }
 

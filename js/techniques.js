@@ -27,7 +27,7 @@ const TECHS = [
     live: ['Light sparring: goal is to land a clean 1-2 each round'] },
 
   { id: 'hook', name: 'The lead hook', style: 'boxing',
-    words: ['hook', 'left hook', 'lead hook', 'check hook'],
+    words: ['hook', 'left hook', 'lead hook', 'check hook', 'rear hook', 'right hook'],
     what: 'A short, curved punch with the lead hand. It is the classic knockout punch at close range.',
     keys: ['Keep the elbow up so your forearm is level with the floor', 'Turn the front foot, hip and shoulder together', 'Keep it short: the arm stays bent at about 90 degrees', 'Rear hand stays glued to your cheek'],
     mistakes: ['Swinging wide and loopy', 'Dropping the hand to load up first', 'Turning only the arm, not the body'],
@@ -47,7 +47,7 @@ const TECHS = [
     live: ['Light sparring: when your opponent ducks or leans in, look for the uppercut'] },
 
   { id: 'body', name: 'Body shots (liver shot)', style: 'boxing',
-    words: ['body shot', 'liver shot', 'liver', 'body punch', 'to the body', 'body work', 'bodywork'],
+    words: ['body shot', 'liver shot', 'liver', 'body punch', 'to the body', 'body work', 'bodywork', 'body hook', 'rear body hook', 'right to the body'],
     what: 'Punches to the ribs and stomach. The lead hook to the liver (your opponent\'s right side) can drop anyone.',
     keys: ['Bend your knees to go down, don\'t just bend at the waist', 'Keep your head off the centre line as you dip', 'Turn the hip into the shot, like a hook to the head', 'Come back up with a shot to the head, or move out'],
     mistakes: ['Reaching down and leaving your head exposed', 'Staying low too long after throwing', 'Throwing arm-only shots with no hip turn'],
@@ -148,7 +148,7 @@ const TECHS = [
     live: ['Light sparring: goal is 3 clean low kicks each round'] },
 
   { id: 'teep', name: 'Teep (push kick)', style: 'muaythai',
-    words: ['teep', 'push kick', 'front kick', 'front kicks', 'push kicks'],
+    words: ['teep', 'push kick', 'front kick', 'front kicks', 'push kicks', 'rear teep', 'back teep', 'lead teep'],
     what: 'A straight push kick with the ball of the foot. It controls distance, stops attacks and knocks people off balance.',
     keys: ['Lift the knee first, then push the foot straight out', 'Push the hips forward and through', 'Hit with the ball of the foot', 'Snap back to stance straight away'],
     mistakes: ['Kicking up in an arc instead of straight out', 'Leaning back and falling off balance', 'Leaving the leg out to be caught'],
@@ -168,7 +168,7 @@ const TECHS = [
     live: ['Light sparring: land the switch kick off a jab'] },
 
   { id: 'clinch', name: 'Clinch and knees', style: 'muaythai',
-    words: ['clinch', 'knee', 'knees', 'knee strike', 'knee strikes', 'plum', 'thai clinch', 'collar tie', 'neck wrestling'],
+    words: ['clinch', 'knee', 'knees', 'knee strike', 'knee strikes', 'plum', 'thai clinch', 'collar tie', 'neck wrestling', 'driving knee', 'straight knee', 'switch knee', 'rear knee', 'lead knee'],
     what: 'Grabbing the head and neck in close and controlling your opponent so you can throw knees and off-balance them.',
     keys: ['Hands on the back of the head, one on top of the other', 'Squeeze elbows together in front of their collarbones', 'Hips forward and posture tall', 'Turn and off-balance them before throwing knees'],
     mistakes: ['Grabbing the neck with the elbows open wide', 'Leaning back with your hips out', 'Kneeing without first breaking their balance'],
@@ -178,7 +178,7 @@ const TECHS = [
     live: ['Clinch sparring: full clinch rounds, light knees'] },
 
   { id: 'elbow', name: 'Elbows (horizontal elbow)', style: 'muaythai',
-    words: ['elbow', 'elbows', 'horizontal elbow', 'horizontal elbows', 'elbow strike', 'elbow strikes', 'rear elbow', 'right elbow', 'left elbow', 'lead elbow', 'sok', 'sok tad', 'sok tat', 'thai elbow'],
+    words: ['elbow', 'elbows', 'horizontal elbow', 'horizontal elbows', 'elbow strike', 'elbow strikes', 'rear elbow', 'right elbow', 'left elbow', 'lead elbow', 'sok', 'sok tad', 'sok tat', 'thai elbow', 'rising elbow', 'upward elbow', 'uppercut elbow', 'sok ngat'],
     what: 'A short strike with the point of the elbow at close range. The horizontal elbow swings across, level with the floor, like a very tight hook. It cuts and it is hard to see coming.',
     keys: ['Step in close first: elbows only work at short range', 'Turn the back heel, hips and shoulders through, more than on a cross', 'Fold the arm tight, keep the forearm level and lead with the point of the elbow', 'Other hand stays up guarding your face, then come straight back to guard'],
     mistakes: ['Throwing it from too far away and falling in', 'Swinging the arm on its own without turning the body', 'Dropping the other hand as you throw'],

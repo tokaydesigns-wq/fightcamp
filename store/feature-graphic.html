@@ -1,0 +1,22 @@
+<!doctype html>
+<!-- Google Play feature graphic (1024 x 500). Open through the local server and screenshot at that size. -->
+<html><head><meta charset="utf-8"><title>Feature graphic</title>
+<style>
+  :root { --accent: #ff4d5e; }
+  html, body { margin: 0; width: 1024px; height: 500px; overflow: hidden; }
+  body { background: radial-gradient(circle at 78% 40%, #7a1520 0%, #2a0d12 45%, #121317 80%); font-family: system-ui, "Segoe UI", sans-serif; color: #fff; position: relative; }
+  .txt { position: absolute; left: 64px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; width: 580px; }
+  .logo { display: flex; align-items: center; gap: 18px; }
+  .logo img { width: 88px; height: 88px; border-radius: 20px; }
+  h1 { font-size: 78px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -.01em; margin: 0; }
+  p { font-size: 30px; line-height: 1.3; margin: 22px 0 0; color: rgba(255,255,255,.85); font-weight: 600; }
+  svg { position: absolute; right: 10px; bottom: -4px; width: 560px; height: auto; }
+</style></head><body>
+  <div class="txt"><div class="logo"><img src="../icon.svg" alt=""><h1>FightCamp</h1></div>
+    <p>Log training, food and weight. Count down to fight night. Learn moves in 3D.</p></div>
+  <svg id="art" viewBox="0 0 300 250"></svg>
+  <script src="../js/core.js"></script><script src="../js/charts.js"></script><script src="../js/techniques.js"></script>
+  <script src="../js/fighters.js"></script><script src="../js/camp.js"></script><script src="../js/learn.js"></script>
+  <script src="../js/moves.js"></script><script src="../js/moves3d.js"></script><script src="../js/art.js"></script>
+  <script>document.getElementById('art').innerHTML = ART.home();</script>
+</body></html>

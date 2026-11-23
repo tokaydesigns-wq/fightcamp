@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- Fills the app with made-up sample data for store screenshots, then opens a screen.
+     Use only on a local test server, e.g. http://localhost:8124/store/sample-data.html?go=home
+     It REPLACES everything saved in the app, so it refuses to run anywhere else. -->
+<html><head><meta charset="utf-8"><title>Sample data</title></head><body>
+<p id="msg">Loading sample data…</p>
+<script>
+(() => {
+  if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+    document.getElementById('msg').textContent = 'This page only runs on a local test server, so it can never wipe real data.';
+    return;
+  }
+  const day = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+  const id = (p, i) => p + i;
+  // Training: about 5 sessions a week for the last 4 weeks
+  const plan = [['muaythai', 75, 8, 'Pads with coach, worked the switch kick'], ['strength', 45, 6, ''], ['boxing', 60, 7, 'Jab-cross-hook on the bag'],
+    ['cardio', 35, 5, '5 km easy run'], ['sparring', 50, 8, '5 rounds light, kept the hands up'], ['muaythai', 90, 8, 'Clinch and knees'], ['bjj', 60, 6, '']];
+  const sessions = [];
+  let k = 0;
+  for (let n = -27; n <= 0; n++) {
+    if ([2, 6].includes((n + 28) % 7)) continue;
+    const [type, mins, rpe, notes] = plan[k++ % plan.length];
+    sessions.push({ id: id('s', k), date: day(n), type, mins, rounds: type === 'sparring' ? 5 : type === 'muaythai' ? 6 : 0, rpe, notes });
+  }
+  // Food today
+  const meals = [['Oats, banana and whey', 520, 38], ['Chicken, rice and greens', 680, 52], ['Greek yoghurt and berries', 230, 20], ['Salmon and sweet potato', 610, 41]]
+    .map(([name, kcal, protein], i) => ({ id: id('m', i), date: day(0), name, kcal, protein }));
+  // Weight: down gently, about 0.6 kg a week (under 1% of body weight)
+  const weights = [];
+  for (let n = -42; n <= 0; n += 3) weights.push({ date: day(n), kg: Math.round((74.8 - n * 0.085 + (n % 2 ? .15 : -.1)) * 10) / 10 });
+  const state = {
+    sessions, meals, weights,
+    targets: { kcal: 2300, protein: 165 }, unit: 'kg',
+    camp: { date: day(38), opponent: 'Sample opponent', cls: 'Welterweight (Muay Thai)', limitKg: 72.5, start: day(-46) },
+    programs: [{ id: 'p1', techId: 'roundhouse', fighter: '', wiki: null, started: day(-9),
+      done: { '0-0': true, '0-1': true, '0-2': true, '0-3': true, '1-0': true, '1-1': true } }],
+    timer: { rounds: 5, work: 180, rest: 60 }, southpaw: false,
+  };
+  localStorage.setItem('fightcamp.v1', JSON.stringify(state));
+  const go = (new URLSearchParams(location.search).get('go') || 'home').replace(/[^\w\/-]/g, '');
+  location.replace('../?shot=' + Date.now() + '#/' + go);
+})();
+</script></body></html>

@@ -177,7 +177,7 @@ function foodScreen() {
       <button class="x" data-act="meal-del" data-id="${esc(m.id)}" aria-label="Delete">×</button></li>`).join('')}</ul>`
       : emptyState('Nothing logged yet.')}</section>
   <section class="card"><h2>Weight</h2>
-    <form class="inline" data-form="weight"><input type="number" name="w" step="0.1" min="20" max="400" inputmode="decimal"
+    <form class="inline" data-form="weight"><input type="number" name="w" aria-label="Today's weight" step="0.1" min="20" max="400" inputmode="decimal"
       placeholder="Today's weight (${state.unit})" required><button class="btn primary">Save</button></form>
     ${last ? `<div class="stats">${stat(fmtW(last.kg), 'latest', 'scale')}${weekAgo && weekAgo !== last ? stat((last.kg - weekAgo.kg > 0 ? '+' : '') + fmtW(last.kg - weekAgo.kg), 'this week') : ''}
       ${limit ? stat(fmtW(Math.abs(last.kg - limit)), last.kg > limit ? 'over the limit' : 'under the limit') : ''}</div>` : ''}

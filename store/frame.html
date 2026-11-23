@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- Holds the app at an exact phone size for screenshots (headless browsers won't make a window narrower
+     than about 500px). Usage: frame.html?w=430&h=932&go=home (add &at=1150 to freeze a move mid-strike) -->
+<html><head><meta charset="utf-8"><title>Phone frame</title>
+<style>html, body { margin: 0; background: #000; } iframe { border: 0; display: block; }</style></head><body>
+<script>
+  const q = new URLSearchParams(location.search), f = document.createElement('iframe');
+  f.width = +q.get('w') || 430; f.height = +q.get('h') || 932;
+  f.src = 'sample-data.html?go=' + encodeURIComponent(q.get('go') || 'home');
+  document.body.appendChild(f);
+  // Optional: freeze the first animation at a moment (at=ms) and scroll it into view, so the shot shows a strike
+  const at = q.get('at');
+  if (at) f.addEventListener('load', () => {
+    const w = f.contentWindow, tick = setInterval(() => {
+      const el = w.document.querySelector('.demo');
+      if (!el || !el._3d) return;
+      clearInterval(tick);
+      el._st = { start: 0, playing: false, slow: 1, at: +at, cue: '' };
+      w.drawDemo(el, w.performance.now());
+      el.closest('.card').scrollIntoView();
+    }, 100);
+  });
+</script></body></html>

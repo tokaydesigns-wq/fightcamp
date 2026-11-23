@@ -295,6 +295,43 @@ const WRONG3D = {
     keys: { 1: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 2: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 3: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] }, 4: { lElb: [0, -.2, -1], rElb: [0, -.2, 1] } } },
   check: { text: 'Leaning away from the kick', why: 'You fall off balance and can\'t counter, or get knocked over.',
     keys: { 1: { lean: -14, tilt: 20, hip: [-.1, .95, .1] }, 2: { lean: -14, tilt: 20, hip: [-.1, .95, .1] } } },
+  // (the versions built from the owner's clips)
+  'hook-rear': { text: 'Lead hand drops as you throw', why: 'Your chin is open to their right hand.',
+    keys: { 2: { lF: [.4, 1.12, -.26] }, 3: { lF: [.4, 1.12, -.26] } } },
+  'body-rear': { text: 'Reaching down by bending at the waist', why: 'Your head ends up low and in front, open to a knee or uppercut.',
+    keys: { 1: { hip: [.14, .92, .06], lean: 40 }, 2: { hip: [.36, .92, .02], lean: 36 }, 3: { hip: [.36, .92, .02], lean: 36 } } },
+  'uppercut-lead': { text: 'Dropping the hand to the waist to load up', why: 'It shows the punch coming and opens your head.',
+    keys: { 1: { lF: [.3, .98, -.26] } } },
+  'elbow-lead': { text: 'Dropping the rear hand as you throw', why: 'At this range their elbow lands on your open face.',
+    keys: { 2: { rF: [.5, 1.12, .26] }, 3: { rF: [.5, 1.12, .26] } } },
+  'elbow-rise-lead': { text: 'Leaning back as the elbow rises', why: 'Your weight goes backwards and the elbow loses its power.',
+    keys: { 2: { lean: -16 }, 3: { lean: -16 } } },
+  'elbow-rise-rear': { text: 'Lead hand drops as you throw', why: 'Your chin is open while you are close enough to be hit.',
+    keys: { 2: { lF: [.6, 1.12, -.26] }, 3: { lF: [.6, 1.12, -.26] } } },
+  'knee-rear': { text: 'Hips stay back', why: 'The knee only lifts; the power comes from driving the hips forward.',
+    keys: { 2: { hip: [.34, .97, .02], lean: 12 }, 3: { hip: [.34, .97, .02], lean: 12 } } },
+  'knee-lead': { text: 'Hands drop to your sides', why: 'Nothing pulls them onto the knee, and your face is open.',
+    keys: { 2: { lF: [.36, 1.02, -.3], rF: [.3, 1.02, .32] }, 3: { lF: [.36, 1.02, -.3], rF: [.3, 1.02, .32] } } },
+  'knee-switch': { text: 'Leaning forward over the knee', why: 'The hips can\'t drive through, so there\'s no power and your head is low.',
+    keys: { 2: { lean: 12 }, 3: { lean: 12 } } },
+  'teep-rear': { text: 'Leaning back and falling off balance', why: 'There\'s no push behind it, and it\'s easy to sweep you.',
+    keys: { 2: { lean: -40 }, 3: { lean: -40 } } },
+  'side-kick': { text: 'Not turning the hips over', why: 'It becomes a weak push with the toes instead of a heel strike.',
+    keys: { 2: { yaw: 40, chestYaw: 40, tilt: 20 }, 3: { yaw: 40, chestYaw: 40, tilt: 20 } } },
+  'side-kick-rear': { text: 'Not turning the hips over', why: 'It becomes a weak push with the toes instead of a heel strike.',
+    keys: { 2: { yaw: -30, chestYaw: -30, tilt: -20 }, 3: { yaw: -30, chestYaw: -30, tilt: -20 } } },
+  oblique: { text: 'Kicking without lifting the knee first', why: 'There\'s no snap, and it\'s easy to see coming.',
+    keys: { 1: { lA: [.3, .2, -.16], lKn: [1, 0, -.3] } } },
+  'oblique-rear': { text: 'Leaning too far back', why: 'You lose balance and can\'t follow up.',
+    keys: { 2: { lean: -32 }, 3: { lean: -32 } } },
+  'spin-side': { text: 'Dropping the hands as you turn your back', why: "For a moment you can't see them, and your face is open.",
+    keys: { 2: { lF: [0, 1.08, -.26], rF: [.04, 1.08, .2] }, 3: { lF: [.0, 1.1, -.3], rF: [.04, 1.1, .16] }, 4: { lF: [.0, 1.1, -.3], rF: [.04, 1.1, .16] } } },
+  'spin-hook': { text: 'Dropping the hands as you spin', why: 'For a moment you can\'t see them, and your face is open.',
+    keys: { 2: { lF: [.02, 1.08, -.26], rF: [.06, 1.08, .2] }, 3: { lF: [.1, 1.08, -.28], rF: [.14, 1.08, .18] }, 4: { lF: [.1, 1.08, -.28], rF: [.14, 1.08, .18] } } },
+  'fly-rear': { text: 'Dropping the hands in the air', why: 'If they step in or counter, your face is open.',
+    keys: { 2: { lF: [.32, 1.24, -.34], rF: [.36, 1.2, .22] }, 3: { lF: [.32, 1.24, -.34], rF: [.36, 1.2, .22] }, 4: { lF: [.32, 1.24, -.34], rF: [.36, 1.2, .22] } } },
+  'fly-lead': { text: 'Dropping the hands in the air', why: 'If they step in or counter, your face is open.',
+    keys: { 2: { lF: [.36, 1.2, -.22], rF: [.32, 1.24, .34] }, 3: { lF: [.36, 1.2, -.22], rF: [.32, 1.24, .34] }, 4: { lF: [.36, 1.2, -.22], rF: [.32, 1.24, .34] } } },
   elbow: { text: 'Dropping the other hand as you throw', why: 'At this range, their elbow lands on your open face.',
     keys: { 2: { lF: [.5, 1.12, -.26] }, 3: { lF: [.5, 1.12, -.26] } } },
 };
@@ -424,10 +461,21 @@ function skeleton(T, p) {
     shL: chest.clone().addScaledVector(cr, -BODY.shW), shR: chest.clone().addScaledVector(cr, BODY.shW),
     head: chest.clone().addScaledVector(spine, BODY.neck + BODY.head),
   };
-  [s.elL, s.fiL] = ik(T, s.shL, V(p.lF), BODY.upper, BODY.fore, V(p.lElb));
-  [s.elR, s.fiR] = ik(T, s.shR, V(p.rF), BODY.upper, BODY.fore, V(p.rElb));
   [s.knL, s.anL] = ik(T, s.hipL, V(p.lA), BODY.thigh, BODY.shin, V(p.lKn));
   [s.knR, s.anR] = ik(T, s.hipR, V(p.rA), BODY.thigh, BODY.shin, V(p.rKn));
+  // A fist never ends up inside the body: blending between two poses (especially while the body
+  // turns or tilts) can carry a hand through the torso, a thigh or the head, so a fist aimed inside
+  // one is pushed straight out until it just touches it.
+  const pushOut = t => {
+    for (const [a, b, r] of [[s.H, s.chest, .2], [s.hipL, s.knL, .15], [s.hipR, s.knR, .15], [s.head, s.head, .17]]) {
+      const ab = b.clone().sub(a), k = ab.lengthSq() ? Math.max(0, Math.min(1, t.clone().sub(a).dot(ab) / ab.lengthSq())) : 0;
+      const c = a.clone().addScaledVector(ab, k), d = t.clone().sub(c), len = d.length();
+      if (len < r) t.copy(c).addScaledVector(len > 1e-4 ? d.normalize() : cf.clone(), r);
+    }
+    return t;
+  };
+  [s.elL, s.fiL] = ik(T, s.shL, pushOut(V(p.lF)), BODY.upper, BODY.fore, V(p.lElb));
+  [s.elR, s.fiR] = ik(T, s.shR, pushOut(V(p.rF)), BODY.upper, BODY.fore, V(p.rElb));
   // Feet point the way the knee points, square to the shin, or further along it when pointed
   const foot = (kn, an, pole, point) => {
     const shin = an.clone().sub(kn).normalize();

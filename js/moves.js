@@ -533,6 +533,14 @@ document.addEventListener('click', e => {
     if (rw) { rw.hidden = !WRONG3D[btn.dataset.id]; rw.querySelectorAll('button').forEach(b => { const on = b.dataset.act === 'demo-right'; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); }
     const playing = st.playing; delete el._st; Object.assign(demoState(el, now), { playing });
     el.querySelector('.demo-cue').textContent = DEMOS[btn.dataset.id].seq[0][2];
+    // The key points and mistakes on the page follow the version that's playing
+    const techId = Object.keys(PICKS).find(t => PICKS[t].some(([p]) => p === btn.dataset.id));
+    const tech = techId && techById(techId), text = VERSION_TEXT[btn.dataset.id] || tech;
+    const card = el.closest('.card');
+    if (text && card) for (const [sel, list] of [['.tech-keys', text.keys], ['.tech-mistakes', text.mistakes]]) {
+      const box = card.querySelector(sel);
+      if (box && list) box.innerHTML = list.map(k => `<li>${esc(k)}</li>`).join('');
+    }
     if (el._3d) { close3d(el); open3d(el); }
     return;
   }

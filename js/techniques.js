@@ -321,6 +321,39 @@ const TECHS = [
 
 const techById = id => TECHS.find(t => t.id === id);
 
+// Key points and common mistakes for the extra versions of a technique (picked with the buttons on
+// its animation). The first version of each technique uses the technique's own keys and mistakes.
+const VERSION_TEXT = {
+  'hook-rear': { keys: ['Elbow comes up and out, arm bent at about 90 degrees', 'Turn the back heel, hip and shoulder through together', 'Forearm level when it lands, like the lead hook', 'Lead hand stays glued to your face'],
+    mistakes: ['Dropping the lead hand as you throw', 'Swinging it wide from the shoulder, so it is slow', 'Turning only the arm, not the back heel and hips'] },
+  'body-rear': { keys: ['Bend the knees to drop your level about a hand\'s width', 'Turn the back heel and hip through as the fist lands', 'Rear fist goes into the ribs under their elbow', 'Lead hand stays up by your chin, then stand back up'],
+    mistakes: ['Reaching down by bending at the waist', 'Staying low after the punch', 'Throwing it with the arm only, no hip turn'] },
+  'uppercut-lead': { keys: ['Dip a little toward your lead side, hand stays close', 'Drive up from the legs and turn the lead hip', 'Elbow bent about 90 degrees, palm facing you', 'Rear hand stays home by your face'],
+    mistakes: ['Dropping the hand to the waist to load up', 'Throwing it from too far away', 'Leaning back as you punch'] },
+  'elbow-lead': { keys: ['Step in close: elbows only work at short range', 'Turn the hips and shoulders right through to the right', 'Fold the arm tight, forearm level, fist by your right ear', 'Rear hand stays up guarding your face'],
+    mistakes: ['Dropping the rear hand as you throw', 'Swinging the arm without turning the body', 'Throwing it from too far away and falling in'] },
+  'elbow-rise-lead': { keys: ['Step in close first', 'Drive the lead elbow straight up the centre line', 'The point lands under the chin, fist by your forehead', 'Rear hand guards your face'],
+    mistakes: ['Leaning back as the elbow rises', 'Swinging it out to the side instead of straight up', 'Dropping the other hand'] },
+  'elbow-rise-rear': { keys: ['Step in close first', 'Turn the back heel and drive the rear elbow straight up', 'The point lands under the chin, fist by your forehead', 'Lead hand guards your face'],
+    mistakes: ['Dropping the lead hand as you throw', 'Swinging it out to the side', 'Throwing it from too far away'] },
+  'knee-rear': { keys: ['Step in and reach for the head with both hands', 'Pull down as the knee drives up', 'Push the hips forward and lean back a little', 'Toes pointed down, then the foot goes straight back to stance'],
+    mistakes: ['Keeping the hips back, so the knee only lifts', 'Bending forward over the knee', 'Dropping the hands to your sides'] },
+  'knee-lead': { keys: ['Small skip to shift your weight back', 'Drive the lead knee up and through', 'Hips forward, lean back a little, toes pointed', 'Hands reach and pull, or stay up guarding'],
+    mistakes: ['Dropping the hands to your sides', 'No skip, so there is no weight behind it', 'Leaning forward over the knee'] },
+  'knee-switch': { keys: ['Make the switch small and quick', 'The knee goes straight off the switch, no pause', 'Drive the hips forward and lean back a little', 'Pull down with the hands as the knee lands'],
+    mistakes: ['Leaning forward over the knee', 'A big, slow switch that gives it away', 'Pausing between the switch and the knee'] },
+  'teep-rear': { keys: ['Bring the rear knee up in front first', 'Push the hips through and drive the ball of the foot', 'Lean back a little, hands by your face', 'Pull the leg straight back to stance'],
+    mistakes: ['Leaning back so far you lose balance', 'Kicking up in an arc instead of straight', 'Leaving the leg out to be caught'] },
+  'side-kick-rear': { keys: ['Pivot on the lead foot and chamber the rear knee', 'Turn the hips right over so your side faces the target', 'Drive the heel straight out and lean your head away', 'Hands up, then pull the leg back and turn back to stance'],
+    mistakes: ['Not turning the hips over, so it is a weak push', 'Kicking with the toes instead of the heel', 'Dropping the hands as you lean back'] },
+  'oblique-rear': { keys: ['Lift the rear knee first, toes turned out', 'Stomp down and forward into their lead thigh', 'Weight stays over your lead leg, hands up', 'Pull straight back to stance'],
+    mistakes: ['Leaning too far back and losing balance', 'Kicking at the knee joint in training', 'Leaving the leg out where it can be caught'] },
+  'spin-hook': { keys: ['Turn your head first, look over your right shoulder', 'Pivot on the ball of the lead foot', 'Sweep the heel across at head height', 'Bend the knee, pull the heel through and finish facing them'],
+    mistakes: ['Dropping the hands as you spin', 'Spinning without looking, so it misses', 'Losing balance and ending with your back to them'] },
+  'fly-lead': { keys: ['Switch your feet as you step in and sink', 'Jump up, not just forward', 'Turn over in the air and land the lead shin', 'Land soft on the balls of your feet, knees bent'],
+    mistakes: ['Dropping the hands in the air', 'Jumping from too far away', 'Landing with straight legs'] },
+};
+
 /* ---------- 4-week program ---------- */
 
 // Each week has a title, goal and items built from the technique's drills.

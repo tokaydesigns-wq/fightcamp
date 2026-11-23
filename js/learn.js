@@ -107,7 +107,7 @@ function learnResult() {
       <p>${esc(tech.what)}</p>
       ${how ? `<div class="how"><b>How ${esc(shortName(fighter))} does it</b><p>${esc(how)}</p></div>` : ''}
       ${moveDemo(tech.id)}
-      <h3>Key points</h3><ol>${tech.keys.map(k => `<li>${esc(k)}</li>`).join('')}</ol>
+      <h3>Key points</h3><ol class="tech-keys">${tech.keys.map(k => `<li>${esc(k)}</li>`).join('')}</ol>
       <button class="btn primary wide" data-act="prog-start">Start my 4-week program</button>
       <button class="btn ghost wide" data-act="learn-clear-tech">Pick a different technique</button></div>`;
   } else {
@@ -173,8 +173,8 @@ function programScreen(id) {
   <section class="card"><h2>How it's done</h2><p>${esc(t.what)}</p>
     ${moveDemo(t.id)}
     ${how ? `<div class="how"><b>How ${esc(shortName(f))} does it</b><p>${esc(how)}</p></div>` : ''}
-    <h3>Key points</h3><ol>${t.keys.map(k => `<li>${esc(k)}</li>`).join('')}</ol>
-    <h3>Common mistakes</h3><ul>${t.mistakes.map(k => `<li>${esc(k)}</li>`).join('')}</ul>
+    <h3>Key points</h3><ol class="tech-keys">${t.keys.map(k => `<li>${esc(k)}</li>`).join('')}</ol>
+    <h3>Common mistakes</h3><ul class="tech-mistakes">${t.mistakes.map(k => `<li>${esc(k)}</li>`).join('')}</ul>
     <a class="btn wide" href="${yt}" target="_blank" rel="noopener">▶ Find videos on YouTube</a></section>
   ${weeks}
   <button class="btn ghost wide danger" data-act="prog-del" data-id="${p.id}">Delete this program</button>`;

@@ -2,7 +2,7 @@
 
 :root {
   --bg: #f5f3f0; --card: #fff; --ink: #17171c; --muted: #6a6a74; --line: #e5e1db;
-  --accent: #d62839; --accent-ink: #fff; --soft: #fbe8ea; --good: #2a9d6f; --warn: #c97a10; --warn-soft: #fdf1dc;
+  --accent: #c4202f; --accent-ink: #fff; --soft: #fbe8ea; --good: #2a9d6f; --warn: #c97a10; --warn-soft: #fdf1dc;
   --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 14px rgba(0,0,0,.05);
   --r: 16px;
   color-scheme: light dark;
@@ -10,7 +10,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0f1014; --card: #1a1c22; --ink: #f1f1f4; --muted: #9c9ca8; --line: #2b2e36;
-    --accent: #ff4d5e; --soft: #3a1b20; --good: #4cc495; --warn: #f0a941; --warn-soft: #3a2a12;
+    --accent: #ff4d5e; --accent-ink: #1a0a0c; --soft: #3a1b20; --good: #4cc495; --warn: #f0a941; --warn-soft: #3a2a12;
     --shadow: none;
   }
 }
@@ -62,6 +62,9 @@ a.card:active { transform: scale(.99); }
 .count span { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
 .count.big { min-width: 100px; height: 100px; }
 .count.big b { font-size: 44px; }
+/* The day count never shrinks, however long the text beside it (the min-width: 0 rule above would squash it) */
+.camp-mini > .count, .countdown > .count { flex: none; min-width: 74px; }
+.countdown > .count.big { min-width: 100px; }
 .countdown { display: flex; gap: 16px; align-items: center; }
 .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
@@ -94,6 +97,8 @@ input, select, textarea {
   border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font: inherit; font-weight: 400;
 }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+/* A visible ring on whatever has keyboard focus (buttons, links, chips), for people not using touch */
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 input[type=range] { padding: 0; min-height: 34px; accent-color: var(--accent); background: none; border: 0; }
 input[type=checkbox] { width: 22px; height: 22px; min-height: 0; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
@@ -216,13 +221,13 @@ details.card[open] > summary::after { content: '–'; }
 .rw[hidden] { display: none; }
 .rw { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0 0 8px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
 .rw button { border: 0; background: var(--card); color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; min-height: 40px; cursor: pointer; }
-.rw button.on[data-act="demo-right"] { background: #1f8f4e; color: #fff; }
-.rw button.on[data-act="demo-wrong"] { background: var(--accent); color: #fff; }
+.rw button.on[data-act="demo-right"] { background: #1a7a43; color: #fff; }
+.rw button.on[data-act="demo-wrong"] { background: var(--accent); color: var(--accent-ink); }
 .demo.wrong .demo-cue { color: var(--accent); }
 .combo-pick { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 0 0 8px; }
 .combo-pick button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 99px; padding: 6px 12px;
   font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
-.combo-pick button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.combo-pick button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .demo-svg { width: 100%; height: auto; display: block; max-height: 260px; }
 .demo-cue { text-align: center; font-weight: 600; min-height: 2.9em; margin: 4px 6px 8px; }
 .demo-ctl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -307,7 +312,7 @@ button.back { border: 0; background: none; color: var(--accent); font: inherit; 
 .vc-stage video, .vc-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .vc-stage canvas { pointer-events: none; }
 .vc-person { position: absolute; border: 3px solid var(--accent); background: rgba(214,40,57,.15); border-radius: 8px; padding: 0; cursor: pointer; }
-.vc-person span { position: absolute; top: -2px; left: -2px; background: var(--accent); color: #fff; font-weight: 800; font-size: 13px; padding: 2px 8px; border-radius: 6px 0 6px 0; }
+.vc-person span { position: absolute; top: -2px; left: -2px; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 13px; padding: 2px 8px; border-radius: 6px 0 6px 0; }
 .vc-file { position: relative; }
 .vc-file input { display: none; }
 .vc-notes { list-style: none; padding: 0; margin: 0; }

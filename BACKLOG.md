@@ -18,8 +18,7 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## In review
 
-- [ ] `[animation]` Clinch knee and a new Elbows technique, both in 3D (PR: "Clinch knee and elbow animations"). Watch them on your phone before merging.
-- [ ] `[bug]` Overnight bug hunt: fixes for sideways scrolling, the weight-pace card, the round timer and more (PR: "Bug fixes from an overnight test of the whole app"). Merge after the clinch knee and elbow PR.
+- (nothing waiting)
 
 ## Needs the owner
 
@@ -39,6 +38,11 @@ Tags: `[bug]` something broken · `[feature]` new section or ability · `[polish
 
 ## Done
 
+- [x] Clinch knee and a new Elbows technique, both in 3D (PR #26)
+- [x] Bug fixes from an overnight test of the whole app (PR #27)
+- [x] Right vs wrong: a common mistake for every 3D move (PR #28)
+- [x] Combinations: six combos with a picker (PR #29)
+- [x] Kick check animation in 3D, with the counter and the common mistake (PR #30)
 - [x] Backup and restore of all your data (PR #10)
 - [x] Training log with weekly totals, streak and 8-week chart
 - [x] Food and weight tracking with targets and a weight chart

@@ -236,9 +236,13 @@ async function findPeople(v) {
     if (!(await seekTo(v, t))) continue;
     const people = detectEveryone(v);
     // Tiny "people" next to a big one are almost always a poster or a bit of the background
+    // (and someone far back in the gym is rarely the one being checked)
     const big = Math.max(0, ...people.map(torsoOf));
-    const real = people.filter(L => torsoOf(L) > big * .3 && torsoOf(L) > .04);
-    if (real.length > best.length) { vc.pickTime = t; best = real; bestImg = grabColors(v); }
+    const real = people.filter(L => torsoOf(L) > big * .5 && torsoOf(L) > .04);
+    // Most people in view; between moments with as many, the one where they look biggest (far
+    // away, the tracker places joints loosely and their clothes are read wrongly)
+    const size = list => list.reduce((s, L) => s + torsoOf(L), 0);
+    if (real.length > best.length || (real.length === best.length && size(real) > size(best) * 1.15)) { vc.pickTime = t; best = real; bestImg = grabColors(v); }
   }
   return personBoxes(best, bestImg);
 }
@@ -326,13 +330,16 @@ async function analyseClip(pick) {
   const v = vc.video, dur = Math.min(v.duration, MAX_SECS), fps = dur <= 60 ? 10 : 6;
   holdVideo(v);
   const frames = [];   // kept in time order
+  let doubt = 0;       // frames in a row where someone else wears their clothes better
   // Their outfit: from the frame they were picked in at first, then the usual outfit over the
   // first moments after it (one frame can have a glove or pad in front of the chest)
   const pick0 = vc.people[pick].outfit, early = [];
   let look = pick0 && (pick0.top || pick0.bottom) ? pick0 : null;
   // Clothes only help if theirs clearly differ from everyone else's in the video (two people in
-  // black can't be told apart that way)
-  const distinct = look && vc.people.length > 1 && vc.people.every((p, i) => i === pick || !p.outfit || (outfitGap(look, p.outfit) ?? 0) > .25);
+  // black can't be told apart that way). Someone much smaller or bigger (further back in the gym,
+  // or right by the camera) is never mistaken for them anyway, so their clothes don't count.
+  const mixable = p => p.scale / vc.people[pick].scale > .65 && p.scale / vc.people[pick].scale < 1.5;
+  const distinct = look && vc.people.length > 1 && vc.people.every((p, i) => i === pick || !p.outfit || !mixable(p) || (outfitGap(look, p.outfit) ?? 0) > .25);
   const onFrame = t => {
     let i = frames.length;
     while (i && frames[i - 1].t > t) i--;
@@ -352,13 +359,18 @@ async function analyseClip(pick) {
     // Lost them for a while, or following someone whose clothes don't look right (they slipped
     // behind a partner and the tracker slid onto the partner): look at everyone and switch to the
     // person who clearly wears their clothes, if nobody else does
+    // (When two people cross, one frame can blend their colours, so a switch while still following
+    // someone needs the clothes to look wrong for a few frames in a row)
     const dressNow = L && look ? outfitGap(look, outfit(img, L)) : null;
+    let better = null;
     if (look && distinct && ((!L && away > .5) || (dressNow != null && dressNow > .25))) {
       everyone = everyone || detectEveryone(v);
       const c = everyone.filter(P => seen(P, J.lHip, J.rHip, J.lSh, J.rSh) && torsoOf(P) / last.scale > .6 && torsoOf(P) / last.scale < 1.6)
         .map(P => ({ P, d: outfitGap(look, outfit(img, P)) })).filter(x => x.d != null).sort((a, b) => a.d - b.d);
-      if (c.length && c[0].d < .2 && (c.length === 1 || c[1].d - c[0].d > .08) && (dressNow == null || dressNow - c[0].d > .1)) L = c[0].P;
+      if (c.length && c[0].d < .2 && (c.length === 1 || c[1].d - c[0].d > .08) && (dressNow == null || dressNow - c[0].d > .1)) better = c[0].P;
     }
+    doubt = better && L ? doubt + 1 : 0;
+    if (better && (!L || doubt >= 3)) L = better;
     const lookNow = L && img ? outfit(img, L) : null;
     if (lookNow && Math.abs(t - vc.pickTime) < 1.5 && early.length < 15) { early.push(lookNow); if (early.length >= 3) look = usualOutfit(early); }
     frames.splice(i, 0, { t, L, look: lookNow });
@@ -374,6 +386,15 @@ async function analyseClip(pick) {
   for (let t = .01; t <= dur; t += 1 / fps) if (!frames.some(f => Math.abs(f.t - t) < .6 / fps)) missed.push(t);
   missed.sort((a, b) => (a < vc.pickTime) - (b < vc.pickTime) || (a < vc.pickTime ? b - a : a - b));
   if (!vc.cancel) await seekFrames(v, missed, onFrame);
+  // A knee or kick is over in a fraction of a second, so look closer (30 frames a second) around
+  // every moment a leg starts to rise. Then the arms can be judged through the whole strike.
+  if (!vc.cancel) {
+    const near = t => frames.some(f => Math.abs(f.t - t) < 1 / 60);
+    const extra = [...new Set(legRises(measure({ frames }, vc.stance)).flatMap(t => [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8].map(k => +(t + k / 30).toFixed(3))))]
+      .filter(t => t > 0 && t < dur && !near(t)).sort((a, b) => a - b);
+    vc.progress = .99; paintProgress();
+    await seekFrames(v, extra, onFrame);
+  }
   if (vc.cancel) { vcReset(); render(); return; }
   if (look && distinct) dropOthers(frames, vc.pickTime);
   if (frames.filter(f => f.L).length < frames.length * .15) {
@@ -533,7 +554,42 @@ function findStrikes(M) {
   // One kick read twice (both legs at once, or the knee lifting then the foot): keep the higher.
   // Two real kicks are rarely less than half a second apart.
   const kicked = kicks.filter(k => !kicks.some(q => q !== k && q.start <= k.last + .5 && k.start <= q.last + .5 && (q.height > k.height || (q.height === k.height && q.t < k.t))));
+  // What each hand did through the strike: in how many frames it sank well below the shoulders,
+  // and in how many it went well out from its usual place by the face (counting frames, as the
+  // tracker can misplace an arm for a single frame when the body turns or a pad gets in the way).
+  // A knee lifts the knee to about hip height with the foot tucked well below it.
+  for (const k of kicked) {
+    const top = M.find(m => m.t === k.t);
+    k.knee = !!top && k.height > -.3 && top[k.side + 'Knee'] != null && top[k.side + 'Leg'] != null && top[k.side + 'Leg'] < top[k.side + 'Knee'] - .3;
+    k.hands = {};
+    for (const side of ['lead', 'rear']) {
+      // (a knee counts from a moment earlier: it's only picked up once the knee reaches hip
+      // height, but the arm swings as it starts to lift)
+      const xs = M.filter(m => m.t >= k.start - (k.knee ? .12 : 0) && m.t <= k.last + .15 && m[side]);
+      k.hands[side] = { n: xs.length, low: xs.filter(m => m[side].low > .45).length,
+        out: xs.filter(m => m[side].reach != null && m[side].reach - G[side] > .45).length };
+    }
+  }
   return { punches: real.sort((a, b) => a.t - b.t), kicks: kicked.sort((a, b) => a.t - b.t) };
+}
+
+// Moments where a knee or foot starts to rise above the other one (a loose test: the closer look
+// that follows decides whether it was a strike)
+function legRises(M) {
+  const out = [];
+  for (const [side, other] of [['lead', 'rear'], ['rear', 'lead']]) {
+    const diff = key => M.filter(m => m[side + key] != null && m[other + key] != null).map(m => m[side + key] - m[other + key]);
+    const base = median(diff('Leg')), baseK = median(diff('Knee'));
+    let from = null, to = null;
+    for (const m of M) {
+      const up = (m[side + 'Knee'] != null && m[other + 'Knee'] != null && m[side + 'Knee'] - m[other + 'Knee'] - baseK > .2)
+        || (m[side + 'Leg'] != null && m[other + 'Leg'] != null && m[side + 'Leg'] - m[other + 'Leg'] - base > .25);
+      if (up) { if (from === null) from = m.t; to = m.t; }
+      else if (from !== null && m.hip) { out.push(from); if (to - from > .3) out.push(to); from = null; }
+    }
+    if (from !== null) out.push(from);
+  }
+  return out.sort((a, b) => a - b);
 }
 
 // Times where something was true for at least half a second (for timestamp chips)
@@ -619,17 +675,24 @@ function buildReport(track, kind, stance) {
     const count = c => kicks.filter(k => h(k) === c).length;
     const parts = ['low', 'body', 'head'].filter(count).map(c => `${count(c)} ${c} height`).join(', ');
     note('Kicks', true, `${kicks.length} kick${kicks.length === 1 ? '' : 's'} or knee${kicks.length === 1 ? '' : 's'} picked up: ${parts}.`);
-    // The guard hand should stay up through the kick and as it lands. Mid-kick the body turns so
-    // far that the tracker can mix up the arms (the kicking-side arm swinging down is fine), so
-    // there it takes both hands down at once; once the foot is back down, the guard hand alone.
-    const open = kicks.map(k => {
-      const both = M.find(m => m.t >= k.start && m.t <= k.last + .05 && m.lead && m.rear && m.lead.low > .6 && m.rear.low > .6);
-      const after = sank(otherSide(k.side), k.last + .05, k.last + .6);
-      return both ? { t: both.t } : after && after.low > .6 ? after : null;
-    }).filter(Boolean);
+    // Through a kick or knee, the arm on that side swings down (for power and balance) while the
+    // other glove stays by the face. Mid-kick the body turns so far that the tracker can mix up
+    // the arms, so it only judges both together: both gloves leaving the face is a mistake, and so
+    // is a knee with no swing at all. Each hand must be seen in at least two frames of the strike.
+    // A glove counts as gone when it drops well below the shoulders or, on a kick, flies out from
+    // the face (on a knee, gloves reaching forward are holding a clinch or a pad).
+    const judged = kicks.filter(k => k.hands && k.hands.lead.n >= 2 && k.hands.rear.n >= 2);
+    const gone = (k, h) => h.low >= 2 || (!k.knee && h.out >= 2);
+    const open = judged.filter(k => gone(k, k.hands.lead) && gone(k, k.hands.rear));
+    // Both gloves stayed close by the face on a knee: no swing (and not reaching for a clinch)
+    const stiff = judged.filter(k => k.knee && ['lead', 'rear'].every(s => k.hands[s].low < 2 && k.hands[s].out < 2));
     if (open.length) {
-      note('Kicks', false, `Your guard drops when you kick (${open.length} of ${kicks.length}). The arm on the kicking side can swing down, but keep the other hand by your face.`,
-        open.map(x => x.t), 'roundhouse');
+      note('Kicks', false, `Both hands leave your face when you kick or knee (${open.length} of ${kicks.length}). Let the arm on the kicking side swing down, but keep the other glove by your chin.`,
+        open.map(k => k.t), 'roundhouse');
+    }
+    if (stiff.length) {
+      note('Kicks', false, `On ${stiff.length === 1 ? 'a knee' : `${stiff.length} knees`}, both gloves stayed up by your face. Swing the arm on the knee side down and back as the knee comes up: it drives the knee and keeps you balanced.`,
+        stiff.map(k => k.t), 'clinch');
     }
   }
 

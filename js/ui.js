@@ -33,7 +33,7 @@ function homeScreen() {
   ${p ? programMini(p) : `<a class="card cta" href="#/learn"><span>Want to move like a pro?</span><b>Learn from a famous fighter ›</b></a>`}
   <div class="quick"><a class="btn primary" href="#/train">+ Log training</a><a class="btn" href="#/food">+ Log food</a></div>
   ${backupCard()}
-  <p class="foot-links"><a href="#/about">About, privacy and credits</a></p>`;
+  <p class="foot-links"><a href="#/about">About, privacy, terms and credits</a></p>`;
 }
 
 /* ---------- About: privacy, health note and credits ---------- */
@@ -45,7 +45,8 @@ function aboutScreen() {
     <p>Everything you log stays on this phone. FightCamp has no accounts, no ads and no tracking. Video check looks at your videos on the phone and never uploads them.</p>
     <a class="btn wide" href="privacy.html">Read the privacy policy</a></section>
   <section class="card"><h2>Not medical advice</h2>
-    <p>FightCamp gives general training and nutrition information. Talk to a doctor before starting a new training plan or cutting weight, especially for a weigh-in. Train with a qualified coach, and only spar with protective gear and supervision.</p></section>
+    <p>FightCamp gives general training and nutrition information. Talk to a doctor before starting a new training plan or cutting weight, especially for a weigh-in. Train with a qualified coach, and only spar with protective gear and supervision.</p>
+    <a class="btn wide" href="terms.html">Read the terms of use</a></section>
   <section class="card"><h2>Fighters</h2>
     <p>Famous fighters are named to describe their style and how they use a technique. FightCamp isn't connected to, or endorsed by, any of them.</p></section>
   <section class="card"><h2>Credits</h2>

@@ -1,4 +1,4 @@
-/* FightCamp styles. Colours are tokens on :root, with dark-mode overrides below. */
+/* Ringcraft styles. Colours are tokens on :root, with dark-mode overrides below. */
 
 :root {
   --bg: #f5f3f0; --card: #fff; --ink: #17171c; --muted: #6a6a74; --line: #e5e1db;

@@ -1,4 +1,4 @@
-# FightCamp: store listing (draft for the owner to approve)
+# Ringcraft: store listing (draft for the owner to approve)
 
 Everything here is a draft. Change anything you like before pasting it into App Store Connect or the
 Google Play Console. Character limits are in brackets; every line below fits.
@@ -6,7 +6,7 @@ Google Play Console. Character limits are in brackets; every line below fits.
 Real fighters' names are left out of the listing on purpose. Using a famous person's name to sell an
 app can break store rules on trademarks and "implied endorsement", so the listing talks about
 "famous fighters" in general. Inside the app it's fine: the About page already says the fighters
-don't endorse FightCamp.
+don't endorse Ringcraft.
 
 ---
 
@@ -14,12 +14,14 @@ don't endorse FightCamp.
 
 | Field | Text | Length |
 | --- | --- | --- |
-| App name (Apple 30, Google 30) | FightCamp: Martial Arts Log | 27 |
+| App name (Apple 30, Google 30) | Ringcraft: Martial Arts Log | 27 |
 | Subtitle (Apple, 30) | Train, cut weight, learn moves | 30 |
 | Short description (Google, 80) | Log training, food and weight, count down to fight night and learn moves in 3D. | 79 |
 | Promotional text (Apple, 170, can be changed any time) | New: 31 techniques with a 3D fighter you can turn, right vs wrong, combos and lead and rear versions of every strike. | 117 |
 
-If "FightCamp: Martial Arts Log" is taken, try "FightCamp – Fight Training" or "FightCamp Muay Thai & Boxing".
+If "Ringcraft: Martial Arts Log" is taken in a store, try "Ringcraft – Fight Training" or "Ringcraft: Muay Thai & Boxing".
+
+The app was called FightCamp until November 2026. That name is a registered trademark of another company (Hykso Inc., who make the FightCamp boxing app), so it must not be used as the app's name. Saying "fight camp" in the description as an ordinary phrase is fine.
 
 ## Keywords (Apple only, 100, comma separated, no spaces needed)
 
@@ -37,7 +39,7 @@ muay thai,boxing,kickboxing,mma,bjj,training log,weight cut,fight camp,round tim
 ## Full description (Apple and Google, 4000)
 
 ```
-FightCamp is a training partner for Muay Thai, boxing, kickboxing, MMA and BJJ. Log your sessions, keep your food and weight on track, count down to fight night, and learn techniques from a 3D fighter you can turn and slow down.
+Ringcraft is a training partner for Muay Thai, boxing, kickboxing, MMA and BJJ. Log your sessions, keep your food and weight on track, count down to fight night, and learn techniques from a 3D fighter you can turn and slow down.
 
 TRAIN
 • Log every session in seconds: type, minutes, rounds, how hard it was and notes
@@ -54,7 +56,7 @@ LEARN MOVES IN 3D
 
 FIGHT CAMP
 • Set your fight date and weight limit and get a countdown with tips for each phase of camp
-• A safe weight plan: FightCamp tells you how many kilos a week you need to lose and warns you if it's too fast (it never suggests water cuts)
+• A safe weight plan: Ringcraft tells you how many kilos a week you need to lose and warns you if it's too fast (it never suggests water cuts)
 
 FOOD AND WEIGHT
 • Track calories and protein against your own targets
@@ -68,7 +70,7 @@ PRIVATE BY DESIGN
 • Everything you log stays on your phone. Save a backup file whenever you like
 • Works offline once it has loaded
 
-FightCamp gives general training information, not medical advice. Talk to a doctor before starting a new training plan or cutting weight.
+Ringcraft gives general training information, not medical advice. Talk to a doctor before starting a new training plan or cutting weight.
 ```
 
 (About 1,800 characters.)
@@ -94,7 +96,7 @@ First release: training log, round timer, food and weight tracking, fight camp c
 - **Google "Data safety":** No data collected, no data shared. Data is not encrypted in transit
   because none is sent; answer "No" to collection and the form skips most questions.
 
-If FightCamp ever adds purchases, accounts, syncing or analytics, these answers and `privacy.html`
+If Ringcraft ever adds purchases, accounts, syncing or analytics, these answers and `privacy.html`
 must change first.
 
 ## Age rating

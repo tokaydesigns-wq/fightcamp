@@ -1,4 +1,4 @@
-# FightCamp
+# Ringcraft
 
 A free phone app for martial artists (boxing, Muay Thai, BJJ, wrestling, MMA).
 

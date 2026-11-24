@@ -1,9 +1,15 @@
-# FightCamp: notes for Claude
+# Ringcraft (formerly FightCamp): notes for Claude
 
-FightCamp is a phone web app (installable PWA) for martial artists: training log, food and weight,
+Ringcraft is a phone web app (installable PWA) for martial artists: training log, food and weight,
 fight-camp countdown with tips, and "learn from a famous fighter" 4-week drill programs.
 It is separate from the owner's other app, Planerr. Live at https://tokaydesigns-wq.github.io/fightcamp/.
 GitHub Pages deploys straight from `main`, so anything merged to `main` goes live within a minute or two.
+
+**Name:** the app is called **Ringcraft** in everything people see. It was FightCamp until Nov 2026, but
+"FightCamp" is a registered trademark of Hykso Inc. (a boxing app), so never use it as the app's name again.
+Internal ids keep the old name on purpose: the repo and web address (`/fightcamp/`), the saved-data key
+`fightcamp.v1`, the backup file's `app: 'fightcamp'`, the service worker cache names, and file/folder names.
+Changing those would lose people's data, break installed copies or break old backups.
 
 The owner isn't a developer. Write to them in plain language, show what changed (screenshots
 help), and say clearly what you did and didn't test.

@@ -121,7 +121,7 @@ function learnResult() {
       <div class="picks">${others.map(pickBtn).join('')}</div></div>`;
   }
   return `${wikiCard(learn.wiki, learn.name)}${body}
-    <p class="muted small center">Programs come from FightCamp's built-in drill library. Fighter info comes from Wikipedia.</p>`;
+    <p class="muted small center">Programs come from Ringcraft's built-in drill library. Fighter info comes from Wikipedia.</p>`;
 }
 
 const pickBtn = t => `<button class="pick" data-act="learn-pick" data-id="${t.id}">${esc(t.name)}</button>`;

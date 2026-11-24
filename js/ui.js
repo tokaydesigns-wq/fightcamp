@@ -1,4 +1,4 @@
-/* FightCamp screens (Home, Train, Food, Camp), router, clicks and forms.
+/* Ringcraft screens (Home, Train, Food, Camp), router, clicks and forms.
    The Learn screens live in learn.js. */
 
 let foodDay = ymd(), foodToday = foodDay;
@@ -22,7 +22,7 @@ window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 function homeScreen() {
   const wk = weekTotals(1)[0], day = dayFood(ymd()), p = state.programs.find(p => techById(p.techId));
   const c = state.camp && campStatus(state.camp);
-  return `${banner('home', 'FightCamp', greeting(), `<p class="app-ver">Version ${APP_VERSION}</p>`, niceDate(ymd()))}
+  return `${banner('home', 'Ringcraft', greeting(), `<p class="app-ver">Version ${APP_VERSION}</p>`, niceDate(ymd()))}
   ${c ? `<a class="card camp-mini" href="#/camp"><div class="count"><b>${Math.max(c.daysOut, 0)}</b><span>${c.daysOut === 1 ? 'day' : 'days'}</span></div>
       <div><p class="eyebrow">${c.daysOut >= 0 ? 'To fight night' : 'Fight done'}</p><h2>${esc(c.phase.name)}</h2><p class="muted small">${esc(c.phase.goal)}</p></div></a>`
     : `<a class="card cta" href="#/camp"><span>Got a fight coming up?</span><b>Set your fight date ›</b></a>`}
@@ -39,22 +39,22 @@ function homeScreen() {
 /* ---------- About: privacy, health note and credits ---------- */
 
 function aboutScreen() {
-  return `<header class="page-head"><a class="back" href="#/home">‹ Home</a><h1>About FightCamp</h1>
+  return `<header class="page-head"><a class="back" href="#/home">‹ Home</a><h1>About Ringcraft</h1>
     <p class="muted">Version ${APP_VERSION}</p></header>
   <section class="card"><h2>Your privacy</h2>
-    <p>Everything you log stays on this phone. FightCamp has no accounts, no ads and no tracking. Video check looks at your videos on the phone and never uploads them.</p>
+    <p>Everything you log stays on this phone. Ringcraft has no accounts, no ads and no tracking. Video check looks at your videos on the phone and never uploads them.</p>
     <a class="btn wide" href="privacy.html">Read the privacy policy</a></section>
   <section class="card"><h2>Not medical advice</h2>
-    <p>FightCamp gives general training and nutrition information. Talk to a doctor before starting a new training plan or cutting weight, especially for a weigh-in. Train with a qualified coach, and only spar with protective gear and supervision.</p>
+    <p>Ringcraft gives general training and nutrition information. Talk to a doctor before starting a new training plan or cutting weight, especially for a weigh-in. Train with a qualified coach, and only spar with protective gear and supervision.</p>
     <a class="btn wide" href="terms.html">Read the terms of use</a></section>
   <section class="card"><h2>Fighters</h2>
-    <p>Famous fighters are named to describe their style and how they use a technique. FightCamp isn't connected to, or endorsed by, any of them.</p></section>
+    <p>Famous fighters are named to describe their style and how they use a technique. Ringcraft isn't connected to, or endorsed by, any of them.</p></section>
   <section class="card"><h2>Credits</h2>
     <ul class="credits">
       <li><b>3D animations</b> are drawn with <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a>, MIT licence. <a href="js/vendor/LICENSE.three.txt" target="_blank" rel="noopener">Licence</a></li>
       <li><b>Video check</b> uses Google <a href="https://ai.google.dev/edge/mediapipe" target="_blank" rel="noopener">MediaPipe</a> Tasks Vision and its Pose Landmarker model, Apache License 2.0. <a href="js/vendor/mediapipe/LICENSE.txt" target="_blank" rel="noopener">Licence</a> · <a href="js/vendor/mediapipe/NOTICE.txt" target="_blank" rel="noopener">Notice</a></li>
       <li><b>Fighter summaries and photos</b> come from <a href="https://en.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a>. Text is available under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> licence; each photo's author and licence are on its Wikipedia page ("Read more on Wikipedia").</li>
-      <li><b>Drills, programs, animations and artwork</b> are FightCamp's own.</li>
+      <li><b>Drills, programs, animations and artwork</b> are Ringcraft's own.</li>
     </ul></section>`;
 }
 
@@ -66,7 +66,7 @@ function updateReady() {
   if (document.getElementById('updateBar')) return;
   const bar = document.createElement('div');
   bar.id = 'updateBar'; bar.className = 'update-bar';
-  bar.innerHTML = '<span>A new version of FightCamp is ready.</span><button class="btn primary" data-act="update-now">Update now</button>';
+  bar.innerHTML = '<span>A new version of Ringcraft is ready.</span><button class="btn primary" data-act="update-now">Update now</button>';
   document.body.append(bar);
 }
 document.addEventListener('click', e => { if (e.target.closest('[data-act="update-now"]')) location.reload(); });
@@ -81,9 +81,10 @@ function backupCard() {
 }
 
 function backupSave() {
+  // The app id stays 'fightcamp' (the app's old name) so backups made before and after the rename both load
   const blob = new Blob([JSON.stringify({ app: 'fightcamp', version: 1, saved: new Date().toISOString(), data: state }, null, 1)], { type: 'application/json' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = `fightcamp-backup-${ymd()}.json`;
+  a.href = URL.createObjectURL(blob); a.download = `ringcraft-backup-${ymd()}.json`;
   document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   toast('Backup saved');
@@ -94,7 +95,7 @@ function backupLoad(file) {
   r.onload = () => {
     let b;
     try { b = JSON.parse(r.result); } catch (e) { /* handled below */ }
-    if (!b || b.app !== 'fightcamp' || !b.data || typeof b.data !== 'object') { toast("That isn't a FightCamp backup"); return; }
+    if (!b || b.app !== 'fightcamp' || !b.data || typeof b.data !== 'object') { toast("That isn't a Ringcraft backup"); return; }
     const d = b.data, n = (d.sessions || []).length, m = (d.meals || []).length;
     const have = state.sessions.length || state.meals.length || state.weights.length || state.camp || state.programs.length;
     const msg = `Load this backup (${n} sessions, ${m} meals)?` + (have ? ' It will replace everything currently on this phone.' : '');

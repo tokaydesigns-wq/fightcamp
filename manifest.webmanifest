@@ -1,6 +1,6 @@
 {
-  "name": "FightCamp",
-  "short_name": "FightCamp",
+  "name": "Ringcraft",
+  "short_name": "Ringcraft",
   "description": "Track your martial arts training, food and fight camp, and learn moves from famous fighters.",
   "start_url": "./#/home",
   "scope": "./",

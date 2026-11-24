@@ -1,11 +1,11 @@
 /* Offline cache. Bump CACHE on every release so phones pick up the new version, and set
    APP_VERSION in js/core.js to the same number (it's shown on the Home screen). */
-const CACHE = 'fightcamp-v37';
+const CACHE = 'fightcamp-v38';
 // The video-check tracker has its own cache so app updates don't download its 20 MB again.
 // Change the name only when the files in js/vendor/mediapipe change.
 const TRACKER = 'fightcamp-tracker-mediapipe-1.1.1';
 const SHELL = [
-  './', 'index.html', 'privacy.html', 'styles.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',
+  './', 'index.html', 'privacy.html', 'terms.html', 'styles.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',
   'js/core.js', 'js/charts.js', 'js/techniques.js', 'js/fighters.js', 'js/camp.js', 'js/learn.js',
   'js/moves.js', 'js/moves3d.js', 'js/art.js', 'js/timer.js', 'js/video.js', 'js/ui.js',
   'js/vendor/three.module.min.js', 'js/vendor/three.core.js',

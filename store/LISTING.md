@@ -82,6 +82,7 @@ First release: training log, round timer, food and weight tracking, fight camp c
 ## Links
 
 - Privacy policy URL: https://tokaydesigns-wq.github.io/fightcamp/privacy.html
+- Terms of use URL (Apple: put it in the description or the licence agreement field; Google: optional): https://tokaydesigns-wq.github.io/fightcamp/terms.html
 - Support URL: https://github.com/tokaydesigns-wq/fightcamp/issues
 - Marketing URL (optional): https://tokaydesigns-wq.github.io/fightcamp/
 

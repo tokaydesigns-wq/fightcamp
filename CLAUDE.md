@@ -42,6 +42,8 @@ pull request a night. It never merges. The owner adds ideas under Inbox and merg
 | `sw.js` | Offline cache. Bump `CACHE` (`fightcamp-vN`) on every release **and set `APP_VERSION` in core.js to the same N** (shown on Home so the owner can see which version they have); add new files to `SHELL`. |
 
 - Routes: `#/home`, `#/train`, `#/food`, `#/camp`, `#/learn`, `#/p/ID` (a program), `#/timer`, `#/video`, `#/about` (privacy summary, health note, credits; linked at the bottom of Home).
+- `store/` holds the app-store icons, Play banner, screenshots and listing text (`LISTING.md`); `store/README.md` says how to re-make the screenshots with sample data. Not part of the app or the offline cache.
+- `terms.html` is the terms of use with the health and safety notice (linked from About and the privacy policy).
 - `privacy.html` is the public privacy policy (the stores link to it). **Update it, with a new date, before shipping anything that changes what data the app handles or sends** (purchases, accounts, syncing, analytics, new outside services).
 - Animations exist for jab, cross, hook, uppercut, body shot, slip, roundhouse, switch kick, low kick, teep,
   clinch knee (`clinch`), rear horizontal elbow (`elbow`), angles and distance.
